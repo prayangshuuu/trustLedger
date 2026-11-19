@@ -1,0 +1,72 @@
+# PROMPT.md
+
+Build tracker for TrustLedger. Run prompts **in order**. Each prompt follows `PLAN_CONTEXT.md`.
+When a prompt is finished: its report exists in `docs/`, its box is ticked here, and it is committed as `prompt NN: title`.
+
+**How to run a prompt with Claude Code:**
+```
+Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute docs/prompts/PROMPT_NN.md exactly.
+```
+
+## Foundation
+- [x] **Prompt 1: Repository audit and baseline** — `docs/prompts/PROMPT_01.md` — report: `docs/PROMPT1_REPORT.md`
+- [ ] **Prompt 2: Monorepo structure, tooling and CI** — `docs/prompts/PROMPT_02.md` — report: `docs/PROMPT2_REPORT.md`
+
+## Scoring and API
+- [ ] **Prompt 3: Scoring core package** — `docs/prompts/PROMPT_03.md` — report: `docs/PROMPT3_REPORT.md`
+- [ ] **Prompt 4: Database, consent and persistence** — `docs/prompts/PROMPT_04.md` — report: `docs/PROMPT4_REPORT.md`
+- [ ] **Prompt 5: FastAPI backend v1** — `docs/prompts/PROMPT_05.md` — report: `docs/PROMPT5_REPORT.md`
+
+## AI layer
+- [ ] **Prompt 6: LLM client and SMS parser** — `docs/prompts/PROMPT_06.md` — report: `docs/PROMPT6_REPORT.md`
+- [ ] **Prompt 7: Feature builder** — `docs/prompts/PROMPT_07.md` — report: `docs/PROMPT7_REPORT.md`
+- [ ] **Prompt 8: Document OCR — bills, receipts and khata** — `docs/prompts/PROMPT_08.md` — report: `docs/PROMPT8_REPORT.md`
+- [ ] **Prompt 9: Bhorsha — psychometric chat assessment** — `docs/prompts/PROMPT_09.md` — report: `docs/PROMPT9_REPORT.md`
+- [ ] **Prompt 10: RAG knowledge base** — `docs/prompts/PROMPT_10.md` — report: `docs/PROMPT10_REPORT.md`
+- [ ] **Prompt 11: LangGraph multi-agent pipeline** — `docs/prompts/PROMPT_11.md` — report: `docs/PROMPT11_REPORT.md`
+
+## Integration and platform
+- [ ] **Prompt 12: MCP server** — `docs/prompts/PROMPT_12.md` — report: `docs/PROMPT12_REPORT.md`
+- [ ] **Prompt 13: Workflows — Temporal and Airflow** — `docs/prompts/PROMPT_13.md` — report: `docs/PROMPT13_REPORT.md`
+- [ ] **Prompt 14: Federated learning with Flower** — `docs/prompts/PROMPT_14.md` — report: `docs/PROMPT14_REPORT.md`
+
+## Apps
+- [ ] **Prompt 15: Borrower app (Flutter)** — `docs/prompts/PROMPT_15.md` — report: `docs/PROMPT15_REPORT.md`
+- [ ] **Prompt 16: Lender dashboard (React)** — `docs/prompts/PROMPT_16.md` — report: `docs/PROMPT16_REPORT.md`
+
+## Quality
+- [ ] **Prompt 17: Evaluation suite and quality gates** — `docs/prompts/PROMPT_17.md` — report: `docs/PROMPT17_REPORT.md`
+- [ ] **Prompt 18: Security, privacy hardening and observability** — `docs/prompts/PROMPT_18.md` — report: `docs/PROMPT18_REPORT.md`
+
+## Launch
+- [ ] **Prompt 19: Deployment — Heroku and demo environment** — `docs/prompts/PROMPT_19.md` — report: `docs/PROMPT19_REPORT.md`
+- [ ] **Prompt 20: Public /docs site, README and submission pack** — `docs/prompts/PROMPT_20.md` — report: `docs/PROMPT20_REPORT.md`
+- [ ] **Prompt 21: Final QA and submission readiness** — `docs/prompts/PROMPT_21.md` — report: `docs/PROMPT21_REPORT.md`
+
+## Status
+
+| Prompt | Status | Report | Notes |
+|---|---|---|---|
+| 1 | done | docs/PROMPT1_REPORT.md | Baseline audit & env configured |
+| 2 | not started | — | |
+| 3 | not started | — | |
+| 4 | not started | — | |
+| 5 | not started | — | |
+| 6 | not started | — | |
+| 7 | not started | — | |
+| 8 | not started | — | |
+| 9 | not started | — | |
+| 10 | not started | — | |
+| 11 | not started | — | |
+| 12 | not started | — | |
+| 13 | not started | — | |
+| 14 | not started | — | |
+| 15 | not started | — | |
+| 16 | not started | — | |
+| 17 | not started | — | |
+| 18 | not started | — | |
+| 19 | not started | — | |
+| 20 | not started | — | |
+| 21 | not started | — | |
+
+Timeline: code freeze **23 Dec 2026**, final **26 Dec 2026**.

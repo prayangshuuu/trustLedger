@@ -5,8 +5,24 @@ requires-python = ">=3.12"
 dependencies = [
     "ipykernel>=7.4.0",
     "matplotlib>=3.11.2",
+    "notebook",
     "numpy>=2.5.5",
     "pandas>=3.1.1",
+    "scikit-learn>=1.9.1",
     "shap>=0.54.1",
     "xgboost>=3.4.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.5.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["*.ipynb"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
