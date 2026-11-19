@@ -15,7 +15,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 ## Scoring and API
 - [x] **Prompt 3: Scoring core package** — `docs/prompts/PROMPT_03.md` — report: `docs/PROMPT3_REPORT.md`
 - [x] **Prompt 4: Database, consent and persistence** — `docs/prompts/PROMPT_04.md` — report: `docs/PROMPT4_REPORT.md`
-- [ ] **Prompt 5: FastAPI backend v1** — `docs/prompts/PROMPT_05.md` — report: `docs/PROMPT5_REPORT.md`
+- [x] **Prompt 5: FastAPI backend v1** — `docs/prompts/PROMPT_05.md` — report: `docs/PROMPT5_REPORT.md`
 
 ## AI layer
 - [ ] **Prompt 6: LLM client and SMS parser** — `docs/prompts/PROMPT_06.md` — report: `docs/PROMPT6_REPORT.md`
@@ -51,7 +51,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 2 | done | docs/PROMPT2_REPORT.md | Monorepo structure, tooling & CI |
 | 3 | done | docs/PROMPT3_REPORT.md | Scoring core, SHAP explain & fairness checks |
 | 4 | done | docs/PROMPT4_REPORT.md | Database, consent & persistence |
-| 5 | not started | — | |
+| 5 | done | docs/PROMPT5_REPORT.md | FastAPI backend v1, REST endpoints & docs |
 | 6 | not started | — | |
 | 7 | not started | — | |
 | 8 | not started | — | |
