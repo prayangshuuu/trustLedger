@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     )
 
     # Database & Cache
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/trustledger"
+    DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/trustledger"
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # LLM & AI Services (DeepSeek)
