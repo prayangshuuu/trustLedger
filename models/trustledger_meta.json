@@ -1,0 +1,80 @@
+{
+  "features": [
+    "monthly_inflow_bdt",
+    "income_volatility",
+    "months_on_wallet",
+    "txn_per_month",
+    "bills_on_time",
+    "recharge_regularity",
+    "savings_ratio",
+    "sends_money_home",
+    "bhorsha_score",
+    "loan_to_income"
+  ],
+  "threshold": 0.7050021886825562,
+  "group_thresholds": {
+    "F_rural": 0.6848993015289307,
+    "F_urban": 0.7173145866394043,
+    "M_rural": 0.6861969936639071,
+    "M_urban": 0.7448047395795584
+  },
+  "score_scale": {
+    "points_at_4_to_1": 600,
+    "points_to_double_odds": 50,
+    "range": [
+      300,
+      900
+    ]
+  },
+  "reasons": {
+    "bills_on_time": [
+      "বিল সময়মতো পরিশোধ",
+      "বিল পরিশোধে দেরি"
+    ],
+    "income_volatility": [
+      "আয় স্থিতিশীল",
+      "আয় অনিয়মিত"
+    ],
+    "monthly_inflow_bdt": [
+      "মাসিক আয় ভালো",
+      "মাসিক আয় কম"
+    ],
+    "savings_ratio": [
+      "নিয়মিত সঞ্চয়",
+      "সঞ্চয় কম"
+    ],
+    "recharge_regularity": [
+      "নিয়মিত মোবাইল রিচার্জ",
+      "রিচার্জ অনিয়মিত"
+    ],
+    "months_on_wallet": [
+      "দীর্ঘ ওয়ালেট ইতিহাস",
+      "ওয়ালেট ইতিহাস কম"
+    ],
+    "txn_per_month": [
+      "নিয়মিত লেনদেন",
+      "লেনদেন কম"
+    ],
+    "sends_money_home": [
+      "নিয়মিত পরিবারে টাকা পাঠান",
+      "রেমিট্যান্স অনিয়মিত"
+    ],
+    "bhorsha_score": [
+      "ভরসা মূল্যায়নে ভালো ফল",
+      "ভরসা মূল্যায়নে উন্নতি দরকার"
+    ],
+    "loan_to_income": [
+      "ঋণের পরিমাণ আয়ের সাথে মানানসই",
+      "ঋণের পরিমাণ আয়ের তুলনায় বেশি"
+    ]
+  },
+  "tips": {
+    "bills_on_time": "প্রতিটি বিল নির্ধারিত তারিখের আগে পরিশোধ করুন।",
+    "income_volatility": "আয়ের একটি নিয়মিত উৎস দেখাতে ওয়ালেটে আয় জমা রাখুন।",
+    "savings_ratio": "প্রতি মাসে আয়ের অন্তত ৫% সঞ্চয় করুন।",
+    "loan_to_income": "ছোট অঙ্কের ঋণ দিয়ে শুরু করুন, সময়মতো পরিশোধে সীমা বাড়বে।",
+    "months_on_wallet": "নিয়মিত ওয়ালেট ব্যবহার চালিয়ে যান।",
+    "recharge_regularity": "নিয়মিত সময়ে মোবাইল রিচার্জ করুন।",
+    "bhorsha_score": "ভরসা মূল্যায়ন আবার দিন।"
+  }
+}

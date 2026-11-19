@@ -1,0 +1,52 @@
+{
+  "findex_bd": {
+    "all adults": 0.433,
+    "women": 0.333,
+    "men": 0.535,
+    "borrowed (any source)": 0.703
+  },
+  "home_credit": {
+    "auc": 0.7031,
+    "ks": 0.2988,
+    "brier": 0.0706,
+    "comparison": {
+      "bureau only": {
+        "auc_all": 0.7254,
+        "auc_no_bureau": 0.6669
+      },
+      "alternative data": {
+        "auc_all": 0.7031,
+        "auc_no_bureau": 0.6932
+      },
+      "both": {
+        "auc_all": 0.7601,
+        "auc_no_bureau": 0.7203
+      }
+    },
+    "tpr_gap_before": 0.402,
+    "tpr_gap_after": 0.018
+  },
+  "lendingclub": {
+    "loans": 422373,
+    "auc": 0.7366,
+    "ks": 0.3474,
+    "brier": 0.1425
+  },
+  "trustledger": {
+    "auc": 0.7644,
+    "ks": 0.3901,
+    "brier": 0.168,
+    "approval_gap_before": 0.1,
+    "approval_gap_after": 0.013,
+    "eq_odds_gap_before": 0.097,
+    "eq_odds_gap_after": 0.034,
+    "inclusion": {
+      "bank_rule_approval": 0.117,
+      "trustledger_approval": 0.59,
+      "newly_included": 0.503,
+      "repay_rate_bank_approved": 0.806,
+      "repay_rate_newly_included": 0.836
+    },
+    "federated_auc": 0.7574
+  }
+}
