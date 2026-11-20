@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrustLedger Docs</title>
+<meta name="description" content="Fair, private, explainable credit scoring for Bangladeshis without a credit history.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#14B8A6;--navy:#0F172A;--gold:#F5B942;--bg:#F8FAFC;--panel:#fff;--text:#0F172A;--muted:#64748B;--border:#E2E8F0}
+@media (prefers-color-scheme:dark){:root{--bg:#0B1220;--panel:#111A2E;--text:#E2E8F0;--muted:#94A3B8;--border:#1E293B}}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,"Hind Siliguri",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+header{background:var(--navy);color:#fff;padding:56px 16px 40px} .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+h1{font-size:clamp(32px,5vw,48px);margin:0} h1 span{color:var(--teal)} .bn{font-family:"Hind Siliguri";font-size:20px;color:#CBD5E1}
+nav{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);z-index:5} nav .wrap{display:flex;gap:16px;overflow-x:auto;padding:10px 16px}
+nav a{color:var(--muted);text-decoration:none;white-space:nowrap;font-weight:600;font-size:14px} nav a:hover{color:var(--teal)}
+section{padding:40px 0;border-bottom:1px solid var(--border)} h2{font-size:26px;margin:0 0 12px} h3{margin:20px 0 8px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))} .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
+.kpi{font-size:30px;font-weight:700;color:var(--teal)} .muted{color:var(--muted)} figure{margin:16px 0} figure img{max-width:min(100%,760px);border-radius:8px;background:#fff;border:1px solid var(--border)}
+figcaption{color:var(--muted);font-size:14px} table{border-collapse:collapse;width:100%;font-size:14px} th,td{border-bottom:1px solid var(--border);padding:8px;text-align:left}
+code,pre{font-family:ui-monospace,Menlo,monospace;font-size:13px} pre{background:var(--navy);color:#E2E8F0;padding:14px;border-radius:8px;overflow-x:auto}
+.steps{counter-reset:s;list-style:none;padding:0} .steps li{counter-increment:s;padding:8px 0 8px 44px;position:relative} .steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700}
+.btn{display:inline-block;background:var(--teal);color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;margin:4px 8px 4px 0} .shots img{max-height:520px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Trust<span>Ledger</span></h1>
+<p class="bn">ফোনের অভ্যাস থেকে ন্যায্য, গোপনীয় ও ব্যাখ্যাযোগ্য ক্রেডিট স্কোর</p>
+<p style="max-width:720px;color:#E2E8F0">TrustLedger turns everyday phone habits into a fair, private and explainable credit score, so no responsible Bangladeshi is rejected just for being invisible to banks.</p>
+<a class="btn" href="/">Lender dashboard</a><a class="btn" href="https://github.com/prayangshuuu/trustLedger">Source code</a>
+<p class="muted" style="color:#94A3B8">International AI Builders Congress 2026 · CreditForAll (FinSphere AI) · Team Minus One</p>
+</div></header>
+<nav><div class="wrap"><a href="#problem">Problem</a><a href="#story">Shathi</a><a href="#architecture">Architecture</a><a href="#agents">Agents</a><a href="#results">Results</a><a href="#fairness">Fairness</a><a href="#privacy">Privacy</a><a href="#api">API</a><a href="#mcp">MCP</a><a href="#team">Team</a></div></nav>
+<main class="wrap">
+<section id="problem"><h2>The problem</h2>
+<p>In Bangladesh, 43% of adults have a financial account: 33% of women and 54% of men. 70% borrowed money last year, mostly informally. Banks decide on bank statements and salary slips, which garment workers, gig workers, students and homemakers do not have.</p>
+<figure><img src="figures/findex_bangladesh.png" alt="Account ownership in Bangladesh"><figcaption>Global Findex 2025, Bangladesh microdata.</figcaption></figure>
+<div class="grid"><div class="card"><div class="kpi">11.7%</div>approved by a typical bank rule</div><div class="card"><div class="kpi">59.0%</div>approved by TrustLedger</div><div class="card"><div class="kpi">50.3%</div>newly included people</div><div class="card"><div class="kpi">83.6%</div>repay rate of the newly included (bank-approved: 80.6%)</div></div>
+</section>
+<section id="story"><h2>Shathi's story</h2>
+<p>Shathi is 24 and works in a garment factory in Ashulia. She has no bank account and no salary slip, but she pays every electricity bill on time, recharges her phone regularly and sends money home every month.</p>
+<ol class="steps"><li>She grants consent per data source in Bangla, and can revoke it any time.</li><li>Her wallet SMS are turned into 10 habit features on the phone; her DESCO bill photo is read by DeepSeek-OCR.</li><li>Five agents score her: <b>691 (Good)</b>, P(repay) 0.93, approved.</li><li>She sees why in Bangla: “বিল সময়মতো পরিশোধ”, “নিয়মিত মোবাইল রিচার্জ”; and one tip: “প্রতি মাসে আয়ের অন্তত ৫% সঞ্চয় করুন।”</li><li>Three on-time installments raise her limit by 20%.</li></ol>
+<div class="grid shots"><figure><img src="media/app_consent.png" alt="Consent screen"><figcaption>Consent per source</figcaption></figure><figure><img src="media/app_score.png" alt="Score reveal"><figcaption>Score reveal</figcaption></figure><figure><img src="media/app_reasons.png" alt="Reasons"><figcaption>Bangla reasons and cited tips</figcaption></figure></div>
+<p>No history at all? <b>Bhorsha</b>, a 10–12 question Bangla conversation, gives a first score from financial-planning behaviour, with consistency and anti-gaming checks.</p>
+</section>
+<section id="architecture"><h2>Architecture</h2>
+<pre class="mermaid">
+flowchart LR
+  APP[Borrower app · Flutter] --> API[FastAPI]
+  DASH[Lender dashboard · React] --> API
+  PARTNER[Partner AI agents] -->|MCP| MCP[MCP server] --> API
+  API --> SUP{{LangGraph supervisor}}
+  SUP --> DA[Data Agent: SMS + DeepSeek-OCR] --> BR{No history?}
+  BR -->|yes| BH[Bhorsha chat]
+  BR -->|no| SC[Scoring: XGBoost]
+  SC --> EX[Explainer: SHAP + RAG] --> FA[Fairness Agent]
+  API --> PG[(Postgres + pgvector)]
+  API --> R2[(R2: encrypted images, 30 days)]
+  TEMP[Temporal loan lifecycle] --> API
+  AIR[Airflow: audits, drift, purge] --> API
+  FL[Flower DP-FedAvg] -.-> AIR
+</pre>
+<p class="muted">Gender, region, division and age are never model inputs; they only choose the group threshold and feed the audits.</p>
+</section>
+<section id="agents"><h2>Agent pipeline</h2>
+<table><tr><th>Agent</th><th>Does</th><th>Guard rails</th></tr>
+<tr><td>Data</td><td>SMS regex + PII-redacted LLM fallback, OCR'd bills → 10 features</td><td>Consent per source, raw SMS never stored, ranges clipped to training data</td></tr>
+<tr><td>Bhorsha router</td><td>&lt; 3 months history and no Bhorsha score → chat first</td><td>Never infers from demographics</td></tr>
+<tr><td>Scoring</td><td>XGBoost P(repay) → 300–900 score and band</td><td>Thresholds only from <code>trustledger_meta.json</code></td></tr>
+<tr><td>Explainer</td><td>Top-2 good/bad SHAP reasons in Bangla, tips citing the knowledge base, short summary</td><td>Summary rejected if it names a non-SHAP feature</td></tr>
+<tr><td>Fairness</td><td>Group threshold, checks, ±0.03 → human review</td><td>Can block; nothing approved without sign-off</td></tr></table>
+<p>Every run is traced (node timings, model version, prompt versions) in the audit log.</p>
+</section>
+<section id="results"><h2>Model results</h2>
+<div class="grid"><div class="card"><div class="kpi">0.7644</div>AUC · KS 0.3901 · Brier 0.168</div><div class="card"><div class="kpi">0.7555</div>Flower DP-FedAvg, 8 divisions (central 0.7644)</div><div class="card"><div class="kpi">0.703</div>Home Credit, real data, alternative features</div><div class="card"><div class="kpi">0.0057</div>calibration error (ECE)</div></div>
+<figure><img src="figures/trustledger_roc_calibration.png" alt="ROC and calibration"><figcaption>ROC and calibration on 20,000 held-out borrowers.</figcaption></figure>
+<figure><img src="figures/trustledger_shap.png" alt="SHAP summary"><figcaption>What drives the score (SHAP).</figcaption></figure>
+<figure><img src="figures/trustledger_score_distribution.png" alt="Score distribution"><figcaption>Score distribution. 600 = 4:1 odds; +50 points doubles the odds.</figcaption></figure>
+<figure><img src="figures/flower_federated.png" alt="Federated"><figcaption>Federated training with Flower: raw data never leaves a client.</figcaption></figure>
+<figure><img src="figures/homecredit_feature_sets.png" alt="Home Credit"><figcaption>Real data check: for applicants with no bureau score, alternative data beats bureau scores.</figcaption></figure>
+<p>Quality gates (CI, every push): model auc not below notebook · fairness gaps le 0.05 · sms type f1 ge 0.95 · ocr field f1 ge 0.90 · rag hit rate ge 0.90 · explanations only shap features · bhorsha stable and ordered · prompt regression — all passing.</p>
+</section>
+<section id="fairness"><h2>Fairness and inclusion</h2>
+<figure><img src="figures/trustledger_fairness.png" alt="Fairness"><figcaption>Approval-rate gap 0.1 → 0.013; equalized-odds gap 0.097 → 0.034. CI fails above 0.05.</figcaption></figure>
+<figure><img src="figures/trustledger_inclusion_lift.png" alt="Inclusion lift"><figcaption>Who gets approved: bank rule vs TrustLedger.</figcaption></figure>
+<figure><img src="media/dashboard_fairness.png" alt="Dashboard fairness page"><figcaption>Lender dashboard: live fairness on stored decisions.</figcaption></figure>
+</section>
+<section id="privacy"><h2>Privacy</h2>
+<ul><li>Consent per source (SMS, bills, recharge, photos, Bhorsha); revoke any time.</li><li>Raw SMS stays on the phone; only 10 derived numbers are stored.</li><li>Bill photos encrypted, deleted after 30 days; never in the database.</li><li>Presidio removes phone numbers and IDs before any AI call; logs are scrubbed.</li><li>“Delete my data” erases every record and image.</li></ul>
+<p>Full details: <a href="https://github.com/prayangshuuu/trustLedger/blob/main/docs/privacy.md">docs/privacy.md</a>.</p>
+</section>
+<section id="api"><h2>API</h2>
+<pre>curl -X POST $API/apply -H 'X-API-Key: …' -d '{"user_id":"…","amount_bdt":15000}'
+# → {"status":"approved","decision":{"score":691,"band":"Good","good":["বিল সময়মতো পরিশোধ",…]},"trace_id":"trace_…"}</pre>
+<p>31 endpoints: consent and sessions, <code>/apply</code> (agents), <code>/score</code>, <code>/explain/{id}</code>, <code>/documents</code> (OCR), <code>/bhorsha/*</code>, <code>/loans/*</code>, <code>/fairness/report</code>, <code>/inclusion-lift</code>, dashboard stats, <code>/metrics</code>. Full reference: <a href="https://github.com/prayangshuuu/trustLedger/blob/main/docs/api.md">docs/api.md</a> and Swagger at <code>/docs</code> on the API.</p>
+</section>
+<section id="mcp"><h2>MCP for partner agents</h2>
+<p>Tools <code>score_user</code>, <code>explain_score</code>, <code>fairness_audit</code>, <code>get_inclusion_lift</code> over stdio or authenticated streamable HTTP (<code>/mcp</code>, <code>X-API-Key</code>).</p>
+<pre>{"mcpServers":{"trustledger":{"command":"uv","args":["run","python","-m","mcp_server.server"],"env":{"TRUSTLEDGER_API_URL":"https://…"}}}}</pre>
+</section>
+<section id="team"><h2>Team Minus One</h2>
+<table><tr><td>Dipanwita Maitra</td><td>Team Lead, Voiceover &amp; Scripting</td></tr><tr><td>Prayangshu Biswas</td><td>Video Editor, Co-Developer &amp; AI/ML Engineer</td></tr><tr><td>Daniel</td><td>Lead Developer</td></tr><tr><td>Soniya</td><td>Researcher &amp; UI/UX</td></tr><tr><td>Fariha</td><td>Documentation &amp; Co-Research</td></tr></table>
+<p class="muted">All data shown is synthetic. Bangladesh boundaries: geoBoundaries (CC0). Font: Hind Siliguri (OFL).</p>
+</section>
+</main>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs";
+mermaid.initialize({ startOnLoad: true, theme: matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default" });
+</script>
+</body></html>

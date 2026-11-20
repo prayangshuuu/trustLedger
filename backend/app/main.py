@@ -69,7 +69,7 @@ def create_app() -> FastAPI:
             "- **Privacy by design**: Mandatory source consent, Presidio PII scrubbing, zero raw SMS persistence, cascading deletion\n"
             "- **Inclusion reporting**: Quantifiable Inclusion Lift vs legacy collateral/salary-slip banking rules"
         ),
-        version="0.1.0",
+        version="1.0.0",
         openapi_tags=[
             {"name": "System", "description": "Service health checks and version introspection"},
             {

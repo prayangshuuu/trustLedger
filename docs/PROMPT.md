@@ -40,7 +40,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 
 ## Launch
 - [x] **Prompt 19: Deployment — Heroku and demo environment** — `docs/prompts/PROMPT_19.md` — report: `docs/PROMPT19_REPORT.md`
-- [ ] **Prompt 20: Public /docs site, README and submission pack** — `docs/prompts/PROMPT_20.md` — report: `docs/PROMPT20_REPORT.md`
+- [x] **Prompt 20: Public /docs site, README and submission pack** — `docs/prompts/PROMPT_20.md` — report: `docs/PROMPT20_REPORT.md`
 - [ ] **Prompt 21: Final QA and submission readiness** — `docs/prompts/PROMPT_21.md` — report: `docs/PROMPT21_REPORT.md`
 
 ## Status
@@ -66,7 +66,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 17 | done | docs/PROMPT17_REPORT.md | 8 offline gates, CI fails on bias |
 | 18 | done | docs/PROMPT18_REPORT.md | Rate limits, CORS, metrics, Grafana, privacy.md |
 | 19 | partial | docs/PROMPT19_REPORT.md | Deploy-ready; public URLs blocked on team accounts |
-| 20 | not started | — | |
+| 20 | partial | docs/PROMPT20_REPORT.md | Docs site, README, demo script, judge Q&A |
 | 21 | not started | — | |
 
 Timeline: code freeze **23 Dec 2026**, final **26 Dec 2026**.

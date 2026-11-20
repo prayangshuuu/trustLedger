@@ -52,7 +52,7 @@ def health(db: DbSession) -> dict[str, str]:
 def version() -> dict[str, str]:
     """Return model version hash, git commit SHA, and core version."""
     return {
-        "app_version": "0.1.0",
+        "app_version": "1.0.0",
         "model_version": get_model_version(),
         "git_sha": get_git_sha(),
     }
