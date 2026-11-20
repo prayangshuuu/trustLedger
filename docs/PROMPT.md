@@ -41,7 +41,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 ## Launch
 - [x] **Prompt 19: Deployment — Heroku and demo environment** — `docs/prompts/PROMPT_19.md` — report: `docs/PROMPT19_REPORT.md`
 - [x] **Prompt 20: Public /docs site, README and submission pack** — `docs/prompts/PROMPT_20.md` — report: `docs/PROMPT20_REPORT.md`
-- [ ] **Prompt 21: Final QA and submission readiness** — `docs/prompts/PROMPT_21.md` — report: `docs/PROMPT21_REPORT.md`
+- [x] **Prompt 21: Final QA and submission readiness** — `docs/prompts/PROMPT_21.md` — report: `docs/PROMPT21_REPORT.md`
 
 ## Status
 
@@ -63,10 +63,10 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 14 | done | docs/PROMPT14_REPORT.md | Flower DP-FedAvg, AUC 0.7555 |
 | 15 | partial | docs/PROMPT15_REPORT.md | Flutter app; macOS e2e passes, emulator pending |
 | 16 | done | docs/PROMPT16_REPORT.md | React dashboard, live stats endpoints |
-| 17 | done | docs/PROMPT17_REPORT.md | 8 offline gates, CI fails on bias |
+| 17 | done | docs/PROMPT17_REPORT.md | 9 offline gates (incl. Fairlearn), CI fails on bias |
 | 18 | done | docs/PROMPT18_REPORT.md | Rate limits, CORS, metrics, Grafana, privacy.md |
 | 19 | partial | docs/PROMPT19_REPORT.md | Deploy-ready; public URLs blocked on team accounts |
 | 20 | partial | docs/PROMPT20_REPORT.md | Docs site, README, demo script, judge Q&A |
-| 21 | not started | — | |
+| 21 | partial | docs/PROMPT21_REPORT.md | QA done; deploy/keys/media pending team |
 
 Timeline: code freeze **23 Dec 2026**, final **26 Dec 2026**.
