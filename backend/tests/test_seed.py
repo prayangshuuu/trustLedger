@@ -31,35 +31,35 @@ def test_seed_demo_personas(session: Session) -> None:
     users = seed_demo_personas(session)
     assert len(users) == 4
 
-    # 1. Shathi Persona (Garment worker, F_urban)
-    shathi_hash = hash_phone("+8801711000001")
-    shathi = session.scalars(select(User).where(User.phone_hash == shathi_hash)).first()
-    assert shathi is not None
-    assert shathi.gender == "F"
-    assert shathi.region == "urban"
-    assert shathi.division == "Dhaka"
+    # 1. Moon Persona (Garment worker, F_urban)
+    moon_hash = hash_phone("+8801711000001")
+    moon = session.scalars(select(User).where(User.phone_hash == moon_hash)).first()
+    assert moon is not None
+    assert moon.gender == "F"
+    assert moon.region == "urban"
+    assert moon.division == "Dhaka"
 
     # Consents
-    shathi_consents = [c.source for c in shathi.consents]
-    assert set(shathi_consents) == {"sms", "bills", "recharge", "ocr"}
+    moon_consents = [c.source for c in moon.consents]
+    assert set(moon_consents) == {"sms", "bills", "recharge", "ocr"}
 
     # Features
-    shathi_snapshot = session.scalars(
-        select(FeatureSnapshot).where(FeatureSnapshot.user_id == shathi.id)
+    moon_snapshot = session.scalars(
+        select(FeatureSnapshot).where(FeatureSnapshot.user_id == moon.id)
     ).first()
-    assert shathi_snapshot is not None
-    assert shathi_snapshot.features["bills_on_time"] == 0.97
-    assert shathi_snapshot.features["monthly_inflow_bdt"] == 14000.0
+    assert moon_snapshot is not None
+    assert moon_snapshot.features["bills_on_time"] == 0.97
+    assert moon_snapshot.features["monthly_inflow_bdt"] == 14000.0
 
     # Decision
-    shathi_decision = session.scalars(
-        select(DecisionRecord).where(DecisionRecord.user_id == shathi.id)
+    moon_decision = session.scalars(
+        select(DecisionRecord).where(DecisionRecord.user_id == moon.id)
     ).first()
-    assert shathi_decision is not None
-    assert shathi_decision.approved is True
-    assert shathi_decision.score == 691
-    assert shathi_decision.band == "Good"
-    assert shathi_decision.group == "F_urban"
+    assert moon_decision is not None
+    assert moon_decision.approved is True
+    assert moon_decision.score == 691
+    assert moon_decision.band == "Good"
+    assert moon_decision.group == "F_urban"
 
     # 2. Student Persona (M_urban)
     student_hash = hash_phone("+8801811000002")

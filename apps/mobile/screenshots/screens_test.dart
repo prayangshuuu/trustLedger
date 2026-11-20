@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trustledger_app/screens/consent_screen.dart';
+import 'package:trustledger_app/screens/loan_offer_screen.dart';
 import 'package:trustledger_app/screens/reasons_screen.dart';
 import 'package:trustledger_app/screens/score_reveal_screen.dart';
-import 'package:trustledger_app/theme.dart';
+import 'package:trustledger_app/screens/welcome_screen.dart';
+import 'package:trustledger_app/design/theme.dart';
 
 import '../test/helpers.dart';
 
@@ -31,18 +33,27 @@ Future<void> shot(WidgetTester tester, Widget screen, String name) async {
 void main() {
   setUpAll(loadFonts);
 
+  testWidgets('welcome', (tester) async {
+    final state = FakeBackend().state();
+    await shot(tester, WelcomeScreen(state: state), 'welcome');
+  });
+
   testWidgets('consent', (tester) async {
     final backend = FakeBackend()..consents.addAll({'sms', 'bills', 'ocr'});
     final state = backend.state();
-    await tester.runAsync(() => state.selectPersona({'user_id': 'u1', 'key': 'shathi', 'group': 'F_urban'}));
+    await tester.runAsync(() => state.selectPersona({'user_id': 'u1', 'key': 'moon', 'group': 'F_urban'}));
     await shot(tester, ConsentScreen(state: state), 'consent');
   });
 
   testWidgets('score', (tester) async {
-    await shot(tester, ScoreRevealScreen(state: FakeBackend().state()..result = shathiResult()), 'score');
+    await shot(tester, ScoreRevealScreen(state: FakeBackend().state()..result = moonResult()), 'score');
   });
 
   testWidgets('reasons', (tester) async {
-    await shot(tester, ReasonsScreen(state: FakeBackend().state()..result = shathiResult()), 'reasons');
+    await shot(tester, ReasonsScreen(state: FakeBackend().state()..result = moonResult()), 'reasons');
+  });
+
+  testWidgets('loan', (tester) async {
+    await shot(tester, LoanOfferScreen(state: FakeBackend().state()..result = moonResult()), 'loan');
   });
 }

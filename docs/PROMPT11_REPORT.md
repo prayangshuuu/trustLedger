@@ -25,7 +25,7 @@ model version and the versions of all six prompts.
 ## How to run / verify
 ```bash
 uv run pytest backend/tests/test_agents.py
-make api   # then POST /apply {"user_id": "<shathi id from seed>", "amount_bdt": 15000}
+make api   # then POST /apply {"user_id": "<moon id from seed>", "amount_bdt": 15000}
 ```
 
 ## Tests and checks
@@ -35,18 +35,18 @@ make api   # then POST /apply {"user_id": "<shathi id from seed>", "amount_bdt":
 
 | Persona | Group | Status | Score | p_repay | Node path |
 |---|---|---|---|---|---|
-| Shathi | F_urban | approved | 717 | 0.953 | data → router → scoring → explainer → fairness → finalize |
+| Moon | F_urban | approved | 717 | 0.953 | data → router → scoring → explainer → fairness → finalize |
 | Student | M_urban | approved | 674 | 0.918 | same |
 | Homemaker (Bhorsha only) | F_rural | approved | 650 | 0.889 | same |
 
-Shathi scores 717 here rather than 691 because `loan_to_income` is recomputed from the requested amount (15,000 / 14,000 ≈ 1.07, not 4.0).
+Moon scores 717 here rather than 691 because `loan_to_income` is recomputed from the requested amount (15,000 / 14,000 ≈ 1.07, not 4.0).
 At 56,000 BDT from her 12-month SMS history she is approved with loan_to_income = 4.0 (test).
 
 ## Acceptance criteria
 - [x] `/apply` works end to end in mock mode for all 3 personas (tests + table)
 - [x] Each decision has a complete trace (`agent_trace` audit row; also `trace_id` in the decision's audit entry)
 - [x] Prompt files exist and are referenced by version in traces
-- [x] Tests: Shathi end-to-end approved, zero-history user routed to Bhorsha (and scored after it), borderline goes to review, Fairness Agent blocks a missing threshold
+- [x] Tests: Moon end-to-end approved, zero-history user routed to Bhorsha (and scored after it), borderline goes to review, Fairness Agent blocks a missing threshold
 
 ## Decisions and deviations
 - **Deterministic supervisor:** routing is code, not an LLM call. Lending decisions must be reproducible and auditable. The policy still lives in `prompts/supervisor.md` and is versioned in traces.

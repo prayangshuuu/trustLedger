@@ -30,7 +30,7 @@ uv run pytest backend/tests/test_mcp_server.py
 ## Tests and checks
 - ruff: pass · mypy: pass (`backend/app` + `mcp_server`, 64 files)
 - pytest: 167 passed, 1 skipped
-- `test_tools_in_memory`, `test_tools_over_stdio`, `test_tools_over_http_with_auth`: all 4 tools return valid output. Shathi is approved, and the explanation matches the decision.
+- `test_tools_in_memory`, `test_tools_over_stdio`, `test_tools_over_http_with_auth`: all 4 tools return valid output. Moon is approved, and the explanation matches the decision.
 
 ## Acceptance criteria
 - [x] All 4 tools work over stdio and HTTP

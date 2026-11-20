@@ -1,7 +1,7 @@
 """Synthetic demo data: 3 personas and an optional notebook-style population.
 
 Personas (always):
-1. Shathi: 24, garment worker in Ashulia, pays every bill on time, no bank account.
+1. Moon: 24, garment worker in Ashulia, pays every bill on time, no bank account.
 2. Student: 21, student and freelancer in Dhaka, regular recharges, Bhorsha done.
 3. Homemaker: 28, rural homemaker in Chattogram, zero wallet history, Bhorsha only.
 
@@ -35,7 +35,7 @@ DIVISION_WEIGHTS = [0.30, 0.18, 0.11, 0.12, 0.06, 0.07, 0.09, 0.07]
 
 PERSONAS: list[dict[str, Any]] = [
     {
-        "name": "Shathi",
+        "name": "Moon",
         "phone": "+8801711000001",
         "gender": "F",
         "region": "urban",

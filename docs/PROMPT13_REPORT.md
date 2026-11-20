@@ -29,19 +29,19 @@ Four Airflow DAGs cover the weekly fairness audit (fails loudly above 0.05), the
 ```bash
 uv run pytest backend/tests/test_temporal_workflow.py backend/tests/test_airflow_tasks.py
 docker compose -f infra/docker-compose.yml --profile app up --build   # API + worker + infra
-uv run python -m workflows.temporal.cli start --persona shathi
+uv run python -m workflows.temporal.cli start --persona moon
 ```
 
 ## Tests and checks
 - ruff: pass · mypy: pass for `backend/app`, `mcp_server`, `workflows` (one import of `federated.simulate` resolves in Prompt 14)
 - pytest: 174 passed, 1 skipped
-- Temporal time-skipping run (real API on SQLite): Shathi scored → disbursed → 3 reminders → 3 on-time repayments → limit 15,000 → **18,000 BDT**; with one late payment the limit stays 15,000
+- Temporal time-skipping run (real API on SQLite): Moon scored → disbursed → 3 reminders → 3 on-time repayments → limit 15,000 → **18,000 BDT**; with one late payment the limit stays 15,000
 - Fairness DAG test: 90% vs 50% approvals → `FairnessGateError` (approval gap 0.40)
 - PSI: stable sample < 0.1, shifted sample > 0.25 and flagged
 - `docker compose --profile app config`: valid
 
 ## Acceptance criteria
-- [x] Shathi's loan runs through the full lifecycle in the Temporal test env
+- [x] Moon's loan runs through the full lifecycle in the Temporal test env
 - [x] Fairness DAG fails when given biased decisions (test)
 
 ## Decisions and deviations

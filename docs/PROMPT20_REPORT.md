@@ -4,7 +4,7 @@
 **Status:** partial — all content is written, and every figure loads locally. **BLOCKED:** public URL, demo video and deck links, and a human rehearsal.
 
 ## Summary
-`docs/site/index.html` is the public docs page. It covers the problem, Shathi's story with app screenshots, a Mermaid architecture diagram,
+`docs/site/index.html` is the public docs page. It covers the problem, Moon's story with app screenshots, a Mermaid architecture diagram,
 the agent pipeline, model, fairness and inclusion results using the real figures from `training_files/`, privacy, API, MCP and the team.
 The dashboard build copies it, with its figures, to `/docs`, so it deploys with the dashboard on Vercel.
 The root README was rewritten to cover the whole app plus the training-notebook details, and its wrong "Git LFS datasets" claim was fixed.

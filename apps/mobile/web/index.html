@@ -1,46 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TrustLedger — ট্রাস্টলেজার</title>
+  <meta name="description" content="ফোনের অভ্যাস থেকে ন্যায্য, গোপনীয় ও ব্যাখ্যাযোগ্য ক্রেডিট স্কোর। Fair, private and explainable credit scores for Bangladesh.">
+  <!-- colours mirror apps/design_tokens.json (brand.navy / brand.teal) -->
+  <meta name="theme-color" content="#0F172A">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="trustledger_app">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>trustledger_app</title>
+  <meta name="apple-mobile-web-app-title" content="TrustLedger">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="assets/assets/fonts/HindSiliguri-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0F172A; }
+    #splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; color: #FFFFFF; font: 600 20px system-ui, sans-serif; transition: opacity .3s; }
+    #splash img { width: 96px; height: 96px; }
+    #splash .bar { width: 160px; height: 4px; border-radius: 2px; background: #1E293B; overflow: hidden; }
+    #splash .bar::after { content: ""; display: block; width: 40%; height: 100%; background: #14B8A6; animation: load 1.2s ease-in-out infinite; }
+    @keyframes load { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+    @media (prefers-reduced-motion: reduce) { #splash .bar::after { animation: none; width: 100%; } }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <div id="splash" role="status" aria-live="polite">
+    <img src="icons/Icon-192.png" alt="">
+    <div>ট্রাস্টলেজার</div>
+    <div class="bar" aria-hidden="true"></div>
+    <noscript>TrustLedger needs JavaScript. ট্রাস্টলেজার চালাতে জাভাস্ক্রিপ্ট প্রয়োজন।</noscript>
+  </div>
+  <script>
+    // Remove the splash once Flutter has painted its first frame.
+    window.addEventListener("flutter-first-frame", function () {
+      var s = document.getElementById("splash");
+      if (s) { s.style.opacity = "0"; setTimeout(function () { s.remove(); }, 300); }
+    });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

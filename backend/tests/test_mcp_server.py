@@ -28,7 +28,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from mcp_server.server import create_http_app, create_server
 
 ROOT = Path(__file__).resolve().parents[2]
-SHATHI = {
+MOON = {
     "monthly_inflow_bdt": 14000.0,
     "income_volatility": 0.10,
     "months_on_wallet": 30.0,
@@ -64,9 +64,7 @@ def payload(result: Any) -> dict[str, Any]:
 async def exercise(session: ClientSession) -> dict[str, dict[str, Any]]:
     tools = {t.name for t in (await session.list_tools()).tools}
     assert tools == {"score_user", "explain_score", "fairness_audit", "get_inclusion_lift"}
-    scored = payload(
-        await session.call_tool("score_user", {"features": SHATHI, "group": "F_urban"})
-    )
+    scored = payload(await session.call_tool("score_user", {"features": MOON, "group": "F_urban"}))
     explained = payload(
         await session.call_tool("explain_score", {"decision_id": scored["decision_id"]})
     )

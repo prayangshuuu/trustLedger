@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shathi's demo flow against a deployed (or local) TrustLedger API.
+# Moon's demo flow against a deployed (or local) TrustLedger API.
 #   infra/smoke.sh https://trustledger-<id>.herokuapp.com <API_KEY> [MCP_URL]
 set -euo pipefail
 BASE="${1:-http://localhost:8000}"; KEY="${2:-${API_KEY:-dev-key}}"; MCP="${3:-${MCP_URL:-}}"
@@ -20,7 +20,7 @@ echo "TrustLedger smoke test → $BASE"
 [ "$(req GET /health)" = 200 ] && [ "$(jq_ "d['status']")" = ok ] && ok "health ($(jq_ "d['database']"))" || fail health
 [ "$(req GET /version)" = 200 ] && ok "version model=$(jq_ "d['model_version']")" || fail version
 [ "$(req GET /demo/personas)" = 200 ] || fail "demo personas (DEMO_MODE=true and seeded?)"
-UID_="$(jq_ "[p['user_id'] for p in d if p['key']=='shathi'][0]")"; ok "Shathi = $UID_"
+UID_="$(jq_ "[p['user_id'] for p in d if p['key']=='moon'][0]")"; ok "Moon = $UID_"
 body=$(printf '{"user_id":"%s"}' "$UID_")
 [ "$(req POST /auth/session "$body")" = 200 ] || fail session
 AUTH="Authorization: Bearer $(jq_ "d['token']")"; ok "borrower session"
@@ -29,10 +29,10 @@ for s in sms bills recharge ocr; do
   [ "$(req POST /consent "$body" "$AUTH")" = 201 ] || fail "consent $s"
 done; ok "consent sms, bills, recharge, ocr"
 [ "$(req GET /me "" "$AUTH")" = 200 ] && ok "profile consents $(jq_ "d['consents']")" || fail me
-python3 -c "import json;print(json.dumps({'user_id':'$UID_','amount_bdt':56000,'sms':json.load(open('$ROOT/apps/mobile/assets/demo/shathi_sms.json'))['sms']}))" > "$TMP/apply.json"
+python3 -c "import json;print(json.dumps({'user_id':'$UID_','amount_bdt':56000,'sms':json.load(open('$ROOT/apps/mobile/assets/demo/moon_sms.json'))['sms']}))" > "$TMP/apply.json"
 [ "$(req POST /apply "@$TMP/apply.json")" = 200 ] || fail "apply $(cat "$TMP/body")"
 STATUS="$(jq_ "d['status']")"; SCORE="$(jq_ "d['decision']['score']")"
-[ "$STATUS" = approved ] || fail "Shathi status $STATUS"
+[ "$STATUS" = approved ] || fail "Moon status $STATUS"
 [ "$SCORE" -ge 650 ] || fail "score $SCORE"
 [ "$(jq_ "len(d['decision']['good'])")" -ge 1 ] || fail "no Bangla reasons"
 ok "apply: $STATUS, score $SCORE, reasons: $(jq_ "', '.join(d['decision']['good'])")"

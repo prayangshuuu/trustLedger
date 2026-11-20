@@ -9,17 +9,17 @@ Exposed the TrustLedger scoring core, privacy gates, and persistence engines thr
 ## Changes
 | File | Change |
 |---|---|
-| `backend/app/schemas/` | Defined Pydantic models: `ErrorResponse`, `ConsentRequest`, `ConsentResponse`, `ConsentRevokeResponse`, `ScoreRequest` (with Shathi example payload), `ScoreResponse`, `ExplainResponse`, `FairnessReportResponse`, `InclusionLiftResponse`. |
+| `backend/app/schemas/` | Defined Pydantic models: `ErrorResponse`, `ConsentRequest`, `ConsentResponse`, `ConsentRevokeResponse`, `ScoreRequest` (with Moon example payload), `ScoreResponse`, `ExplainResponse`, `FairnessReportResponse`, `InclusionLiftResponse`. |
 | `backend/app/api/deps.py` | Built FastAPI dependencies: database session injection (`get_db`), institutional API key validation (`verify_api_key`), and borrower session extraction (`get_current_user_id`). |
 | `backend/app/api/routers/health.py` | Implemented `GET /health` with live database ping and `GET /version` exposing model version hash, git commit SHA, and semver. |
 | `backend/app/api/routers/consent.py` | Implemented `POST /consent` (grant/reactivate), `DELETE /consent/{source}` (immediate revocation), and `DELETE /me` (cascading user data deletion). |
 | `backend/app/api/routers/score.py` | Implemented `POST /score` handling raw features or stored snapshot by user_id with mandatory consent enforcement (403 if absent), persisting decisions and audit entries, and `GET /explain/{decision_id}` returning SHAP attributions. |
 | `backend/app/api/routers/fairness.py` | Implemented `GET /fairness/report` (live demographic audit across stored decisions) and `GET /inclusion-lift` (quantifying approval lift over legacy bank account + salary slip rules). |
 | `backend/app/main.py` | Application factory `create_app()` with CORS middleware, `RequestLoggingAndIDMiddleware` generating `X-Request-ID` and structured JSON logs, custom exception handlers (`ConsentMissingError` -> 403, `AllFeaturesMissingError` -> 400), and router registrations. |
-| `docs/api.md` | Comprehensive REST API documentation including authentication headers, uniform error formats, endpoint specifications, and Shathi request/response examples. |
+| `docs/api.md` | Comprehensive REST API documentation including authentication headers, uniform error formats, endpoint specifications, and Moon request/response examples. |
 | `backend/tests/test_api_health_version.py` | Integration tests for `GET /health`, `GET /version`, and correlation headers. |
 | `backend/tests/test_api_consent.py` | Integration tests for granting, revoking, and deleting user data via `/consent` and `/me`. |
-| `backend/tests/test_api_score.py` | Integration tests for Shathi scoring, stored decision validation, consent missing gating (403), snapshot fallback, and explain endpoint. |
+| `backend/tests/test_api_score.py` | Integration tests for Moon scoring, stored decision validation, consent missing gating (403), snapshot fallback, and explain endpoint. |
 | `backend/tests/test_api_fairness_inclusion.py` | Integration tests verifying live calculation of fairness gaps and inclusion lift over seeded database records. |
 | `backend/tests/test_api_auth.py` | Integration tests verifying `X-API-Key` enforcement and borrower header authentication. |
 | `docs/PROMPT.md` | Marked Prompt 5 complete in checklist and updated status table. |
@@ -35,7 +35,7 @@ make api
 curl -s http://localhost:8000/health | jq
 curl -s http://localhost:8000/version | jq
 
-# 3. Score Shathi persona via HTTP POST
+# 3. Score Moon persona via HTTP POST
 curl -s -X POST http://localhost:8000/score \
   -H "Content-Type: application/json" \
   -d '{
@@ -67,13 +67,13 @@ uv run pytest
 - **ruff format:** pass (`uv run ruff format --check .` -> `101 files already formatted`)
 - **mypy:** pass (`uv run mypy backend/app` -> `Success: no issues found in 34 source files`)
 - **pytest:** pass (`uv run pytest` -> 107 passed, 0 failed, 98% statement coverage)
-- **Shathi scoring test:** pass (`test_score_shathi_payload_approved_and_stored` verified approved=True, score=691, band=Good, Bangla reasons present, decision record persisted)
+- **Moon scoring test:** pass (`test_score_moon_payload_approved_and_stored` verified approved=True, score=691, band=Good, Bangla reasons present, decision record persisted)
 - **Consent gating test:** pass (`test_score_consent_missing_forbidden` verified 403 Forbidden with `CONSENT_MISSING` error code)
 - **Offline test execution:** pass (all 107 integration and unit tests execute completely offline using isolated SQLite in-memory databases)
 
 ## Acceptance criteria
-- [x] `make api` serves `/docs` (Swagger) with Shathi examples — verified OpenAPI spec generated with tags, examples, and descriptions.
-- [x] `POST /score` for Shathi returns approved + Bangla reasons, and the decision is stored — verified by `test_score_shathi_payload_approved_and_stored`.
+- [x] `make api` serves `/docs` (Swagger) with Moon examples — verified OpenAPI spec generated with tags, examples, and descriptions.
+- [x] `POST /score` for Moon returns approved + Bangla reasons, and the decision is stored — verified by `test_score_moon_payload_approved_and_stored`.
 - [x] Fairness and inclusion endpoints return numbers from stored data — verified by `test_fairness_and_inclusion_endpoints_with_seeded_data`.
 - [x] All endpoint tests pass offline — verified across all 107 test cases without network or external database dependencies.
 

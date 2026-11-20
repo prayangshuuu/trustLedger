@@ -12,13 +12,13 @@ from app.db.models import User
 router = APIRouter(prefix="/demo", tags=["Demo"])
 
 PERSONA_PHONES = {
-    "shathi": "+8801711000001",
+    "moon": "+8801711000001",
     "student": "+8801811000002",
     "homemaker": "+8801911000003",
     "newcomer": "+8801611000004",
 }
 PERSONA_INFO = {
-    "shathi": "Shathi, 24, garment worker in Ashulia. Wallet SMS + bills.",
+    "moon": "Moon, 24, garment worker in Ashulia. Wallet SMS + bills.",
     "student": "Rafi, 21, student and freelancer in Dhaka. Wallet + Bhorsha.",
     "homemaker": "Rina, 28, homemaker in Chattogram. No wallet, Bhorsha done.",
     "newcomer": "Mitu, 19, new to phones and wallets. No history: takes Bhorsha.",

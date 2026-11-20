@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trustledger_app/screens/reasons_screen.dart';
-import 'package:trustledger_app/screens/score_reveal_screen.dart';
-import 'package:trustledger_app/theme.dart';
 import 'package:trustledger_app/widgets/score_meter.dart';
 
 import 'helpers.dart';
@@ -23,18 +21,22 @@ void main() {
     expect(find.text('ভালো'), findsOneWidget);
   });
 
-  testWidgets('score reveal shows band in Bangla and opens Bangla reasons', (tester) async {
-    tester.view.physicalSize = const Size(1080, 2400);
-    tester.view.devicePixelRatio = 2.5;
-    addTearDown(tester.view.reset);
-    final state = FakeBackend().state()..result = shathiResult();
+  testWidgets('reduced motion shows the final score immediately', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: buildTheme(),
-        home: ScoreRevealScreen(state: state),
+      const MediaQuery(
+        data: MediaQueryData(disableAnimations: true),
+        child: MaterialApp(
+          home: Scaffold(body: ScoreMeter(score: 691, label: 'ভালো')),
+        ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    expect(find.text('691'), findsOneWidget);
+  });
+
+  testWidgets('score reveal shows band in Bangla and opens Bangla reasons', (tester) async {
+    final state = await signedIn(FakeBackend(), withResult: true);
+    await pumpApp(tester, state, '/score');
     expect(find.text('691'), findsOneWidget);
     expect(find.descendant(of: find.byKey(const Key('band_chip')), matching: find.text('ভালো')), findsOneWidget);
 
@@ -49,14 +51,8 @@ void main() {
   });
 
   testWidgets('language toggle switches to English labels', (tester) async {
-    final state = FakeBackend().state()..result = shathiResult();
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: buildTheme(),
-        home: ScoreRevealScreen(state: state),
-      ),
-    );
-    await tester.pumpAndSettle();
+    final state = await signedIn(FakeBackend(), withResult: true);
+    await pumpApp(tester, state, '/score');
     await tester.tap(find.byKey(const Key('lang_toggle')));
     await tester.pumpAndSettle();
     expect(find.text('Your TrustLedger score'), findsOneWidget);

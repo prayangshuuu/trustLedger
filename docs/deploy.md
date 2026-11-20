@@ -104,7 +104,7 @@ For Play Store distribution, add a keystore (`android/key.properties`).
 infra/smoke.sh https://trustledger-<id>.herokuapp.com <API_KEY> https://trustledger-mcp-<id>.herokuapp.com
 ```
 
-It runs Shathi's flow: health → personas → session → consents → `/apply` with 72 SMS (approved, Bangla reasons) → trace →
+It runs Moon's flow: health → personas → session → consents → `/apply` with 72 SMS (approved, Bangla reasons) → trace →
 explanation → disburse → 3 repayments → limit upgrade → fairness and inclusion → MCP health and auth.
 
 ## Local stand-in (verified)

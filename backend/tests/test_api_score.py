@@ -35,8 +35,8 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
         yield tc
 
 
-def test_score_shathi_payload_approved_and_stored(client: TestClient, db_session: Session) -> None:
-    """Verify POST /score for Shathi returns approved + Bangla reasons, and stores decision."""
+def test_score_moon_payload_approved_and_stored(client: TestClient, db_session: Session) -> None:
+    """Verify POST /score for Moon returns approved + Bangla reasons, and stores decision."""
     payload = {
         "group": "F_urban",
         "amount_bdt": 15000.0,

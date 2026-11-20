@@ -16,11 +16,11 @@ Build the pure scoring library in `backend/app/core/` that turns a feature dict 
 - `core/explain.py`: SHAP TreeExplainer, top-2 good / top-2 bad, skip missing and |impact| < 0.02, Bangla text + tips from meta, English label too.
 - `core/fairness.py`: `decide(p_repay, group)` using `group_thresholds`; `audit(decisions)` returning approval rate, TPR, FPR per group and the gaps.
 - `core/decision.py`: `score_applicant(features, group) -> Decision` combining all the above. `Decision` includes p_repay, score, band, approved, reasons, tips, threshold_used, model_version.
-- Tests: Shathi case (approved, score in Good band, "বিল সময়মতো পরিশোধ" among good reasons), a zero-history user with only `bhorsha_score`, all-missing input rejected with a clear error, score monotonic in p, thresholds read from meta (not hard-coded).
-- A golden test that reproduces the notebook's Shathi numbers within ±0.01.
+- Tests: Moon case (approved, score in Good band, "বিল সময়মতো পরিশোধ" among good reasons), a zero-history user with only `bhorsha_score`, all-missing input rejected with a clear error, score monotonic in p, thresholds read from meta (not hard-coded).
+- A golden test that reproduces the notebook's Moon numbers within ±0.01.
 
 ## Acceptance criteria
-- `score_applicant` returns a complete `Decision` for Shathi and for a zero-history user
+- `score_applicant` returns a complete `Decision` for Moon and for a zero-history user
 - Coverage of `app/core` ≥ 90%
 - mypy strict passes on `app/core`
 - No network or DB access in `core/`

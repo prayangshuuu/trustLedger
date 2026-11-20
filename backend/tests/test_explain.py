@@ -12,9 +12,9 @@ from app.core.explain import (
 from app.core.features import FeatureVector, get_feature_order
 
 
-def test_explain_shathi() -> None:
-    """Verify SHAP explanation generation for the Shathi benchmark profile."""
-    shathi_fv = FeatureVector(
+def test_explain_moon() -> None:
+    """Verify SHAP explanation generation for the Moon benchmark profile."""
+    moon_fv = FeatureVector(
         monthly_inflow_bdt=14000.0,
         income_volatility=0.10,
         months_on_wallet=30.0,
@@ -26,7 +26,7 @@ def test_explain_shathi() -> None:
         bhorsha_score=None,
         loan_to_income=4.0,
     )
-    exp = explain(shathi_fv)
+    exp = explain(moon_fv)
 
     # Top-2 positive drivers
     assert "বিল সময়মতো পরিশোধ" in exp.good

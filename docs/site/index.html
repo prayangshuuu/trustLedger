@@ -31,15 +31,15 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:13px} pre{background
 <a class="btn" href="/">Lender dashboard</a><a class="btn" href="https://github.com/prayangshuuu/trustLedger">Source code</a>
 <p class="muted" style="color:#94A3B8">International AI Builders Congress 2026 · CreditForAll (FinSphere AI) · Team Minus One</p>
 </div></header>
-<nav><div class="wrap"><a href="#problem">Problem</a><a href="#story">Shathi</a><a href="#architecture">Architecture</a><a href="#agents">Agents</a><a href="#results">Results</a><a href="#fairness">Fairness</a><a href="#privacy">Privacy</a><a href="#api">API</a><a href="#mcp">MCP</a><a href="#team">Team</a></div></nav>
+<nav><div class="wrap"><a href="#problem">Problem</a><a href="#story">Moon</a><a href="#architecture">Architecture</a><a href="#agents">Agents</a><a href="#results">Results</a><a href="#fairness">Fairness</a><a href="#privacy">Privacy</a><a href="#api">API</a><a href="#mcp">MCP</a><a href="#team">Team</a></div></nav>
 <main class="wrap">
 <section id="problem"><h2>The problem</h2>
 <p>In Bangladesh, 43% of adults have a financial account: 33% of women and 54% of men. 70% borrowed money last year, mostly informally. Banks decide on bank statements and salary slips, which garment workers, gig workers, students and homemakers do not have.</p>
 <figure><img src="figures/findex_bangladesh.png" alt="Account ownership in Bangladesh"><figcaption>Global Findex 2025, Bangladesh microdata.</figcaption></figure>
 <div class="grid"><div class="card"><div class="kpi">11.7%</div>approved by a typical bank rule</div><div class="card"><div class="kpi">59.0%</div>approved by TrustLedger</div><div class="card"><div class="kpi">50.3%</div>newly included people</div><div class="card"><div class="kpi">83.6%</div>repay rate of the newly included (bank-approved: 80.6%)</div></div>
 </section>
-<section id="story"><h2>Shathi's story</h2>
-<p>Shathi is 24 and works in a garment factory in Ashulia. She has no bank account and no salary slip, but she pays every electricity bill on time, recharges her phone regularly and sends money home every month.</p>
+<section id="story"><h2>Moon's story</h2>
+<p>Moon is 24 and works in a garment factory in Ashulia. She has no bank account and no salary slip, but she pays every electricity bill on time, recharges her phone regularly and sends money home every month.</p>
 <ol class="steps"><li>She grants consent per data source in Bangla, and can revoke it any time.</li><li>Her wallet SMS are turned into 10 habit features on the phone; her DESCO bill photo is read by DeepSeek-OCR.</li><li>Five agents score her: <b>691 (Good)</b>, P(repay) 0.93, approved.</li><li>She sees why in Bangla: “বিল সময়মতো পরিশোধ”, “নিয়মিত মোবাইল রিচার্জ”; and one tip: “প্রতি মাসে আয়ের অন্তত ৫% সঞ্চয় করুন।”</li><li>Three on-time installments raise her limit by 20%.</li></ol>
 <div class="grid shots"><figure><img src="media/app_consent.png" alt="Consent screen"><figcaption>Consent per source</figcaption></figure><figure><img src="media/app_score.png" alt="Score reveal"><figcaption>Score reveal</figcaption></figure><figure><img src="media/app_reasons.png" alt="Reasons"><figcaption>Bangla reasons and cited tips</figcaption></figure></div>
 <p>No history at all? <b>Bhorsha</b>, a 10–12 question Bangla conversation, gives a first score from financial-planning behaviour, with consistency and anti-gaming checks.</p>

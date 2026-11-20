@@ -15,7 +15,7 @@ Create the data model for users, consent, applications, decisions and audit logs
 - pgvector extension enabled in a migration (used later by RAG).
 - `privacy/consent.py`: helpers to grant/revoke/check consent; scoring must refuse if required consent is missing.
 - `privacy/deletion.py`: delete-all-user-data function (cascades), used later by `DELETE /me`.
-- Seed script `backend/scripts/seed_demo.py` creating the 3 demo personas (Shathi, a student, a zero-history homemaker) with synthetic data.
+- Seed script `backend/scripts/seed_demo.py` creating the 3 demo personas (Moon, a student, a zero-history homemaker) with synthetic data.
 - Tests with a Postgres test container or SQLite fallback for unit tests.
 
 ## Acceptance criteria

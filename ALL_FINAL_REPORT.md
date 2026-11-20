@@ -23,7 +23,7 @@ The per-prompt details are in `docs/PROMPT{1..21}_REPORT.md`.
 | Prompts 15, 19, 20, 21 | **Partial**: code complete and verified locally. Remaining items need your accounts, keys or people (section 5) |
 | Backend tests | **191 passed**, 1 skipped (needs a live DeepSeek key), coverage **93%** |
 | Quality gates (`evals/run_all.py`) | **9/9 PASS**: AUC 0.7644, fairness gaps 0.0131 / 0.034 (Fairlearn agrees) |
-| Smoke test (Shathi's full flow) | **PASS 14/14** locally; **16/16** on a Heroku-style rehearsal (Postgres + pgvector + MCP) |
+| Smoke test (Moon's full flow) | **PASS 14/14** locally; **16/16** on a Heroku-style rehearsal (Postgres + pgvector + MCP) |
 | Flutter app | 8/8 widget tests; 2/2 end-to-end flows against the real API (macOS); release APK builds |
 | Dashboard | type check, 4/4 unit tests, Playwright smoke and build all pass |
 | Fresh clone | green across backend, evals, dashboard and Flutter |
@@ -77,7 +77,7 @@ The root README now covers the whole app plus the notebook: sections, model cont
 | `uv run pytest` | 191 passed, 1 skipped, coverage 93% (`app/core` 100%) |
 | `ruff check`, `ruff format --check`, `mypy backend/app mcp_server workflows federated` | all pass |
 | `uv run python evals/run_all.py` | 9/9 gates: AUC 0.7644 · KS 0.3901 · Brier 0.168 · ECE 0.0057 · approval gap 0.0996 → **0.0131** · equalized-odds gap 0.0972 → **0.034** · SMS F1 1.0 · OCR F1 1.0 (mock) · RAG precision 0.95, hit rate 1.0 · explanations 300/300 · Bhorsha 100 vs 21 · prompt goldens 6/6 |
-| `infra/smoke.sh http://localhost:8000 dev-key` | PASS 14/14 (Shathi approved, score ~696 with her SMS) |
+| `infra/smoke.sh http://localhost:8000 dev-key` | PASS 14/14 (Moon approved, score ~696 with her SMS) |
 | Heroku rehearsal (`release.sh` + `web.sh` on Postgres, API + MCP roles) | PASS 16/16 |
 | `flutter analyze` / `flutter test` / integration (macOS, real API) | clean / 8 passed / 2 passed |
 | Dashboard `tsc`, `vitest`, `build`, Playwright | pass / 4 passed / pass / 1 passed |
@@ -121,7 +121,7 @@ The root README now covers the whole app plus the notebook: sections, model cont
 | Federated learning | Flower server and strategy run in-process with 8 simulated clients | Real clients via `python -m federated.client` over gRPC; add SecAgg+ and privacy accounting |
 | Live TPR/FPR on the dashboard | Shows approval parity live; TPR/FPR come from the notebook test set (declined applicants have no outcomes) | Back-testing or reject inference |
 | APK signing | Flutter default debug signing | Release keystore for the Play Store |
-| Demo personas | Shathi, Rafi, Rina and newcomer Mitu, plus 4,000 synthetic applicants; `POST /demo/reset` re-seeds | Real users |
+| Demo personas | Moon, Rafi, Rina and newcomer Mitu, plus 4,000 synthetic applicants; `POST /demo/reset` re-seeds | Real users |
 
 ---
 
@@ -147,7 +147,7 @@ The root README now covers the whole app plus the notebook: sections, model cont
 ```bash
 uv sync && export DATABASE_URL=sqlite:///./trustledger.db DEMO_MODE=true API_KEYS=dev-key
 make seed && make ingest && make api                    # API on :8000 (/docs = Swagger)
-infra/smoke.sh http://localhost:8000 dev-key             # Shathi end to end
+infra/smoke.sh http://localhost:8000 dev-key             # Moon end to end
 uv run python evals/run_all.py                           # 9 quality gates
 cd apps/dashboard && npm install && npm run dev          # dashboard (+ /docs site)
 cd apps/mobile && flutter run -d macos                   # borrower app

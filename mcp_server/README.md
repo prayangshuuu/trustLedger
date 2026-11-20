@@ -62,7 +62,7 @@ async with streamablehttp_client(
         )
 ```
 
-Example `score_user` result (Shathi):
+Example `score_user` result (Moon):
 
 ```json
 {"decision_id": "…", "p_repay": 0.934, "score": 691, "band": "Good", "approved": true,

@@ -46,7 +46,8 @@ class Settings(BaseSettings):
     SESSION_SECRET: str | None = None
     # Allowed browser origins (comma separated); "*" only for local development
     CORS_ORIGINS: str = (
-        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173"
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173,"
+        "http://localhost:8080,http://127.0.0.1:8080"
     )
     RATE_LIMIT_PER_MINUTE: int = 300
     MAX_BODY_BYTES: int = 1_000_000  # JSON bodies (2,000 SMS fit comfortably)
@@ -56,6 +57,8 @@ class Settings(BaseSettings):
     DEMO_MODE: bool = False
     # Built dashboard served at / (relative to the repo root); ignored if no build exists
     DASHBOARD_DIR: str = "apps/dashboard/dist"
+    # Flutter web build of the borrower app, served at /app (flutter build web --base-href /app/)
+    BORROWER_WEB_DIR: str = "apps/mobile/build/web"
     TEMPORAL_HOST: str = "localhost:7233"
     MODEL_DIR: str = "models"
 

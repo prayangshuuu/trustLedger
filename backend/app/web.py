@@ -8,10 +8,42 @@ is a JSON 404 as before.
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 
 # Keep in sync with the <Route> paths in apps/dashboard/src/App.tsx.
 SPA_ROUTES = ("distribution", "fairness", "map", "feed", "applicant", "reports")
+
+
+def mount_borrower_app(application: FastAPI, dist: Path, prefix: str = "/app") -> bool:
+    """Serve the Flutter web build (built with --base-href /app/) under /app.
+
+    Every path that is not a real file returns index.html, so deep links such as /app/score and
+    browser refresh work (go_router handles the route on the client).
+    """
+    dist = dist.resolve()
+    index = dist / "index.html"
+    if not index.is_file():
+        return False
+
+    @application.get(prefix, include_in_schema=False)
+    def borrower_root() -> RedirectResponse:
+        return RedirectResponse(f"{prefix}/")
+
+    @application.api_route(
+        f"{prefix}/{{full_path:path}}", methods=["GET", "HEAD"], include_in_schema=False
+    )
+    def borrower_app(full_path: str) -> FileResponse:
+        candidate = (dist / full_path).resolve()
+        if full_path and candidate.is_relative_to(dist) and candidate.is_file():
+            # Flutter's own files are not content-hashed: revalidate, but allow caching of big wasm/fonts
+            long_lived = candidate.suffix in {".wasm", ".ttf", ".otf", ".png"}
+            headers = {"Cache-Control": "public, max-age=86400" if long_lived else "no-cache"}
+            return FileResponse(candidate, headers=headers)
+        if "." in full_path.rsplit("/", 1)[-1]:
+            raise HTTPException(status_code=404, detail="Not Found")
+        return FileResponse(index, headers={"Cache-Control": "no-cache"})
+
+    return True
 
 
 def mount_dashboard(application: FastAPI, dist: Path) -> bool:

@@ -13,7 +13,7 @@ Activities call the API, retry with exponential backoff (5 attempts), and are id
 make compose-up                                       # Temporal dev server on :7233 (UI :8233)
 DEMO_MODE=true make api                               # API with seeded personas
 uv run python -m workflows.temporal.worker            # worker
-uv run python -m workflows.temporal.cli start --persona shathi
+uv run python -m workflows.temporal.cli start --persona moon
 uv run python -m workflows.temporal.cli repay loan-xxxx
 uv run python -m workflows.temporal.cli status loan-xxxx
 ```

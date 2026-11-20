@@ -15,7 +15,7 @@ Engineered the feature extraction pipeline converting structured `Transaction` s
 | `backend/app/schemas/features.py` | Defined Pydantic models: `ParseSmsRequest`, `ParseSmsResponse`, `StoreFeatureSnapshotRequest`, and `FeatureSnapshotResponse`. |
 | `backend/app/api/routers/features.py` | Implemented `POST /parse/sms` (DEMO_MODE gated) and `POST /features` (saving `FeatureSnapshot` records to database). |
 | `backend/app/main.py` | Registered `features_router` under application endpoints. |
-| `backend/tests/test_feature_builder.py` | Added comprehensive test suite: 12-month synthetic SMS history for Shathi resulting in approval under `F_urban`, short-history Bhorsha delegation, individual formula tests for all 10 features, range clipping tests, demo mode gate enforcement, and snapshot persistence. |
+| `backend/tests/test_feature_builder.py` | Added comprehensive test suite: 12-month synthetic SMS history for Moon resulting in approval under `F_urban`, short-history Bhorsha delegation, individual formula tests for all 10 features, range clipping tests, demo mode gate enforcement, and snapshot persistence. |
 | `docs/PROMPT.md` | Marked Prompt 7 complete in checklist and updated status table. |
 
 ## How to run / verify
@@ -37,12 +37,12 @@ uv run mypy backend/app
 - **ruff format:** pass (`uv run ruff format --check` -> `112 files already formatted`)
 - **mypy:** pass (`uv run mypy backend/app` -> `Success: no issues found in 40 source files`)
 - **pytest:** pass (`uv run pytest` -> 127 passed, 1 skipped, 0 failed, 94% statement coverage)
-- **Shathi approval check:** pass (`test_shathi_12_month_synthetic_sms_scores_approved` verified 12-month SMS history yields score >= 650, band 'Good', approved=True under `F_urban`).
+- **Moon approval check:** pass (`test_moon_12_month_synthetic_sms_scores_approved` verified 12-month SMS history yields score >= 650, band 'Good', approved=True under `F_urban`).
 - **Short history check:** pass (`test_short_history_triggers_needs_bhorsha` verified <3 months tenure sets `needs_bhorsha=True` and all wallet features `None`).
 - **Formula unit checks:** pass (`test_individual_feature_formulas` verified formulas for inflow, volatility, bills on time, recharge regularity, savings ratio, remittance, and loan-to-income).
 
 ## Acceptance criteria
-- [x] Shathi's synthetic SMS history produces features that score her as approved — verified in `test_shathi_12_month_synthetic_sms_scores_approved`.
+- [x] Moon's synthetic SMS history produces features that score her as approved — verified in `test_moon_12_month_synthetic_sms_scores_approved`.
 - [x] Short history correctly sets `needs_bhorsha` — verified in `test_short_history_triggers_needs_bhorsha`.
 - [x] Every feature formula has a unit test — verified in `test_individual_feature_formulas`.
 

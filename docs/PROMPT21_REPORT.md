@@ -12,7 +12,7 @@ The fresh clone also caught a missing `@types/node` in the dashboard.
 
 | Item | Status | Evidence |
 |---|---|---|
-| Shathi end to end: consent → SMS + bill → score 300–900 → Bangla reasons/tips → fairness → approved loan | ✅ local · ⛔ deployed URL | `infra/smoke.sh` PASS (14 checks); app integration test on macOS; Heroku rehearsal on Postgres PASS (16 checks) |
+| Moon end to end: consent → SMS + bill → score 300–900 → Bangla reasons/tips → fairness → approved loan | ✅ local · ⛔ deployed URL | `infra/smoke.sh` PASS (14 checks); app integration test on macOS; Heroku rehearsal on Postgres PASS (16 checks) |
 | Zero-history user completes Bhorsha and gets a score | ✅ | `test_zero_history_user_is_routed_to_bhorsha_then_scored`, app integration "Newcomer" flow |
 | Dashboard shows score distribution, fairness by group and Inclusion Lift from live data | ✅ | `apps/dashboard`, Playwright smoke, `docs/media/dashboard_*.png` |
 | MCP exposes the 4 tools | ✅ | `test_mcp_server.py` (in-memory, stdio, HTTP + auth) |

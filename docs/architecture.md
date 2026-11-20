@@ -39,7 +39,7 @@ flowchart LR
   FL["Flower DP-FedAvg<br/>8 division clients"] -.->|weights| AIR
 ```
 
-## Request path: Shathi applies
+## Request path: Moon applies
 
 1. **Consent.** The app records one consent per source (`/consent`). Every later step checks it.
 2. **Data Agent.** In the demo, raw SMS goes to `/apply` and is parsed in memory (regex first, then a PII-redacted DeepSeek fallback). Bill photos were already read by DeepSeek-OCR via `/documents`. Only the 10 derived features are stored.

@@ -4,7 +4,7 @@
 **Status:** done  
 
 ## Summary
-Completed an exhaustive repository audit and asset inventory, verifying Git LFS tracking across all benchmark datasets (totaling 6.16 GB) and confirming all data files are fully materialized. Verified the production machine learning model contract in `models/trustledger_meta.json` against `PLAN_CONTEXT.md` §2 with zero discrepancies, and verified offline scoring on the Shathi persona (`p_repay` = 0.934, score = 691, approved under `F_urban`). Established reproducible dependency management with `uv`, adding `scikit-learn`, `notebook`, `ruff`, and `pytest` to `pyproject.toml`, configured `.env.example` with all 14 required environment variables, and secured `.gitignore` to prevent secret leakage.
+Completed an exhaustive repository audit and asset inventory, verifying Git LFS tracking across all benchmark datasets (totaling 6.16 GB) and confirming all data files are fully materialized. Verified the production machine learning model contract in `models/trustledger_meta.json` against `PLAN_CONTEXT.md` §2 with zero discrepancies, and verified offline scoring on the Moon persona (`p_repay` = 0.934, score = 691, approved under `F_urban`). Established reproducible dependency management with `uv`, adding `scikit-learn`, `notebook`, `ruff`, and `pytest` to `pyproject.toml`, configured `.env.example` with all 14 required environment variables, and secured `.gitignore` to prevent secret leakage.
 
 ## Changes
 | File | Change |
@@ -31,7 +31,7 @@ uv run ruff format --check .
 git lfs ls-files
 ls -lh datasets/
 
-# 4. Verify model scoring on Shathi benchmark persona
+# 4. Verify model scoring on Moon benchmark persona
 .venv/bin/python -c '
 import json, numpy as np, pandas as pd, xgboost as xgb
 
@@ -42,7 +42,7 @@ FEATURES = meta["features"]
 model = xgb.XGBClassifier()
 model.load_model("models/trustledger_xgb.json")
 
-shathi = {
+moon = {
     "monthly_inflow_bdt": 14000,
     "income_volatility": 0.10,
     "months_on_wallet": 30,
@@ -54,7 +54,7 @@ shathi = {
     "bhorsha_score": np.nan,
     "loan_to_income": 4.0
 }
-x = pd.DataFrame([shathi])[FEATURES].astype(float)
+x = pd.DataFrame([moon])[FEATURES].astype(float)
 p = float(model.predict_proba(x)[0, 1])
 scale = meta["score_scale"]
 odds = (p / (1.0 - p)) / 4.0
@@ -88,7 +88,7 @@ rm -f .env
 ## Acceptance criteria
 - [x] `uv sync` works from a fresh clone — verified, locks 119 packages cleanly on Python 3.12.
 - [x] Meta contract verified (or mismatches listed) — verified 10/10 features, float threshold, 4 demographic group thresholds, score scaling parameters, 10/10 dual Bangla reasons, and 7 actionable Bangla tips with 0 contract mismatches.
-- [x] Shathi scored with the saved model, numbers in the report — verified `p_repay` = 0.933661 (~0.934), score = 691 (Good band [650–749]), approved (`p >= 0.717315`).
+- [x] Moon scored with the saved model, numbers in the report — verified `p_repay` = 0.933661 (~0.934), score = 691 (Good band [650–749]), approved (`p >= 0.717315`).
 - [x] Baseline metrics table in the report — comprehensive metrics extracted from `training_files/metrics.json` documented below.
 - [x] `.env.example` exists and `.env` is git-ignored — `.env.example` created with all 14 variables and `.gitignore` updated and tested.
 
@@ -183,9 +183,9 @@ The metadata contract was verified against `PLAN_CONTEXT.md` §2:
    - Note: `monthly_inflow_bdt`, `txn_per_month`, and `sends_money_home` intentionally omit tips as they represent external economic conditions rather than immediate borrower habits.
 7. **Contract Mismatches:** 0 discrepancies.
 
-### 4. Shathi Benchmark Scoring
+### 4. Moon Benchmark Scoring
 
-Scoring executed against production artifact `models/trustledger_xgb.json` using Shathi profile:
+Scoring executed against production artifact `models/trustledger_xgb.json` using Moon profile:
 - Profile: `monthly_inflow_bdt: 14000`, `income_volatility: 0.10`, `months_on_wallet: 30`, `txn_per_month: 18`, `bills_on_time: 0.97`, `recharge_regularity: 0.90`, `savings_ratio: 0.04`, `sends_money_home: 1`, `bhorsha_score: NaN`, `loan_to_income: 4.0`.
 - Demographic Group: `F_urban`
 - Calibrated Threshold (`F_urban`): `0.717315`

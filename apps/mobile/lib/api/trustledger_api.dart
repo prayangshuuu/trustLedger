@@ -25,8 +25,14 @@ class TrustLedgerApi {
   Future<Map<String, dynamic>> apply(String userId, double amount, {List<String>? sms}) async =>
       await client.post('/apply', {'user_id': userId, 'amount_bdt': amount, 'sms': ?sms}) as Map<String, dynamic>;
 
-  Future<Map<String, dynamic>> uploadDocument(String userId, List<int> bytes, String filename) async =>
-      await client.postFile('/documents', {'user_id': userId, 'document_type': 'utility_bill'}, bytes, filename)
+  /// [documentType] null lets the server detect the type (bill, receipt or khata page).
+  Future<Map<String, dynamic>> uploadDocument(
+    String userId,
+    List<int> bytes,
+    String filename, {
+    String? documentType = 'utility_bill',
+  }) async =>
+      await client.postFile('/documents', {'user_id': userId, 'document_type': ?documentType}, bytes, filename)
           as Map<String, dynamic>;
 
   Future<Map<String, dynamic>> bhorshaStart(String userId) async =>
@@ -38,6 +44,9 @@ class TrustLedgerApi {
 
   Future<Map<String, dynamic>> bhorshaResult(String sessionId) async =>
       await client.get('/bhorsha/$sessionId/result') as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>> explain(String decisionId) async =>
+      await client.get('/explain/$decisionId') as Map<String, dynamic>;
 
   Future<Map<String, dynamic>> loan(String applicationId) async =>
       await client.get('/loans/$applicationId') as Map<String, dynamic>;

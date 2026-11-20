@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../design/theme.dart';
+import '../router.dart';
 import '../state/app_state.dart';
 import '../widgets/common.dart';
-import 'bhorsha_chat_screen.dart';
 import 'scaffold.dart';
-import 'score_reveal_screen.dart';
 
 const pipelineSteps = [
   'data_agent',
@@ -31,30 +32,30 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
   @override
   void initState() {
     super.initState();
-    _run();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _run());
   }
 
   Future<void> _run() async {
     setState(() => _error = null);
     final s = widget.state;
+    final stepDelay = motion(context, TMotion.stepReveal);
     try {
       final result = await s.runApply();
       // Reveal the agent steps one by one so the user sees what happened
       for (final step in (result['trace'] as List).cast<Map<String, dynamic>>()) {
-        await Future<void>.delayed(const Duration(milliseconds: 350));
+        await Future<void>.delayed(stepDelay);
         if (!mounted) return;
         setState(() => _done[step['node'] as String] = (step['ms'] as num).toDouble());
       }
-      await Future<void>.delayed(const Duration(milliseconds: 400));
+      await Future<void>.delayed(stepDelay);
       if (!mounted) return;
-      final next = result['status'] == 'bhorsha_required'
-          ? BhorshaChatScreen(state: s)
-          : (result['decision'] == null ? null : ScoreRevealScreen(state: s));
-      if (next == null) {
+      if (result['status'] == 'bhorsha_required') {
+        context.pushReplacement(Routes.bhorsha);
+      } else if (result['decision'] != null) {
+        context.pushReplacement(Routes.score);
+      } else {
         setState(() => _error = result['error'] ?? 'error');
-        return;
       }
-      await Navigator.of(context).pushReplacement(MaterialPageRoute<void>(builder: (_) => next));
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e);
@@ -66,24 +67,24 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
   Widget build(BuildContext context) {
     final s = widget.state;
     return ListenableBuilder(
-      listenable: widget.state,
+      listenable: s,
       builder: (context, _) => TLScaffold(
         state: s,
         title: s.t('processing'),
         body: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(TSpace.lg),
           children: [
             for (final step in pipelineSteps)
               ListTile(
                 key: Key('step_$step'),
                 leading: _done.containsKey(step)
-                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    ? const Icon(Icons.check_circle, color: TColor.good, semanticLabel: 'done')
                     : const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
                 title: Text(s.t('step_$step')),
                 trailing: _done.containsKey(step) ? Text('${_done[step]!.toStringAsFixed(0)} ms') : null,
               ),
             if (_error != null) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: TSpace.lg),
               FilledButton(onPressed: _run, child: Text(s.t('retry'))),
             ],
           ],

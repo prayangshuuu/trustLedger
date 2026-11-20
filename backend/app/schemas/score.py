@@ -1,11 +1,11 @@
-"""Scoring and explanation request/response schemas with Shathi persona examples."""
+"""Scoring and explanation request/response schemas with Moon persona examples."""
 
 from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
 
-SHATHI_EXAMPLE_FEATURES: dict[str, Any] = {
+MOON_EXAMPLE_FEATURES: dict[str, Any] = {
     "monthly_inflow_bdt": 14000.0,
     "income_volatility": 0.10,
     "months_on_wallet": 30.0,
@@ -43,7 +43,7 @@ class ScoreRequest(BaseModel):
     features: dict[str, Any] | None = Field(
         default=None,
         description="10 alternative credit features. If omitted, fetched from user_id feature snapshot.",
-        examples=[SHATHI_EXAMPLE_FEATURES],
+        examples=[MOON_EXAMPLE_FEATURES],
     )
 
     model_config = {
@@ -51,7 +51,7 @@ class ScoreRequest(BaseModel):
             "example": {
                 "group": "F_urban",
                 "amount_bdt": 15000.0,
-                "features": SHATHI_EXAMPLE_FEATURES,
+                "features": MOON_EXAMPLE_FEATURES,
             }
         }
     }

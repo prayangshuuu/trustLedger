@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../router.dart';
 import '../state/app_state.dart';
-import '../theme.dart';
+import '../design/theme.dart';
 import '../widgets/common.dart';
-import 'processing_screen.dart';
 import 'scaffold.dart';
 
 class _Msg {
@@ -108,7 +109,7 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
     try {
       await s.api.bhorshaResult(_sessionId!);
       if (!mounted) return;
-      await Navigator.of(context).pushReplacement(MaterialPageRoute<void>(builder: (_) => ProcessingScreen(state: s)));
+      context.pushReplacement(Routes.processing);
     } catch (e) {
       setState(() => _busy = false);
       if (mounted) showError(context, s, e, onRetry: _finish);
@@ -125,28 +126,28 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
         title: '${s.t('bhorsha_title')} ($_turn/$_total)',
         body: Column(
           children: [
-            LinearProgressIndicator(value: _total == 0 ? 0 : _turn / _total, color: TLColors.teal),
+            LinearProgressIndicator(value: _total == 0 ? 0 : _turn / _total, color: TColor.tealDark),
             Expanded(
               child: ListView.builder(
                 controller: _scroll,
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(TSpace.md),
                 itemCount: _messages.length,
                 itemBuilder: (_, i) {
                   final m = _messages[i];
                   return Align(
                     alignment: m.fromUser ? Alignment.centerRight : Alignment.centerLeft,
                     child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.symmetric(vertical: TSpace.xs),
+                      padding: const EdgeInsets.all(TSpace.md),
                       constraints: const BoxConstraints(maxWidth: 320),
                       decoration: BoxDecoration(
-                        color: m.fromUser ? TLColors.teal : Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 2)],
+                        color: m.fromUser ? TColor.tealDark : TColor.lightSurface,
+                        borderRadius: BorderRadius.circular(TRadius.lg),
+                        boxShadow: const [BoxShadow(color: TColor.lightShadow, blurRadius: TShadow.blur)],
                       ),
                       child: Text(
                         m.text,
-                        style: TextStyle(color: m.fromUser ? Colors.white : TLColors.navy, fontSize: 16),
+                        style: TextStyle(color: m.fromUser ? TColor.lightSurface : TColor.navy, fontSize: TType.body),
                       ),
                     ),
                   );
@@ -155,7 +156,7 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
             ),
             if (_completed)
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(TSpace.lg),
                 child: FilledButton(
                   key: const Key('bhorsha_finish'),
                   onPressed: _busy ? null : _finish,
@@ -164,7 +165,7 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
               )
             else
               Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(TSpace.sm),
                 child: Row(
                   children: [
                     Expanded(
@@ -178,7 +179,7 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
                     ),
                     IconButton(
                       key: const Key('bhorsha_send'),
-                      icon: const Icon(Icons.send, color: TLColors.teal),
+                      icon: const Icon(Icons.send, color: TColor.tealDark),
                       tooltip: s.t('send'),
                       onPressed: _busy ? null : _send,
                     ),

@@ -1,6 +1,6 @@
 """Start and drive a loan workflow for a demo persona.
 
-uv run python -m workflows.temporal.cli start --persona shathi --amount 15000
+uv run python -m workflows.temporal.cli start --persona moon --amount 15000
 uv run python -m workflows.temporal.cli repay loan-<id>
 uv run python -m workflows.temporal.cli status loan-<id>
 uv run python -m workflows.temporal.cli review loan-<id> --approve
@@ -36,7 +36,7 @@ async def main() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
     start = sub.add_parser("start")
-    start.add_argument("--persona", default="shathi")
+    start.add_argument("--persona", default="moon")
     start.add_argument("--user-id")
     start.add_argument("--amount", type=float, default=15000.0)
     start.add_argument("--interval-days", type=int, default=30)

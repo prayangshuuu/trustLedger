@@ -28,7 +28,7 @@ from app.config import get_settings
 from app.core.features import AllFeaturesMissingError
 from app.observability import GuardMiddleware, install_log_filter, json_log, metrics_response
 from app.privacy.consent import ConsentMissingError
-from app.web import mount_dashboard
+from app.web import mount_borrower_app, mount_dashboard
 
 logger = logging.getLogger("trustledger.api")
 
@@ -184,9 +184,14 @@ def create_app() -> FastAPI:
     application.include_router(demo_router)
     application.include_router(stats_router)
 
-    # 5. Lender dashboard (same origin) when a build is present; must stay last
-    dist = Path(settings.DASHBOARD_DIR)
-    mount_dashboard(application, dist if dist.is_absolute() else REPO_ROOT / dist)
+    # 5. Borrower web app at /app, then the lender dashboard at / (same origin, when builds exist).
+    #    The dashboard catch-all must stay last.
+    def resolve(path: str) -> Path:
+        p = Path(path)
+        return p if p.is_absolute() else REPO_ROOT / p
+
+    mount_borrower_app(application, resolve(settings.BORROWER_WEB_DIR))
+    mount_dashboard(application, resolve(settings.DASHBOARD_DIR))
 
     return application
 

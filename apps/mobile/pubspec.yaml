@@ -9,7 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  go_router: ^18.1.4
   http: ^1.2.2
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

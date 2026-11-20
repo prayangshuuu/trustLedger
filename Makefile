@@ -1,4 +1,4 @@
-.PHONY: setup lint format test api mcp mcp-http seed ingest compose-up compose-down
+.PHONY: setup lint format test api mcp mcp-http seed ingest web web-serve tokens compose-up compose-down
 
 setup:
 	uv sync
@@ -30,6 +30,18 @@ seed:
 
 ingest:
 	uv run python -m app.rag.ingest
+
+# Borrower web app (Flutter web) served by the API at /app, same origin
+web:
+	cd apps/mobile && dart run tool/gen_tokens.dart && flutter build web --release --base-href /app/ --dart-define=API_BASE_URL= --dart-define=API_KEY=$${APP_API_KEY:-dev-key}
+
+web-serve: web
+	@echo "Borrower web app: http://localhost:8000/app/  (dashboard: http://localhost:8000/)"
+	uv run uvicorn app.main:app --port 8000
+
+# Regenerate design tokens for Flutter and the dashboard from apps/design_tokens.json
+tokens:
+	cd apps/mobile && dart run tool/gen_tokens.dart
 
 compose-up:
 	docker compose -f infra/docker-compose.yml up -d

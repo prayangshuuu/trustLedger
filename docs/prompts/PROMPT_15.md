@@ -7,7 +7,7 @@
 **Report:** `docs/PROMPT15_REPORT.md`
 
 ## Goal
-Build the Bangla-first borrower app that tells Shathi's story in the demo.
+Build the Bangla-first borrower app that tells Moon's story in the demo.
 
 ## Tasks
 - Screens: welcome (Bangla/English toggle), consent per data source (clear Bangla copy), connect data (demo: paste/import sample SMS, upload bill photo), processing (agent steps shown), **score reveal** (animated meter 300–900, band), reasons (✅/⚠️ Bangla cards), tips, loan offer + accept, repayment progress + limit ladder, Bhorsha chat, settings (revoke consent, delete my data).
@@ -17,7 +17,7 @@ Build the Bangla-first borrower app that tells Shathi's story in the demo.
 - Widget tests for score reveal and consent; a short screen recording in `docs/media/`.
 
 ## Acceptance criteria
-- Shathi flow works on an Android emulator against the local API
+- Moon flow works on an Android emulator against the local API
 - Zero-history persona completes Bhorsha in the app
 - Delete-my-data works from settings
 

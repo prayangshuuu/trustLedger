@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../design/theme.dart';
+import '../router.dart';
 import '../state/app_state.dart';
 import '../widgets/common.dart';
-import 'connect_data_screen.dart';
-import 'processing_screen.dart';
 import 'scaffold.dart';
 
 const consentSources = ['sms', 'bills', 'recharge', 'ocr', 'bhorsha'];
@@ -34,11 +35,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       await s.saveConsents(_selected);
       if (!mounted) return;
       final hasData = _selected.contains('sms') || _selected.contains('ocr') || _selected.contains('bills');
-      await Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => hasData ? ConnectDataScreen(state: s) : ProcessingScreen(state: s),
-        ),
-      );
+      context.push(hasData ? Routes.connect : Routes.processing);
     } catch (e) {
       if (mounted) showError(context, s, e, onRetry: _continue);
     } finally {
@@ -50,20 +47,20 @@ class _ConsentScreenState extends State<ConsentScreen> {
   Widget build(BuildContext context) {
     final s = widget.state;
     return ListenableBuilder(
-      listenable: widget.state,
+      listenable: s,
       builder: (context, _) => TLScaffold(
         state: s,
         title: s.t('consent_title'),
         body: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(TSpace.lg),
           children: [
-            Text(s.t('consent_intro'), style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 12),
+            Text(s.t('consent_intro'), style: const TextStyle(fontSize: TType.body)),
+            const SizedBox(height: TSpace.md),
             for (final src in consentSources)
               Card(
                 child: SwitchListTile(
                   key: Key('consent_$src'),
-                  title: Text(s.t('src_$src'), style: const TextStyle(fontWeight: FontWeight.w600)),
+                  title: Text(s.t('src_$src'), style: const TextStyle(fontWeight: TFont.semibold)),
                   subtitle: Text(s.t('src_${src}_d')),
                   value: _selected.contains(src),
                   onChanged: (on) => setState(() => on ? _selected.add(src) : _selected.remove(src)),
@@ -74,7 +71,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
         bottom: FilledButton(
           key: const Key('consent_continue'),
           onPressed: _busy || _selected.isEmpty ? null : _continue,
-          child: _busy ? const CircularProgressIndicator(color: Colors.white) : Text(s.t('continue')),
+          child: _busy ? const CircularProgressIndicator(color: TColor.lightOnBrand) : Text(s.t('continue')),
         ),
       ),
     );

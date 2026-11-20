@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../design/theme.dart';
+import '../router.dart';
 import '../state/app_state.dart';
 import '../widgets/common.dart';
-import 'settings_screen.dart';
 
 /// Shared page frame: title, language toggle and settings.
 class TLScaffold extends StatelessWidget {
@@ -17,7 +19,7 @@ class TLScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Semantics(header: true, child: Text(title)),
         actions: [
           LangToggle(state: state),
           if (state.userId != null)
@@ -25,8 +27,7 @@ class TLScaffold extends StatelessWidget {
               key: const Key('open_settings'),
               icon: const Icon(Icons.settings),
               tooltip: state.t('settings'),
-              onPressed: () =>
-                  Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SettingsScreen(state: state))),
+              onPressed: () => context.push(Routes.settings),
             ),
         ],
       ),
@@ -34,7 +35,7 @@ class TLScaffold extends StatelessWidget {
       bottomNavigationBar: bottom == null
           ? null
           : SafeArea(
-              child: Padding(padding: const EdgeInsets.all(16), child: bottom),
+              child: Padding(padding: const EdgeInsets.all(TSpace.lg), child: bottom),
             ),
     );
   }

@@ -37,7 +37,7 @@ def api() -> Generator[tuple[TestClient, Session], None, None]:
     db.close()
 
 
-def shathi_id(db: Session) -> str:
+def moon_id(db: Session) -> str:
     user = db.scalars(select(User).where(User.phone_hash == hash_phone("+8801711000001"))).first()
     assert user is not None
     return user.id
@@ -74,9 +74,9 @@ async def run_lifecycle(
     return result, sender
 
 
-def test_shathi_full_lifecycle_with_limit_upgrade(api: tuple[TestClient, Session]) -> None:
+def test_moon_full_lifecycle_with_limit_upgrade(api: tuple[TestClient, Session]) -> None:
     client, db = api
-    result, sender = asyncio.run(run_lifecycle(client, shathi_id(db), [True, True, True]))
+    result, sender = asyncio.run(run_lifecycle(client, moon_id(db), [True, True, True]))
     assert result["status"] == "repaid", result
     assert result["paid"] == 3 and result["on_time"] == 3
     assert result["reminders_sent"] == 3 and len(sender.sent) == 3
@@ -90,7 +90,7 @@ def test_shathi_full_lifecycle_with_limit_upgrade(api: tuple[TestClient, Session
 
 def test_late_payment_blocks_limit_upgrade(api: tuple[TestClient, Session]) -> None:
     client, db = api
-    result, _ = asyncio.run(run_lifecycle(client, shathi_id(db), [True, False, True]))
+    result, _ = asyncio.run(run_lifecycle(client, moon_id(db), [True, False, True]))
     assert result["status"] == "repaid"
     assert result["on_time"] == 2
     assert "installment_2_late" in result["events"]
@@ -100,7 +100,7 @@ def test_late_payment_blocks_limit_upgrade(api: tuple[TestClient, Session]) -> N
 
 def test_repayment_endpoint_is_idempotent(api: tuple[TestClient, Session]) -> None:
     client, db = api
-    body = client.post("/apply", json={"user_id": shathi_id(db), "amount_bdt": 15000}).json()
+    body = client.post("/apply", json={"user_id": moon_id(db), "amount_bdt": 15000}).json()
     app_id = body["decision"]["application_id"]
     client.post(f"/loans/{app_id}/disburse")
     for _ in range(2):

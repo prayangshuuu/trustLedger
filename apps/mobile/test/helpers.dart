@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:trustledger_app/api/api_client.dart';
 import 'package:trustledger_app/api/trustledger_api.dart';
+import 'package:trustledger_app/main.dart';
 import 'package:trustledger_app/state/app_state.dart';
 
 /// A fake API backend recording every request.
@@ -19,7 +22,7 @@ class FakeBackend {
     final path = req.url.path;
     if (path == '/demo/personas') {
       return _json([
-        {'key': 'shathi', 'user_id': 'u1', 'group': 'F_urban', 'division': 'Dhaka', 'description': 'Shathi'},
+        {'key': 'moon', 'user_id': 'u1', 'group': 'F_urban', 'division': 'Dhaka', 'description': 'Moon'},
       ]);
     }
     if (path == '/auth/session') return _json({'token': 'tl1.u1.9999999999.sig', 'expires_at': 1, 'user_id': 'u1'});
@@ -43,7 +46,7 @@ class FakeBackend {
   );
 }
 
-Map<String, dynamic> shathiResult() => {
+Map<String, dynamic> moonResult() => {
   'trace_id': 't1',
   'status': 'approved',
   'summary_bn': 'আপনার ট্রাস্টলেজার স্কোর ৬৯১।',
@@ -74,3 +77,20 @@ Map<String, dynamic> shathiResult() => {
     ],
   },
 };
+
+/// A signed-in Moon state backed by [FakeBackend], optionally with her decision loaded.
+Future<AppState> signedIn(FakeBackend backend, {bool withResult = false}) async {
+  final state = backend.state();
+  await state.selectPersona({'user_id': 'u1', 'key': 'moon', 'group': 'F_urban'});
+  if (withResult) state.result = moonResult();
+  return state;
+}
+
+/// Pump the real app (router, theme, responsive frame) at [location].
+Future<void> pumpApp(WidgetTester tester, AppState state, String location, {Size size = const Size(390, 844)}) async {
+  tester.view.physicalSize = size * 3;
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(TrustLedgerApp(state: state, initialLocation: location));
+  await tester.pumpAndSettle();
+}

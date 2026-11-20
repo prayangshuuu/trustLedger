@@ -7,9 +7,9 @@ from app.core.features import AllFeaturesMissingError, FeatureVector
 from app.core.model import get_model_version, load_meta
 
 
-def test_score_applicant_shathi() -> None:
-    """Verify Shathi persona produces an approved decision in Good band with Bangla reasons."""
-    shathi_input = {
+def test_score_applicant_moon() -> None:
+    """Verify Moon persona produces an approved decision in Good band with Bangla reasons."""
+    moon_input = {
         "monthly_inflow_bdt": 14000.0,
         "income_volatility": 0.10,
         "months_on_wallet": 30.0,
@@ -22,7 +22,7 @@ def test_score_applicant_shathi() -> None:
         "loan_to_income": 4.0,
     }
 
-    decision = score_applicant(shathi_input, group="F_urban")
+    decision = score_applicant(moon_input, group="F_urban")
 
     assert isinstance(decision, Decision)
     assert decision.approved is True
@@ -111,7 +111,7 @@ def test_score_applicant_zero_network_db(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(socket.socket, "connect", guarded_connect)
     monkeypatch.setattr(socket, "getaddrinfo", guarded_connect)
 
-    shathi_input = {
+    moon_input = {
         "monthly_inflow_bdt": 14000.0,
         "income_volatility": 0.10,
         "months_on_wallet": 30.0,
@@ -122,6 +122,6 @@ def test_score_applicant_zero_network_db(monkeypatch: pytest.MonkeyPatch) -> Non
         "sends_money_home": 1.0,
         "loan_to_income": 4.0,
     }
-    decision = score_applicant(shathi_input, group="F_urban")
+    decision = score_applicant(moon_input, group="F_urban")
     assert decision.approved is True
     assert decision.score == 691

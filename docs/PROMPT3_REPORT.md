@@ -19,10 +19,10 @@ Built the pure scoring library in `backend/app/core/` that transforms applicant 
 | `backend/tests/test_model.py` | Unit tests for model directory resolution, model/metadata loading, LRU caching, version hashing, and error conditions. |
 | `backend/tests/test_features.py` | Unit tests for feature names, vector validation, boundary constraints, NaN sanitization, ordering, and all-missing rejection. |
 | `backend/tests/test_score.py` | Unit tests for probability prediction, exact log-odds score formula, monotonicity, array vectorized operations, and risk banding. |
-| `backend/tests/test_explain.py` | Unit tests for SHAP feature attribution on Shathi profile, impact filtering, missing feature omission, Bangla translation, and tips. |
+| `backend/tests/test_explain.py` | Unit tests for SHAP feature attribution on Moon profile, impact filtering, missing feature omission, Bangla translation, and tips. |
 | `backend/tests/test_fairness.py` | Unit tests for metadata threshold extraction, dynamic thresholds, demographic audit metrics, and fairness disparity limits. |
-| `backend/tests/test_decision.py` | Integration tests for Shathi persona, zero-history bhorsha-only applicant, missing input rejection, unknown group rejection, and zero-network assertions. |
-| `backend/tests/test_golden.py` | Golden benchmark test reproducing the notebook's Shathi metrics within $\pm 0.01$ tolerance ($p_{repay} = 0.934$, score = 691, band = Good, approved = True). |
+| `backend/tests/test_decision.py` | Integration tests for Moon persona, zero-history bhorsha-only applicant, missing input rejection, unknown group rejection, and zero-network assertions. |
+| `backend/tests/test_golden.py` | Golden benchmark test reproducing the notebook's Moon metrics within $\pm 0.01$ tolerance ($p_{repay} = 0.934$, score = 691, band = Good, approved = True). |
 | `docs/PROMPT.md` | Marked Prompt 3 complete in checklist and updated status table. |
 
 ## How to run / verify
@@ -49,11 +49,11 @@ uv run pytest backend/tests/test_golden.py -v
 - **ruff format:** pass (`uv run ruff format --check .` -> `69 files already formatted`)
 - **mypy:** pass (`uv run mypy backend/app` -> `Success: no issues found in 19 source files`; `uv run mypy --strict backend/app/core` -> `Success: no issues found in 7 source files`)
 - **pytest:** pass (`uv run pytest` -> 78 passed, 0 failed, 95% total application coverage, 100% statement coverage across all `app/core` modules)
-- **golden benchmark test:** pass (`backend/tests/test_golden.py::test_shathi_golden_benchmark` -> reproduces $p_{repay} = 0.934$, score = 691 within $\pm 0.01$ tolerance)
+- **golden benchmark test:** pass (`backend/tests/test_golden.py::test_moon_golden_benchmark` -> reproduces $p_{repay} = 0.934$, score = 691 within $\pm 0.01$ tolerance)
 - **network/DB isolation check:** pass (socket connection and address lookup monkeypatched to raise errors; verified zero network or DB I/O in `app/core`)
 
 ## Acceptance criteria
-- [x] `score_applicant` returns a complete `Decision` for Shathi and for a zero-history user — verified in `backend/tests/test_decision.py` and `test_golden.py`.
+- [x] `score_applicant` returns a complete `Decision` for Moon and for a zero-history user — verified in `backend/tests/test_decision.py` and `test_golden.py`.
 - [x] Coverage of `app/core` ≥ 90% — verified at 100% coverage (406/406 statements in `app/core`).
 - [x] mypy strict passes on `app/core` — verified (`uv run mypy --strict backend/app/core` succeeded with 0 issues).
 - [x] No network or DB access in `core/` — verified with pure functional design and explicit socket-blocking tests.

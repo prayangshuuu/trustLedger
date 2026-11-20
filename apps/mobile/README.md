@@ -1,6 +1,6 @@
 # TrustLedger borrower app (Flutter)
 
-Bangla-first borrower app that tells Shathi's story: consent → connect data → agent processing →
+Bangla-first borrower app that tells Moon's story: consent → connect data → agent processing →
 animated score reveal → Bangla reasons and cited tips → loan offer → repayments and the limit ladder,
 plus the Bhorsha chat for zero-history users and Settings (revoke consent, delete my data).
 
@@ -44,6 +44,6 @@ flutter test integration_test -d macos --dart-define=API_BASE_URL=http://127.0.0
 flutter test screenshots --update-goldens      # regenerates docs/media/app_*.png
 ```
 
-The integration test drives two full flows against the running API. In the first, Shathi grants consent, imports SMS, uploads a bill
+The integration test drives two full flows against the running API. In the first, Moon grants consent, imports SMS, uploads a bill
 and is approved; she then accepts the loan, makes 3 repayments and unlocks the 18,000 BDT limit. In the second, the newcomer completes the
 12-question Bhorsha chat, is scored, then deletes her data.

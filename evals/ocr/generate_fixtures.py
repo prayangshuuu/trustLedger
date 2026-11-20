@@ -17,7 +17,7 @@ DOCUMENTS = [
         "title": "DESCO ELECTRICITY BILL / বিদ্যুৎ বিল",
         "lines": [
             "Dhaka Electric Supply Company Limited",
-            "Customer Name: Shathi Akter",
+            "Customer Name: Moon Akter",
             "Account No: 12984012 / Meter: MTR-982103",
             "Bill Month: October 2026",
             "Payable Amount BDT: 1450.00",

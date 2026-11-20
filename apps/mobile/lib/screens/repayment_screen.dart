@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../design/theme.dart';
 import '../l10n.dart';
 import '../state/app_state.dart';
-import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/responsive.dart';
 import 'scaffold.dart';
 
 class RepaymentScreen extends StatefulWidget {
@@ -17,6 +18,12 @@ class RepaymentScreen extends StatefulWidget {
 
 class _RepaymentScreenState extends State<RepaymentScreen> {
   bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.state.loan == null) widget.state.refreshLoan();
+  }
 
   Future<void> _do(Future<void> Function() action) async {
     setState(() => _busy = true);
@@ -33,71 +40,75 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final s = widget.state;
-    final loan = s.loan ?? {};
-    final onTime = (loan['on_time_repayments'] as int?) ?? 0;
-    final limit = (loan['credit_limit_bdt'] as num?)?.toDouble() ?? s.amount;
-    final upgraded = limit > s.amount + 1;
-    final ladder = [s.amount, s.amount * 1.2, s.amount * 1.44];
+    final isCompact = breakpointOf(context) == Breakpoint.compact;
     return ListenableBuilder(
-      listenable: widget.state,
-      builder: (context, _) => TLScaffold(
-        state: s,
-        title: s.t('repay_title'),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
+      listenable: s,
+      builder: (context, _) {
+        final loan = s.loan ?? {};
+        final onTime = (loan['on_time_repayments'] as int?) ?? 0;
+        final limit = (loan['credit_limit_bdt'] as num?)?.toDouble() ?? s.amount;
+        final upgraded = limit > s.amount + 1;
+        final ladder = [s.amount, s.amount * 1.2, s.amount * 1.44];
+
+        final limitCard = Card(
+          child: Padding(
+            padding: const EdgeInsets.all(TSpace.lg),
+            child: Column(
+              children: [
+                Text(s.t('current_limit')),
+                Text(
+                  '৳ ${num2(limit, s.lang)}',
+                  key: const Key('current_limit'),
+                  style: const TextStyle(
+                    fontSize: TType.headline - 2,
+                    fontWeight: TFont.bold,
+                    color: TColor.navy,
+                  ),
+                ),
+                const SizedBox(height: TSpace.md),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(s.t('current_limit')),
-                    Text(
-                      '৳ ${num2(limit, s.lang)}',
-                      key: const Key('current_limit'),
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: TLColors.navy),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var i = 0; i < 3; i++)
-                          Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: CircleAvatar(
-                              radius: 18,
-                              backgroundColor: i < onTime ? TLColors.good : Colors.black12,
-                              child: Text(num2(i + 1, s.lang), style: const TextStyle(color: Colors.white)),
-                            ),
-                          ),
-                      ],
-                    ),
-                    Text('${num2(onTime, s.lang)}/৩ ${s.t('paid_on_time')}', key: const Key('paid_count')),
+                    for (var i = 0; i < 3; i++)
+                      Padding(
+                        padding: const EdgeInsets.all(TSpace.xs + 2),
+                        child: CircleAvatar(
+                          radius: TSpace.lg + 2,
+                          backgroundColor: i < onTime ? TColor.good : TColor.lightTrack,
+                          child: Text(num2(i + 1, s.lang), style: const TextStyle(color: TColor.lightOnBrand)),
+                        ),
+                      ),
                   ],
                 ),
-              ),
+                Text('${num2(onTime, s.lang)}/৩ ${s.t('paid_on_time')}', key: const Key('paid_count')),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(s.t('limit_ladder'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            Text(s.t('ladder_hint')),
-            for (var i = 0; i < ladder.length; i++)
-              ListTile(
-                leading: Icon(
-                  limit >= ladder[i] - 1 ? Icons.check_circle : Icons.lock_outline,
-                  color: limit >= ladder[i] - 1 ? TLColors.good : Colors.black38,
-                ),
-                title: Text('৳ ${num2(ladder[i], s.lang)}'),
+          ),
+        );
+
+        final ladderList = [
+          SectionHeader(s.t('limit_ladder')),
+          Text(s.t('ladder_hint')),
+          for (var i = 0; i < ladder.length; i++)
+            ListTile(
+              leading: Icon(
+                limit >= ladder[i] - 1 ? Icons.check_circle : Icons.lock_outline,
+                color: limit >= ladder[i] - 1 ? TColor.good : TColor.lightTextMuted,
               ),
-            if (onTime >= 3 && !upgraded)
-              FilledButton(
+              title: Text('৳ ${num2(ladder[i], s.lang)}'),
+            ),
+        ];
+
+        final actionBtn = onTime >= 3 && !upgraded
+            ? FilledButton(
                 key: const Key('unlock_limit'),
-                style: FilledButton.styleFrom(backgroundColor: TLColors.gold),
+                style: FilledButton.styleFrom(backgroundColor: TColor.gold, foregroundColor: TColor.navy),
                 onPressed: _busy ? null : () => _do(() => s.api.upgradeLimit(s.applicationId!)),
                 child: Text(s.t('unlock_limit')),
-              ),
-          ],
-        ),
-        bottom: onTime < 3
+              )
+            : null;
+
+        final payBtn = onTime < 3
             ? FilledButton(
                 key: const Key('pay_installment'),
                 onPressed: _busy
@@ -105,8 +116,62 @@ class _RepaymentScreenState extends State<RepaymentScreen> {
                     : () => _do(() => s.api.repay(s.applicationId!, s.amount / 3, 'app-${onTime + 1}')),
                 child: Text(s.t('pay_installment')),
               )
-            : null,
-      ),
+            : null;
+
+        if (isCompact) {
+          return TLScaffold(
+            state: s,
+            title: s.t('repay_title'),
+            body: ListView(
+              padding: const EdgeInsets.all(TSpace.lg),
+              children: [
+                limitCard,
+                const SizedBox(height: TSpace.sm),
+                ...ladderList,
+                ?actionBtn,
+              ],
+            ),
+            bottom: payBtn,
+          );
+        }
+
+        return TLScaffold(
+          state: s,
+          title: s.t('repay_title'),
+          body: Padding(
+            padding: const EdgeInsets.all(TSpace.xl),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      limitCard,
+                      const SizedBox(height: TSpace.lg),
+                      ?payBtn,
+                      ?actionBtn,
+                    ],
+                  ),
+                ),
+                const SizedBox(width: TSpace.lg),
+                Expanded(
+                  flex: 3,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(TSpace.lg),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: ladderList,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -154,9 +154,9 @@ def test_individual_feature_formulas() -> None:
     assert feat["recharge_regularity"] is not None and feat["recharge_regularity"] >= 0.85
 
 
-def test_shathi_12_month_synthetic_sms_scores_approved() -> None:
-    """Generate 12 months of synthetic SMS for Shathi, extract features, and verify approval."""
-    # Shathi: garment worker in Ashulia (F_urban), receives 14,000 BDT monthly salary,
+def test_moon_12_month_synthetic_sms_scores_approved() -> None:
+    """Generate 12 months of synthetic SMS for Moon, extract features, and verify approval."""
+    # Moon: garment worker in Ashulia (F_urban), receives 14,000 BDT monthly salary,
     # pays DESCO bill on time, sends 3,000 home monthly, saves 600 monthly, recharges regularly.
     sms_history: list[str] = []
     start_date = datetime(2025, 11, 1, 10, 0, tzinfo=UTC)
@@ -208,9 +208,9 @@ def test_shathi_12_month_synthetic_sms_scores_approved() -> None:
     assert feat["sends_money_home"] == 1.0
     assert feat["bills_on_time"] is not None and feat["bills_on_time"] >= 0.90
 
-    # Run decision engine on Shathi's extracted features under F_urban demographic group
+    # Run decision engine on Moon's extracted features under F_urban demographic group
     decision = score_applicant(feat, group="F_urban")
-    assert decision.approved is True, f"Expected Shathi to be approved, got: {decision}"
+    assert decision.approved is True, f"Expected Moon to be approved, got: {decision}"
     assert decision.score >= 650
     assert decision.band in ("Good", "Excellent")
     assert len(decision.reasons) > 0

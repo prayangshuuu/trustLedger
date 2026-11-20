@@ -17,7 +17,7 @@ Make the loan lifecycle durable and automate scheduled audits.
 - Tests: Temporal workflow test environment (time-skipping) covering approve → 3 repayments → limit upgrade.
 
 ## Acceptance criteria
-- Shathi's loan runs through the full lifecycle in the Temporal test env
+- Moon's loan runs through the full lifecycle in the Temporal test env
 - Fairness DAG fails when given biased decisions (test)
 
 ## Out of scope

@@ -1,0 +1,75 @@
+{
+  "$description": "Single source of TrustLedger design values. Generated into apps/mobile/lib/design/tokens.g.dart (dart run tool/gen_tokens.dart) and apps/dashboard/src/tokens.css (node scripts/gen-tokens.mjs). Do not hard-code colours, fonts or spacing elsewhere.",
+  "color": {
+    "brand": {
+      "teal": "#14B8A6",
+      "tealDark": "#0F766E",
+      "navy": "#0F172A",
+      "gold": "#F5B942"
+    },
+    "status": {
+      "good": "#16A34A",
+      "warn": "#B45309",
+      "bad": "#DC2626",
+      "info": "#0E7490"
+    },
+    "band": {
+      "excellent": "#16A34A",
+      "good": "#0F766E",
+      "fair": "#B7791F",
+      "building": "#C2410C"
+    },
+    "light": {
+      "background": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "text": "#0F172A",
+      "textMuted": "#475569",
+      "border": "#E2E8F0",
+      "onBrand": "#FFFFFF",
+      "onBrandMuted": "#CBD5E1",
+      "track": "#CBD5E1",
+      "neutralBar": "#94A3B8",
+      "shadow": "#1F0F172A",
+      "pageBackdrop": "#E6F7F5"
+    },
+    "dark": {
+      "background": "#0B1220",
+      "surface": "#111A2E",
+      "text": "#E2E8F0",
+      "textMuted": "#94A3B8",
+      "border": "#1E293B",
+      "onBrand": "#FFFFFF",
+      "onBrandMuted": "#CBD5E1",
+      "track": "#334155",
+      "neutralBar": "#64748B",
+      "shadow": "#66000000",
+      "pageBackdrop": "#0B1220"
+    }
+  },
+  "font": {
+    "familyBangla": "Hind Siliguri",
+    "familyLatin": "Inter",
+    "weight": { "regular": 400, "medium": 500, "semibold": 600, "bold": 700 }
+  },
+  "type": {
+    "display": 52,
+    "headline": 34,
+    "title": 22,
+    "titleSmall": 18,
+    "body": 16,
+    "bodySmall": 14,
+    "caption": 12
+  },
+  "space": { "xxs": 2, "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "xxl": 32, "xxxl": 48 },
+  "radius": { "sm": 8, "md": 12, "lg": 14, "pill": 999 },
+  "shadow": { "card": { "blur": 2, "y": 1 } },
+  "motion": { "fast": 300, "medium": 600, "scoreReveal": 1800, "stepReveal": 350, "reduced": 0 },
+  "layout": {
+    "breakpoints": { "compact": 600, "expanded": 1024 },
+    "contentMaxWidth": 520,
+    "wideContentMaxWidth": 960,
+    "buttonHeight": 52,
+    "meterWidth": 280,
+    "meterHeight": 150
+  }
+}

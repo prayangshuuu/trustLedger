@@ -37,6 +37,18 @@ const Map<String, Map<String, String>> _strings = {
   'sms_loaded': {'bn': 'টি এসএমএস প্রস্তুত (ফোনেই থাকে, ডেমোতে পাঠানো হয়)', 'en': 'SMS ready (demo only)'},
   'upload_bill': {'bn': 'বিলের ছবি আপলোড করুন', 'en': 'Upload a bill photo'},
   'bill_done': {'bn': 'বিল পড়া হয়েছে', 'en': 'Bill read'},
+  'web_sms_note': {
+    'bn':
+        'ফোনের অ্যাপ এসএমএস ফোনেই পড়ে। ওয়েব ডেমোতে নমুনা এসএমএস পেস্ট বা .txt ফাইল আপলোড করুন; কাঁচা এসএমএস সংরক্ষণ হয় না।',
+    'en':
+        'The phone app reads SMS on the device. In the web demo, paste sample SMS or upload a .txt file; raw SMS is never stored.',
+  },
+  'paste_sms_hint': {'bn': 'প্রতি লাইনে একটি এসএমএস পেস্ট করুন', 'en': 'Paste one SMS per line'},
+  'use_pasted': {'bn': 'পেস্ট করা এসএমএস ব্যবহার করুন', 'en': 'Use pasted SMS'},
+  'upload_txt': {'bn': '.txt ফাইল', 'en': '.txt file'},
+  'choose_photo': {'bn': 'ছবি বেছে নিন', 'en': 'Choose photo'},
+  'take_photo': {'bn': 'ক্যামেরা', 'en': 'Camera'},
+  'drop_hint': {'bn': 'অথবা ছবি এখানে টেনে আনুন', 'en': 'or drop a photo anywhere'},
   'get_score': {'bn': 'আমার স্কোর দেখুন', 'en': 'See my score'},
   'processing': {'bn': 'আপনার তথ্য যাচাই হচ্ছে…', 'en': 'Checking your data…'},
   'step_data_agent': {'bn': 'তথ্য প্রস্তুত', 'en': 'Data prepared'},

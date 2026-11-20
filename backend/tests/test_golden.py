@@ -1,12 +1,12 @@
-"""Golden benchmark test matching notebook evaluation on the Shathi persona."""
+"""Golden benchmark test matching notebook evaluation on the Moon persona."""
 
 import numpy as np
 from app.core.decision import score_applicant
 
 
-def test_shathi_golden_benchmark() -> None:
-    """Reproduce the notebook's Shathi benchmark metrics within ±0.01 tolerance."""
-    shathi_features = {
+def test_moon_golden_benchmark() -> None:
+    """Reproduce the notebook's Moon benchmark metrics within ±0.01 tolerance."""
+    moon_features = {
         "monthly_inflow_bdt": 14000.0,
         "income_volatility": 0.10,
         "months_on_wallet": 30.0,
@@ -19,7 +19,7 @@ def test_shathi_golden_benchmark() -> None:
         "loan_to_income": 4.0,
     }
 
-    decision = score_applicant(shathi_features, group="F_urban")
+    decision = score_applicant(moon_features, group="F_urban")
 
     # 1. P(repay) reproduction within ±0.01 of notebook's 0.933661 (~0.934)
     assert abs(decision.p_repay - 0.933661) <= 0.01

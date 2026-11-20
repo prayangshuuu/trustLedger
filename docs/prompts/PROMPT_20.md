@@ -10,10 +10,10 @@
 Give judges and the public one place to understand, verify and try TrustLedger.
 
 ## Tasks
-- `docs/site/` (static site, e.g. MkDocs Material or a simple Vite page) deployed at `/docs`: problem, solution, Shathi's story, architecture diagram, agent pipeline, model + fairness + inclusion results (figures from `training_files/`), privacy, API reference (from `docs/api.md`), MCP usage, team, links.
+- `docs/site/` (static site, e.g. MkDocs Material or a simple Vite page) deployed at `/docs`: problem, solution, Moon's story, architecture diagram, agent pipeline, model + fairness + inclusion results (figures from `training_files/`), privacy, API reference (from `docs/api.md`), MCP usage, team, links.
 - Update `README.md`: fill demo, docs, video and deck links; add eval numbers; keep it short.
 - `docs/architecture.md` with a Mermaid diagram.
-- `docs/DEMO_SCRIPT.md`: the 3-minute live demo click path (Shathi → zero-history user → dashboard), backup plan if network fails (local docker + recorded video).
+- `docs/DEMO_SCRIPT.md`: the 3-minute live demo click path (Moon → zero-history user → dashboard), backup plan if network fails (local docker + recorded video).
 - `docs/JUDGE_QA.md`: 15 likely judge questions with short answers (privacy, bias, business model, data access, why DeepSeek, scaling, regulation).
 
 ## Acceptance criteria

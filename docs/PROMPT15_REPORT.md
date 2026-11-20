@@ -18,7 +18,7 @@ The backend gained signed borrower sessions and `GET /me`. A raw user id is no l
 | `apps/mobile/test/*` | 8 widget/unit tests (score reveal, consent, settings revoke + delete, API retries) |
 | `apps/mobile/integration_test/app_flow_test.dart` | 2 end-to-end flows against the running API |
 | `apps/mobile/screenshots/`, `docs/media/app_*.png` | Rendered screens (consent, score, reasons) |
-| `apps/mobile/assets/` | Hind Siliguri (OFL), synthetic Shathi SMS, sample DESCO bill |
+| `apps/mobile/assets/` | Hind Siliguri (OFL), synthetic Moon SMS, sample DESCO bill |
 | `backend/app/security.py` | HMAC-signed borrower tokens (`tl1.<user>.<exp>.<sig>`), 12 h TTL |
 | `backend/app/api/routers/consent.py` | `POST /auth/session`, `GET /me`; consent calls need the user's token or an API key |
 | `backend/app/api/deps.py` | Token-only borrower auth; constant-time API key check |
@@ -36,12 +36,12 @@ cd apps/mobile && flutter test && flutter test integration_test -d macos --dart-
 - `flutter analyze`: no issues
 - `flutter test`: 8 passed
 - `flutter test integration_test -d macos` (real API, SQLite, 200-person population): **2 passed** in 51 s
-  - Shathi: consents → 72 SMS + DESCO bill (OCR) → `/apply` approved (score ≥ 650) → reasons → accept → 3 repayments → limit **18,000 BDT**
+  - Moon: consents → 72 SMS + DESCO bill (OCR) → `/apply` approved (score ≥ 650) → reasons → accept → 3 repayments → limit **18,000 BDT**
   - Newcomer: Bhorsha consent → `bhorsha_required` → 12-answer chat → scored with reasons → Settings → delete my data
 - Backend: ruff pass, mypy pass, pytest 179 passed, 1 skipped (new token tests: tampered/expired/foreign tokens rejected)
 
 ## Acceptance criteria
-- [ ] Shathi flow works on an **Android emulator** against the local API. NOT RUN: no AVD exists on this machine. The identical flow passes on macOS desktop against the local API. Team: `flutter emulators --create`, then run the integration test with `-d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:8000`.
+- [ ] Moon flow works on an **Android emulator** against the local API. NOT RUN: no AVD exists on this machine. The identical flow passes on macOS desktop against the local API. Team: `flutter emulators --create`, then run the integration test with `-d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:8000`.
 - [x] Zero-history persona completes Bhorsha in the app (integration test)
 - [x] Delete-my-data works from settings (widget + integration test)
 - [ ] Short screen recording in `docs/media/`. NOT DONE: the terminal has no screen-capture permission. Rendered screenshots are in `docs/media/` instead. Team: record with the phone or QuickTime.

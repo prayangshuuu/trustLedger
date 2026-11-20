@@ -33,7 +33,7 @@ Every response carries `X-Request-ID`. Errors share one envelope:
 Codes: `CONSENT_MISSING` 403, `ALL_FEATURES_MISSING` 400, `VALIDATION_ERROR` 422, `RATE_LIMITED` 429, `PAYLOAD_TOO_LARGE` 413, `HTTP_<status>`.
 Limits: 300 requests/min per key, token or IP; JSON body 1 MB; uploads 8 MB (JPEG/PNG/WebP only).
 
-## Main flow (Shathi)
+## Main flow (Moon)
 
 ```bash
 H='X-API-Key: dev-key'
@@ -65,7 +65,7 @@ def main() -> None:
     out = [NOTES]
     for tag, rows in by_tag.items():
         out += [f"\n### {tag}\n", "| Method | Path | Summary | Notes |", "|---|---|---|---|", *rows]
-    out.append("\n## Example: `POST /score` response (Shathi)\n")
+    out.append("\n## Example: `POST /score` response (Moon)\n")
     example = {
         "decision_id": "…", "p_repay": 0.9337, "score": 691, "band": "Good", "approved": True, "fairness_ok": True,
         "good": ["বিল সময়মতো পরিশোধ", "নিয়মিত মোবাইল রিচার্জ"], "bad": ["সঞ্চয় কম"],

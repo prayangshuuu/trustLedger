@@ -44,3 +44,21 @@ def test_api_wins_and_unknown_is_json_404(tmp_path: Path) -> None:
 
 def test_not_mounted_without_build(tmp_path: Path) -> None:
     assert not mount_dashboard(FastAPI(), tmp_path)
+
+
+def test_borrower_web_app_deep_links(tmp_path: Path) -> None:
+    from app.web import mount_borrower_app
+
+    web = tmp_path / "web"
+    web.mkdir()
+    (web / "index.html").write_text("<base href='/app/'>flutter")
+    (web / "main.dart.js").write_text("main()")
+    app = FastAPI(docs_url=None, redoc_url=None)
+    assert mount_borrower_app(app, web)
+    c = TestClient(app)
+    assert c.get("/app", follow_redirects=False).status_code == 307
+    assert "flutter" in c.get("/app/").text
+    assert "flutter" in c.get("/app/score").text  # deep link -> index.html
+    assert c.get("/app/main.dart.js").text == "main()"
+    assert c.get("/app/missing.js").status_code == 404
+    assert c.get("/app/../secret").status_code == 404

@@ -19,7 +19,7 @@ Every response carries `X-Request-ID`. Errors share one envelope:
 Codes: `CONSENT_MISSING` 403, `ALL_FEATURES_MISSING` 400, `VALIDATION_ERROR` 422, `RATE_LIMITED` 429, `PAYLOAD_TOO_LARGE` 413, `HTTP_<status>`.
 Limits: 300 requests/min per key, token or IP; JSON body 1 MB; uploads 8 MB (JPEG/PNG/WebP only).
 
-## Main flow (Shathi)
+## Main flow (Moon)
 
 ```bash
 H='X-API-Key: dev-key'
@@ -122,7 +122,7 @@ curl -X POST $API/score -H "$H" -d '{"group":"F_urban","features":{"bills_on_tim
 | `GET` | `/decisions/{decision_id}` | Applicant decision detail with trace |  |
 | `GET` | `/stats/model-metrics` | Offline model, fairness and federated metrics | Notebook test-set metrics (training_files/metrics.json) and Flower results. |
 
-## Example: `POST /score` response (Shathi)
+## Example: `POST /score` response (Moon)
 
 ```json
 {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../design/theme.dart';
+import '../router.dart';
 import '../state/app_state.dart';
-import '../theme.dart';
 import '../widgets/common.dart';
-import 'consent_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key, required this.state});
@@ -29,7 +30,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     try {
       await widget.state.selectPersona(persona);
       if (!mounted) return;
-      await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ConsentScreen(state: widget.state)));
+      context.push(Routes.consent);
     } catch (e) {
       if (mounted) showError(context, widget.state, e, onRetry: () => _pick(persona));
     } finally {
@@ -43,42 +44,45 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return ListenableBuilder(
       listenable: s,
       builder: (context, _) => Scaffold(
-        backgroundColor: TLColors.navy,
+        backgroundColor: TColor.navy,
         body: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(TSpace.xl),
             children: [
               Align(
                 alignment: Alignment.centerRight,
                 child: LangToggle(state: s),
               ),
-              const SizedBox(height: 24),
-              const Icon(Icons.verified_user_rounded, color: TLColors.teal, size: 64),
-              const SizedBox(height: 12),
-              Text(
-                s.t('app_name'),
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w700),
+              const SizedBox(height: TSpace.xl),
+              const Icon(Icons.verified_user_rounded, color: TColor.teal, size: 64, semanticLabel: 'TrustLedger'),
+              const SizedBox(height: TSpace.md),
+              Semantics(
+                header: true,
+                child: Text(
+                  s.t('app_name'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: TColor.lightOnBrand, fontSize: TType.headline, fontWeight: TFont.bold),
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: TSpace.sm),
               Text(
                 s.t('tagline'),
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 16),
+                style: const TextStyle(color: TColor.lightOnBrandMuted, fontSize: TType.body),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: TSpace.xxl),
               Text(
                 s.t('demo_mode'),
-                style: const TextStyle(color: TLColors.gold, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: TColor.gold, fontWeight: TFont.semibold),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: TSpace.sm),
               FutureBuilder<List<dynamic>>(
                 future: _personas,
                 builder: (context, snap) {
                   if (snap.hasError) {
                     return Column(
                       children: [
-                        Text(s.t('err_network'), style: const TextStyle(color: Colors.white)),
+                        Text(s.t('err_network'), style: const TextStyle(color: TColor.lightOnBrand)),
                         TextButton(
                           onPressed: () => setState(() => _personas = s.api.personas()),
                           child: Text(s.t('retry')),
@@ -96,7 +100,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             leading: const WalletIcon(),
                             title: Text(
                               _personaName(p['key'] as String, s.lang),
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: TFont.semibold),
                             ),
                             subtitle: Text(p['description'] as String),
                             trailing: _busy ? null : const Icon(Icons.arrow_forward),
@@ -116,11 +120,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 }
 
 String _personaName(String key, String lang) => switch ((key, lang)) {
-  ('shathi', 'bn') => 'শাথী — পোশাক শ্রমিক',
+  ('moon', 'bn') => 'মুন — পোশাক শ্রমিক',
   ('student', 'bn') => 'রাফি — ছাত্র ও ফ্রিল্যান্সার',
   ('homemaker', 'bn') => 'রিনা — গৃহিণী (ভরসা সম্পন্ন)',
   ('newcomer', 'bn') => 'মিতু — নতুন (কোনো ইতিহাস নেই)',
-  ('shathi', _) => 'Shathi — garment worker',
+  ('moon', _) => 'Moon — garment worker',
   ('student', _) => 'Rafi — student and freelancer',
   ('homemaker', _) => 'Rina — homemaker (Bhorsha done)',
   _ => 'Mitu — newcomer (no history)',

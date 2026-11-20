@@ -43,6 +43,11 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 20: Public /docs site, README and submission pack** — `docs/prompts/PROMPT_20.md` — report: `docs/PROMPT20_REPORT.md`
 - [x] **Prompt 21: Final QA and submission readiness** — `docs/prompts/PROMPT_21.md` — report: `docs/PROMPT21_REPORT.md`
 
+## Web and Containers
+- [x] **Prompt 22: Borrower web app — Flutter Web from the same codebase** — `docs/prompts/PROMPT_22.md` — report: `docs/PROMPT22_REPORT.md`
+- [ ] **Prompt 23: Web app polish, design parity QA and deployment** — `docs/prompts/PROMPT_23.md` — report: `docs/PROMPT23_REPORT.md`
+- [ ] **Prompt 24: Full-stack Dockerization — Frontend, Backend and One-Command Build** — `docs/prompts/PROMPT_24.md` — report: `docs/PROMPT24_REPORT.md`
+
 ## Status
 
 | Prompt | Status | Report | Notes |
@@ -68,5 +73,8 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 19 | partial | docs/PROMPT19_REPORT.md | Deploy-ready; public URLs blocked on team accounts |
 | 20 | partial | docs/PROMPT20_REPORT.md | Docs site, README, demo script, judge Q&A |
 | 21 | partial | docs/PROMPT21_REPORT.md | QA done; deploy/keys/media pending team |
+| 22 | done | docs/PROMPT22_REPORT.md | Borrower web app (Flutter Web), design tokens, /app route |
+| 23 | pending | docs/PROMPT23_REPORT.md | Web app polish, design parity QA and deployment |
+| 24 | pending | docs/PROMPT24_REPORT.md | Dockerize everything frontend & backend, 1-command build |
 
 Timeline: code freeze **23 Dec 2026**, final **26 Dec 2026**.

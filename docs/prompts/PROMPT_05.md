@@ -20,12 +20,12 @@ Expose the scoring core and persistence through a clean, documented REST API.
   - `GET /fairness/report` — audit over stored decisions (per group rates + gaps)
   - `GET /inclusion-lift` — bank-rule approvals vs TrustLedger approvals over stored decisions (same rule as the notebook)
 - Consistent error format, request IDs, structured JSON logs.
-- OpenAPI tags and examples (Shathi as the example payload). Write `docs/api.md` generated from OpenAPI plus short notes.
+- OpenAPI tags and examples (Moon as the example payload). Write `docs/api.md` generated from OpenAPI plus short notes.
 - Tests with httpx for every endpoint, including consent missing → 403 and delete-me.
 
 ## Acceptance criteria
-- `make api` serves `/docs` (Swagger) with Shathi examples
-- `POST /score` for Shathi returns approved + Bangla reasons, and the decision is stored
+- `make api` serves `/docs` (Swagger) with Moon examples
+- `POST /score` for Moon returns approved + Bangla reasons, and the decision is stored
 - Fairness and inclusion endpoints return numbers from stored data
 - All endpoint tests pass offline
 

@@ -254,12 +254,12 @@ def prompt_cases() -> dict[str, Any]:
     from app.bhorsha.interviewer import interviewer_turn
     from app.bhorsha.scorer import load_question_bank, prompt_version, rubric_score
 
-    shathi = {
+    moon = {
         "monthly_inflow_bdt": 14000.0, "income_volatility": 0.10, "months_on_wallet": 30.0, "txn_per_month": 18.0,
         "bills_on_time": 0.97, "recharge_regularity": 0.90, "savings_ratio": 0.04, "sends_money_home": 1.0,
         "bhorsha_score": None, "loan_to_income": 4.0,
     }  # fmt: skip
-    d = score_applicant(shathi, "F_urban")
+    d = score_applicant(moon, "F_urban")
     exp = explain_decision(None, d)
     q = load_question_bank()[0]
     cases: dict[str, Any] = {

@@ -4,7 +4,7 @@
 **Status:** done
 
 ## Summary
-Created the data persistence layer for TrustLedger adhering strictly to the privacy and fairness architecture. Implemented SQLAlchemy 2 models (`users`, `consents`, `feature_snapshots`, `applications`, `decisions`, `repayments`, `audit_log`), Alembic migrations with the `pgvector` extension enabled for future RAG embedding lookups, consent validation and gating helpers in `app/privacy/consent.py`, GDPR-compliant cascading data deletion in `app/privacy/deletion.py`, and an idempotent seed script in `backend/scripts/seed_demo.py` creating the three demo personas (Shathi, Student, Homemaker). Proved through automated tests that no table or column stores raw SMS data and that deleting a user completely cascades across all related child tables.
+Created the data persistence layer for TrustLedger adhering strictly to the privacy and fairness architecture. Implemented SQLAlchemy 2 models (`users`, `consents`, `feature_snapshots`, `applications`, `decisions`, `repayments`, `audit_log`), Alembic migrations with the `pgvector` extension enabled for future RAG embedding lookups, consent validation and gating helpers in `app/privacy/consent.py`, GDPR-compliant cascading data deletion in `app/privacy/deletion.py`, and an idempotent seed script in `backend/scripts/seed_demo.py` creating the three demo personas (Moon, Student, Homemaker). Proved through automated tests that no table or column stores raw SMS data and that deleting a user completely cascades across all related child tables.
 
 ## Changes
 | File | Change |
@@ -20,7 +20,7 @@ Created the data persistence layer for TrustLedger adhering strictly to the priv
 | `backend/app/privacy/consent.py` | Consent operations (`grant_consent`, `revoke_consent`, `has_consent`, `get_active_consents`, `require_consent`) with `ConsentMissingError` gating. |
 | `backend/app/privacy/deletion.py` | Cascading user data removal function `delete_user_data` for user deletion / "Right to be Forgotten". |
 | `backend/app/privacy/__init__.py` | Exported privacy and consent management interfaces. |
-| `backend/scripts/seed_demo.py` | Idempotent demo persona seeding script populating Shathi, Student, and Homemaker personas with synthetic data and core scoring decisions. |
+| `backend/scripts/seed_demo.py` | Idempotent demo persona seeding script populating Moon, Student, and Homemaker personas with synthetic data and core scoring decisions. |
 | `backend/tests/test_db_models.py` | Database model relationships, driver URL normalization, and programmatic Alembic migration upgrade/downgrade test. |
 | `backend/tests/test_consent.py` | Consent granting, revocation, re-granting, validation, and gating assertion tests. |
 | `backend/tests/test_deletion.py` | Verification proving user deletion cascades and completely purges all related rows across all 6 child tables. |
@@ -58,7 +58,7 @@ uv run pytest backend/tests/test_db_models.py backend/tests/test_consent.py back
 
 ## Acceptance criteria
 - [x] `alembic upgrade head` works on a clean DB — verified on both PostgreSQL 16 and SQLite test environments.
-- [x] Seed script creates the 3 personas — verified Shathi (garment worker), Student (freelancer), and Homemaker (zero-history) created with active consents, features, applications, and model decisions.
+- [x] Seed script creates the 3 personas — verified Moon (garment worker), Student (freelancer), and Homemaker (zero-history) created with active consents, features, applications, and model decisions.
 - [x] Deleting a user removes every related row (test proves it) — verified by `test_delete_user_data_cascades_all_tables`.
 - [x] No column stores raw SMS text — verified by `test_no_raw_sms_table_or_column`.
 

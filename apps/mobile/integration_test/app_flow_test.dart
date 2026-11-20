@@ -26,11 +26,11 @@ Future<void> tapKey(WidgetTester tester, String key) async {
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Shathi: consent, SMS + bill, score, reasons, loan, 3 repayments, limit +20%', (tester) async {
+  testWidgets('Moon: consent, SMS + bill, score, reasons, loan, 3 repayments, limit +20%', (tester) async {
     final state = AppState();
     await state.api.resetDemo();
     await tester.pumpWidget(TrustLedgerApp(state: state));
-    await tapKey(tester, 'persona_shathi');
+    await tapKey(tester, 'persona_moon');
     for (final src in ['sms', 'bills', 'recharge', 'ocr']) {
       await waitFor(tester, find.byKey(Key('consent_$src')));
       final tile = tester.widget<SwitchListTile>(find.byKey(Key('consent_$src')));
@@ -112,6 +112,6 @@ void main() {
     await tapKey(tester, 'confirm_delete');
     await tester.pump(const Duration(seconds: 2));
     expect(state.userId, isNull);
-    expect(find.byKey(const Key('persona_shathi')), findsOneWidget);
+    expect(find.byKey(const Key('persona_moon')), findsOneWidget);
   });
 }

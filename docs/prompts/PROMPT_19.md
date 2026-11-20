@@ -15,7 +15,7 @@ Put TrustLedger online with a stable demo for judges.
 - Dashboard on Vercel (or Heroku static) pointing to the API.
 - Flutter app: release APK built and attached to a GitHub release.
 - Seed the 3 personas on deploy; `DEMO_MODE=true`, `LLM_MODE=live` if keys exist, else mock.
-- Smoke test script `infra/smoke.sh` that runs Shathi's flow against the deployed URL.
+- Smoke test script `infra/smoke.sh` that runs Moon's flow against the deployed URL.
 - Staging + production apps; a short `docs/deploy.md`.
 
 ## Acceptance criteria

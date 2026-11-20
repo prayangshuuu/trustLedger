@@ -44,10 +44,10 @@ def persona(db: Session, phone: str) -> User:
     return user
 
 
-SHATHI, STUDENT, HOMEMAKER = "+8801711000001", "+8801811000002", "+8801911000003"
+MOON, STUDENT, HOMEMAKER = "+8801711000001", "+8801811000002", "+8801911000003"
 
 
-def shathi_sms() -> list[str]:
+def moon_sms() -> list[str]:
     out: list[str] = []
     start = datetime(2025, 11, 1, 10, 0, tzinfo=UTC)
     for i in range(12):
@@ -77,7 +77,7 @@ def assert_complete_trace(db: Session, trace_id: str) -> dict[str, Any]:
     return details
 
 
-@pytest.mark.parametrize("phone", [SHATHI, STUDENT])
+@pytest.mark.parametrize("phone", [MOON, STUDENT])
 def test_personas_with_history_are_scored(client: TestClient, db: Session, phone: str) -> None:
     user = persona(db, phone)
     resp = client.post("/apply", json={"user_id": user.id, "amount_bdt": 15000})
@@ -97,14 +97,12 @@ def test_personas_with_history_are_scored(client: TestClient, db: Session, phone
     ]
 
 
-def test_shathi_end_to_end_from_sms_is_approved(
+def test_moon_end_to_end_from_sms_is_approved(
     client: TestClient, db: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(get_settings(), "DEMO_MODE", True)
-    user = persona(db, SHATHI)
-    resp = client.post(
-        "/apply", json={"user_id": user.id, "amount_bdt": 56000, "sms": shathi_sms()}
-    )
+    user = persona(db, MOON)
+    resp = client.post("/apply", json={"user_id": user.id, "amount_bdt": 56000, "sms": moon_sms()})
     body = resp.json()
     assert body["status"] == "approved", body
     assert body["decision"]["score"] >= 650
@@ -115,7 +113,7 @@ def test_shathi_end_to_end_from_sms_is_approved(
 
 
 def test_sms_rejected_outside_demo_mode(client: TestClient, db: Session) -> None:
-    user = persona(db, SHATHI)
+    user = persona(db, MOON)
     body = client.post("/apply", json={"user_id": user.id, "sms": ["Tk 10 received"]}).json()
     assert body["status"] == "rejected_input"
     assert "DEMO_ONLY" in body["error"]
@@ -158,7 +156,7 @@ def test_homemaker_persona_scored_from_bhorsha(client: TestClient, db: Session) 
 
 
 def test_borderline_goes_to_review(client: TestClient, db: Session) -> None:
-    user = persona(db, SHATHI)
+    user = persona(db, MOON)
     first = client.post("/apply", json={"user_id": user.id, "amount_bdt": 15000}).json()
     p = first["decision"]["p_repay"]
     thresholds = load_meta()["group_thresholds"]
@@ -174,7 +172,7 @@ def test_borderline_goes_to_review(client: TestClient, db: Session) -> None:
 
 
 def test_fairness_agent_blocks_when_threshold_missing(client: TestClient, db: Session) -> None:
-    user = persona(db, SHATHI)
+    user = persona(db, MOON)
     thresholds = load_meta()["group_thresholds"]
     original = thresholds.pop("F_urban")
     try:

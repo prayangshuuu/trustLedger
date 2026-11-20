@@ -20,7 +20,7 @@ Single source of truth for building TrustLedger. Every prompt in `docs/prompts/`
 
 **One-liner:** TrustLedger turns everyday phone habits into a fair, private and explainable credit score, so no responsible Bangladeshi is rejected just for being invisible to banks.
 
-**Target users:** students, gig workers, garment workers, homemakers, young professionals — anyone with a phone but no bank credit history. Demo persona: **Shathi**, 24, garment worker in Ashulia, no bank account, no salary slip, pays every bill on time.
+**Target users:** students, gig workers, garment workers, homemakers, young professionals — anyone with a phone but no bank credit history. Demo persona: **Moon**, 24, garment worker in Ashulia, no bank account, no salary slip, pays every bill on time.
 
 **Brief requirements we must visibly meet:** ML scoring + explainable decisions + bias controls, with fair, inclusive approvals and *measurable reach*.
 
@@ -245,7 +245,7 @@ What the next prompt should know.
 
 ## 10. Definition of done (whole project)
 
-- Shathi's demo flow works end to end on the deployed URL: consent → SMS + bill upload → score 300–900 → Bangla reasons and tips → fairness check → approved loan.
+- Moon's demo flow works end to end on the deployed URL: consent → SMS + bill upload → score 300–900 → Bangla reasons and tips → fairness check → approved loan.
 - A zero-history user can complete Bhorsha and get a score.
 - Lender dashboard shows score distribution, fairness by group and Inclusion Lift from live data.
 - MCP server exposes `score_user`, `explain_score`, `fairness_audit`, `get_inclusion_lift`.
