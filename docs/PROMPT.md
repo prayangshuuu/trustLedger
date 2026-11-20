@@ -23,7 +23,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 8: Document OCR — bills, receipts and khata** — `docs/prompts/PROMPT_08.md` — report: `docs/PROMPT8_REPORT.md`
 - [x] **Prompt 9: Bhorsha — psychometric chat assessment** — `docs/prompts/PROMPT_09.md` — report: `docs/PROMPT9_REPORT.md`
 - [x] **Prompt 10: RAG knowledge base** — `docs/prompts/PROMPT_10.md` — report: `docs/PROMPT10_REPORT.md`
-- [ ] **Prompt 11: LangGraph multi-agent pipeline** — `docs/prompts/PROMPT_11.md` — report: `docs/PROMPT11_REPORT.md`
+- [x] **Prompt 11: LangGraph multi-agent pipeline** — `docs/prompts/PROMPT_11.md` — report: `docs/PROMPT11_REPORT.md`
 
 ## Integration and platform
 - [ ] **Prompt 12: MCP server** — `docs/prompts/PROMPT_12.md` — report: `docs/PROMPT12_REPORT.md`
@@ -57,7 +57,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 8 | done | docs/PROMPT8_REPORT.md | DeepSeek-OCR for bills, receipts & khata |
 | 9 | done | docs/PROMPT9_REPORT.md | Bhorsha psychometric chat assessment |
 | 10 | done | docs/PROMPT10_REPORT.md | Hybrid RAG, pgvector, 30-question eval |
-| 11 | not started | — | |
+| 11 | done | docs/PROMPT11_REPORT.md | LangGraph supervisor, /apply, traces |
 | 12 | not started | — | |
 | 13 | not started | — | |
 | 14 | not started | — | |

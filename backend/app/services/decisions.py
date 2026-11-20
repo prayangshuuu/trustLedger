@@ -72,10 +72,14 @@ def persist_decision(
     event: str = "credit_scored",
     extra_audit: dict[str, Any] | None = None,
 ) -> DecisionRecord:
-    """Store application, decision and a complete audit entry. Caller commits."""
+    """Store application, decision and a complete audit entry. Caller commits.
+
+    An explicit status other than "approved" (needs_review, blocked) is never stored as approved.
+    """
+    approved = decision.approved and fairness.ok and status in (None, "approved")
     app_id: str | None = None
     if user is not None:
-        final_status = status or ("approved" if decision.approved and fairness.ok else "rejected")
+        final_status = status or ("approved" if approved else "rejected")
         application = Application(user_id=user.id, amount_bdt=amount_bdt, status=final_status)
         db.add(application)
         db.flush()
@@ -88,7 +92,7 @@ def persist_decision(
         p_repay=decision.p_repay,
         score=decision.score,
         band=decision.band,
-        approved=decision.approved and fairness.ok,
+        approved=approved,
         reasons=reasons,
         tips=decision.tips,
         group=decision.group,

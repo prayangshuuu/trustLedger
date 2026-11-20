@@ -38,13 +38,18 @@ def get_model_dir(model_dir: Path | str | None = None) -> Path:
     return Path("models")
 
 
-@lru_cache(maxsize=1)
-def load_model(model_dir: Path | str | None = None) -> xgb.XGBClassifier:
-    """Load and return the production XGBoost model from the model directory.
+# Cache keys are the resolved directory, so load_meta() and load_meta(model_dir=None) share
+# one cached object (lru_cache would otherwise treat them as different keys).
 
-    Caches the loaded model instance in memory.
-    """
-    resolved_dir = get_model_dir(model_dir)
+
+def load_model(model_dir: Path | str | None = None) -> xgb.XGBClassifier:
+    """Load (once per directory) and return the production XGBoost model."""
+    return _load_model(str(get_model_dir(model_dir)))
+
+
+@lru_cache(maxsize=4)
+def _load_model(dir_str: str) -> xgb.XGBClassifier:
+    resolved_dir = Path(dir_str)
     model_path = resolved_dir / "trustledger_xgb.json"
     if not model_path.exists():
         raise FileNotFoundError(f"Production model artifact not found at {model_path}")
@@ -54,13 +59,14 @@ def load_model(model_dir: Path | str | None = None) -> xgb.XGBClassifier:
     return model
 
 
-@lru_cache(maxsize=1)
 def load_meta(model_dir: Path | str | None = None) -> dict[str, Any]:
-    """Load and return the production metadata JSON configuration.
+    """Load (once per directory) and return the production metadata JSON."""
+    return _load_meta(str(get_model_dir(model_dir)))
 
-    Caches the metadata dictionary in memory.
-    """
-    resolved_dir = get_model_dir(model_dir)
+
+@lru_cache(maxsize=4)
+def _load_meta(dir_str: str) -> dict[str, Any]:
+    resolved_dir = Path(dir_str)
     meta_path = resolved_dir / "trustledger_meta.json"
     if not meta_path.exists():
         raise FileNotFoundError(f"Model metadata configuration not found at {meta_path}")
@@ -70,10 +76,14 @@ def load_meta(model_dir: Path | str | None = None) -> dict[str, Any]:
     return meta_dict
 
 
-@lru_cache(maxsize=1)
 def get_model_version(model_dir: Path | str | None = None) -> str:
-    """Return SHA-256 fingerprint hash of the production model artifact file."""
-    resolved_dir = get_model_dir(model_dir)
+    """Return the SHA-256 fingerprint (first 16 hex chars) of the production model file."""
+    return _model_version(str(get_model_dir(model_dir)))
+
+
+@lru_cache(maxsize=4)
+def _model_version(dir_str: str) -> str:
+    resolved_dir = Path(dir_str)
     model_path = resolved_dir / "trustledger_xgb.json"
     if not model_path.exists():
         raise FileNotFoundError(f"Model artifact not found to compute version at {model_path}")
@@ -83,6 +93,6 @@ def get_model_version(model_dir: Path | str | None = None) -> str:
 
 def clear_cache() -> None:
     """Clear memory caches for model, metadata, and version."""
-    load_model.cache_clear()
-    load_meta.cache_clear()
-    get_model_version.cache_clear()
+    _load_model.cache_clear()
+    _load_meta.cache_clear()
+    _model_version.cache_clear()

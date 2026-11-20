@@ -6,6 +6,7 @@ bhorsha handoff policy, and clips derived metrics against empirical training dis
 
 import json
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -63,6 +64,20 @@ def clip_feature_value(
         val = max(min_val, min(max_val, float(val)))
 
     return round(float(val), 4)
+
+
+def ocr_due_day(ocr_bills: list[dict[str, Any]] | None) -> int | None:
+    """Day of month of the most common due date across OCR'd utility bills."""
+    days: list[int] = []
+    for bill in ocr_bills or []:
+        raw = str(bill.get("due_date") or "")
+        for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+            try:
+                days.append(datetime.strptime(raw, fmt).day)
+                break
+            except ValueError:
+                continue
+    return max(set(days), key=days.count) if days else None
 
 
 def extract_features(
@@ -136,15 +151,18 @@ def extract_features(
     # 2. Transaction frequency per month
     txn_per_month = total_txns / effective_months
 
-    # 3. Utility / Service bills on-time ratio
+    # 3. Bills on time = bills paid by due date / bills seen.
+    # Due day comes from an OCR'd bill when available, else default_due_day.
+    due_day = ocr_due_day(ocr_bills) or default_due_day
     bill_txs = [t for t in sorted_txs if t.type == "bill"]
-    if bill_txs:
-        on_time_count = sum(1 for t in bill_txs if t.date.day <= default_due_day)
-        bills_on_time = on_time_count / len(bill_txs)
-    elif ocr_bills:
-        bills_on_time = 0.90  # Verified via OCR bill attachments
-    else:
-        bills_on_time = 0.95  # Neutral default for non-bill accounts
+    on_time = sum(1 for t in bill_txs if t.date.day <= due_day)
+    seen = len(bill_txs)
+    if not bill_txs and ocr_bills:
+        # No bill SMS: fall back to the paid stamp read from the bill photos
+        flagged = [b for b in ocr_bills if b.get("paid") is not None]
+        on_time = sum(1 for b in flagged if b.get("paid"))
+        seen = len(flagged)
+    bills_on_time = (on_time / seen) if seen else None
 
     # 4. Recharge regularity index (1 - normalized std of inter-recharge days)
     recharges = [t for t in sorted_txs if t.type == "recharge"]
@@ -157,10 +175,8 @@ def extract_features(
         std_int = float(np.std(intervals))
         cv = (std_int / mean_int) if mean_int > 0 else 0.0
         recharge_regularity = max(0.0, min(1.0, 1.0 - cv))
-    elif len(recharges) == 1:
-        recharge_regularity = 0.75
     else:
-        recharge_regularity = 0.50
+        recharge_regularity = None  # too few recharges to measure regularity
 
     # 5. Savings ratio (savings out / total income in)
     total_income = sum(inflow_series)

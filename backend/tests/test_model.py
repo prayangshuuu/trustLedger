@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+import app.core.model as model_mod
 import pytest
 import xgboost as xgb
 from app.core.model import (
@@ -49,10 +50,10 @@ def test_load_model_and_caching() -> None:
     model1 = load_model()
     assert isinstance(model1, xgb.XGBClassifier)
 
-    hits_before = load_model.cache_info().hits
+    hits_before = model_mod._load_model.cache_info().hits
     model2 = load_model()
     assert model1 is model2
-    assert load_model.cache_info().hits == hits_before + 1
+    assert model_mod._load_model.cache_info().hits == hits_before + 1
 
 
 def test_load_meta_and_caching() -> None:
@@ -67,10 +68,10 @@ def test_load_meta_and_caching() -> None:
     assert "reasons" in meta1
     assert "tips" in meta1
 
-    hits_before = load_meta.cache_info().hits
+    hits_before = model_mod._load_meta.cache_info().hits
     meta2 = load_meta()
     assert meta1 is meta2
-    assert load_meta.cache_info().hits == hits_before + 1
+    assert model_mod._load_meta.cache_info().hits == hits_before + 1
 
 
 def test_get_model_version() -> None:
@@ -84,10 +85,10 @@ def test_get_model_version() -> None:
     assert version == "356d061e78fdf8cf"
 
     # Verify version caching
-    hits_before = get_model_version.cache_info().hits
+    hits_before = model_mod._model_version.cache_info().hits
     cached_version = get_model_version()
     assert cached_version == version
-    assert get_model_version.cache_info().hits == hits_before + 1
+    assert model_mod._model_version.cache_info().hits == hits_before + 1
 
 
 def test_clear_cache_invalidation() -> None:
@@ -97,16 +98,16 @@ def test_clear_cache_invalidation() -> None:
     meta1 = load_meta()
     v1 = get_model_version()
 
-    assert load_model.cache_info().currsize == 1
-    assert load_meta.cache_info().currsize == 1
-    assert get_model_version.cache_info().currsize == 1
+    assert model_mod._load_model.cache_info().currsize == 1
+    assert model_mod._load_meta.cache_info().currsize == 1
+    assert model_mod._model_version.cache_info().currsize == 1
 
     # Invalidate all caches
     clear_cache()
 
-    assert load_model.cache_info().currsize == 0
-    assert load_meta.cache_info().currsize == 0
-    assert get_model_version.cache_info().currsize == 0
+    assert model_mod._load_model.cache_info().currsize == 0
+    assert model_mod._load_meta.cache_info().currsize == 0
+    assert model_mod._model_version.cache_info().currsize == 0
 
     # Next call should reload fresh objects
     m2 = load_model()

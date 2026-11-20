@@ -302,3 +302,46 @@ def test_post_features_snapshot_persisted() -> None:
         assert stored.source_summary == "Extracted from 12-month SMS history"
     finally:
         db_session.close()
+
+
+def _tx(day_offset: int, amount: float, direction: str, kind: str, tag: str) -> Transaction:
+    base = datetime(2026, 1, 1, 10, 0, 0, tzinfo=UTC)
+    return Transaction(
+        date=base + timedelta(days=day_offset),
+        amount_bdt=amount,
+        direction=direction,  # type: ignore[arg-type]
+        type=kind,  # type: ignore[arg-type]
+        raw_hash=tag,
+    )
+
+
+def test_tenure_txn_rate_and_volatility_formulas() -> None:
+    """months_on_wallet, txn_per_month and income_volatility (CV of monthly inflow)."""
+    txs = [
+        _tx(m * 30 + 1, inc, "in", "income", f"i{m}")
+        for m, inc in enumerate([10000, 20000, 10000, 20000])
+    ]
+    txs.append(_tx(110, 100, "out", "other", "o1"))
+    res = extract_features(txs)
+    feat = res.features
+    # 110 days of history -> 3.61 months, but 4 calendar months touched -> effective 4
+    assert feat["months_on_wallet"] == 4.0
+    assert feat["txn_per_month"] == round(5 / 4.0, 4)
+    # inflows 10k,20k,10k,20k -> mean 15k, std 5k -> CV 0.3333
+    assert feat["income_volatility"] == round(5000 / 15000, 4)
+    assert feat["loan_to_income"] is None  # no amount requested
+
+
+def test_bills_on_time_uses_ocr_due_day_and_none_when_unseen() -> None:
+    txs = [_tx(m * 30 + 1, 15000, "in", "income", f"i{m}") for m in range(4)]
+    # bills paid on the 20th of each month
+    txs += [_tx(m * 30 + 19, 900, "out", "bill", f"b{m}") for m in range(4)]
+    assert extract_features(txs).features["bills_on_time"] >= 0.99  # default due day 25 (clipped)
+    late = extract_features(txs, ocr_bills=[{"due_date": "2026-02-15", "paid": True}])
+    assert late.features["bills_on_time"] <= 0.05  # due on the 15th -> all late
+
+    no_bills = [_tx(m * 30 + 1, 15000, "in", "income", f"j{m}") for m in range(5)]
+    assert extract_features(no_bills).features["bills_on_time"] is None
+    assert extract_features(no_bills).features["recharge_regularity"] is None
+    photos = [{"due_date": "2026-01-25", "paid": True}, {"due_date": "2026-02-25", "paid": False}]
+    assert abs(extract_features(no_bills, ocr_bills=photos).features["bills_on_time"] - 0.5) < 0.01
