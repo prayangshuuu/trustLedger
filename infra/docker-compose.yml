@@ -68,6 +68,51 @@ services:
       retries: 10
       start_period: 10s
 
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    container_name: trustledger-api
+    profiles: ["app"]
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/trustledger
+      REDIS_URL: redis://redis:6379/0
+      R2_ENDPOINT: http://minio:9000
+      R2_ACCESS_KEY: minioadmin
+      R2_SECRET_KEY: minioadmin
+      R2_BUCKET: trustledger
+      LLM_MODE: ${LLM_MODE:-mock}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEMO_MODE: "true"
+      API_KEYS: ${API_KEYS:-dev-key}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request;urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  temporal-worker:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    container_name: trustledger-temporal-worker
+    profiles: ["app"]
+    command: ["python", "-m", "workflows.temporal.worker"]
+    environment:
+      TEMPORAL_HOST: temporal:7233
+      TRUSTLEDGER_API_URL: http://api:8000
+      TRUSTLEDGER_API_KEY: ${API_KEYS:-dev-key}
+    depends_on:
+      temporal:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:

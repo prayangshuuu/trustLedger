@@ -27,7 +27,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 
 ## Integration and platform
 - [x] **Prompt 12: MCP server** — `docs/prompts/PROMPT_12.md` — report: `docs/PROMPT12_REPORT.md`
-- [ ] **Prompt 13: Workflows — Temporal and Airflow** — `docs/prompts/PROMPT_13.md` — report: `docs/PROMPT13_REPORT.md`
+- [x] **Prompt 13: Workflows — Temporal and Airflow** — `docs/prompts/PROMPT_13.md` — report: `docs/PROMPT13_REPORT.md`
 - [ ] **Prompt 14: Federated learning with Flower** — `docs/prompts/PROMPT_14.md` — report: `docs/PROMPT14_REPORT.md`
 
 ## Apps
@@ -59,7 +59,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 10 | done | docs/PROMPT10_REPORT.md | Hybrid RAG, pgvector, 30-question eval |
 | 11 | done | docs/PROMPT11_REPORT.md | LangGraph supervisor, /apply, traces |
 | 12 | done | docs/PROMPT12_REPORT.md | MCP tools over stdio + HTTP with API keys |
-| 13 | not started | — | |
+| 13 | done | docs/PROMPT13_REPORT.md | Temporal LoanWorkflow + Airflow DAGs |
 | 14 | not started | — | |
 | 15 | not started | — | |
 | 16 | not started | — | |

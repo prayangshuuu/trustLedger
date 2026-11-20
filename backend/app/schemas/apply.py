@@ -19,6 +19,7 @@ class ApplyRequest(BaseModel):
 
 class ApplyDecision(BaseModel):
     decision_id: str | None
+    application_id: str | None = None
     p_repay: float
     score: int
     band: str

@@ -1,0 +1,12 @@
+.git
+.venv
+datasets
+apps
+**/node_modules
+**/__pycache__
+.storage
+.mypy_cache
+.ruff_cache
+.pytest_cache
+*.ipynb
+training_files

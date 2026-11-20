@@ -15,10 +15,12 @@ from app.api.routers import (
     apply_router,
     bhorsha_router,
     consent_router,
+    demo_router,
     documents_router,
     fairness_router,
     features_router,
     health_router,
+    loans_router,
     score_router,
 )
 from app.core.features import AllFeaturesMissingError
@@ -162,6 +164,8 @@ def create_app() -> FastAPI:
     application.include_router(score_router)
     application.include_router(fairness_router)
     application.include_router(apply_router)
+    application.include_router(loans_router)
+    application.include_router(demo_router)
 
     return application
 

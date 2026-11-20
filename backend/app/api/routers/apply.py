@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.agents.graph import run_pipeline
 from app.api.deps import ApiKeyAuth, DbSession
-from app.db.models import AuditLog, User
+from app.db.models import AuditLog, DecisionRecord, User
 from app.schemas.apply import ApplyDecision, ApplyRequest, ApplyResponse, TraceResponse
 from app.schemas.score import ReasonItem
 
@@ -30,8 +30,10 @@ def apply(payload: ApplyRequest, db: DbSession, _api_key: ApiKeyAuth = None) -> 
     if state.get("decision"):
         d = state["decision"] or {}
         reasons = [ReasonItem(**r) for r in d["reasons"]]
+        record = db.get(DecisionRecord, state["decision_id"]) if state.get("decision_id") else None
         decision_out = ApplyDecision(
             decision_id=state.get("decision_id"),
+            application_id=record.application_id if record else None,
             p_repay=d["p_repay"],
             score=d["score"],
             band=d["band"],

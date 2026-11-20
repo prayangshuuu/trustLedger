@@ -102,6 +102,8 @@ module = [
     "sentence_transformers.*",
     "llmlingua",
     "llmlingua.*",
+    "airflow",
+    "airflow.*",
 ]
 ignore_missing_imports = true
 
