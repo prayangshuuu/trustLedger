@@ -87,7 +87,7 @@ async function run() {
     console.log('✓ Captured web_reasons.png');
 
     // 6. Loan Offer Screen
-    const seeOfferBtn = phonePage.getByRole('button', { name: /ঋণের অফার দেখুন|See loan offer/i });
+    const seeOfferBtn = phonePage.getByRole('button', { name: /ঋণ প্রস্তাব দেখুন|See loan offer/i });
     await seeOfferBtn.click();
     await phonePage.waitForURL(url => url.pathname.includes('/loan'), { timeout: 10000 });
     await phonePage.waitForTimeout(1500);
@@ -190,6 +190,20 @@ async function run() {
     await deskPage.waitForURL(url => url.pathname.includes('/score'), { timeout: 45000 });
     console.log('✓ Moon flow completed on desktop');
 
+    // Navigate to reasons, loan, repay
+    await deskPage.getByRole('button', { name: /কেন এই স্কোর/i }).click();
+    await deskPage.waitForURL(url => url.pathname.includes('/reasons'), { timeout: 10000 });
+    await deskPage.waitForTimeout(1000);
+
+    await deskPage.getByRole('button', { name: /ঋণ প্রস্তাব দেখুন|See loan offer/i }).click();
+    await deskPage.waitForURL(url => url.pathname.includes('/loan'), { timeout: 10000 });
+    await deskPage.waitForTimeout(1000);
+
+    await deskPage.getByRole('button', { name: /গ্রহণ করুন|Accept/i }).click();
+    await deskPage.waitForURL(url => url.pathname.includes('/repay'), { timeout: 10000 });
+    await deskPage.waitForTimeout(1500);
+    console.log('✓ Desktop two-column repay/loan history verified');
+
     // Navigate to settings on desktop to verify two-column layout
     await deskPage.getByRole('button', { name: /সেটিংস|Settings/i }).click();
     await deskPage.waitForURL(url => url.pathname.includes('/settings'), { timeout: 10000 });
@@ -245,14 +259,19 @@ async function run() {
       await input.waitFor({ state: 'visible', timeout: 15000 });
       await input.fill(bhorshaAnswers[t]);
       await mituPage.waitForTimeout(300);
+
+      const respPromise = mituPage.waitForResponse(r => r.url().includes('/bhorsha/'));
       await sendBtn.click();
-      console.log(`  Sent Bhorsha turn ${t + 1}/12`);
-      await mituPage.waitForTimeout(1200);
+      const resp = await respPromise;
+      const data = await resp.json();
+      console.log(`  Turn ${t + 1}/12 answered, turn: ${data.turn || 12}, completed: ${data.completed}`);
+      await mituPage.waitForTimeout(800);
+      if (data.completed) break;
     }
 
     // Wait for interview completion button
     const finishBtn = mituPage.getByRole('button', { name: /মূল্যায়ন শেষ|Done/i });
-    await finishBtn.waitFor({ state: 'visible', timeout: 25000 });
+    await finishBtn.waitFor({ state: 'visible', timeout: 20000 });
     console.log('✓ Bhorsha 12 questions completed!');
     await finishBtn.click();
 

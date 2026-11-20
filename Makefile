@@ -1,4 +1,4 @@
-.PHONY: setup lint format test api mcp mcp-http seed ingest web web-serve tokens compose-up compose-down
+.PHONY: setup lint format test api mcp mcp-http seed ingest web web-serve web-test tokens compose-up compose-down
 
 setup:
 	uv sync
@@ -38,6 +38,9 @@ web:
 web-serve: web
 	@echo "Borrower web app: http://localhost:8000/app/  (dashboard: http://localhost:8000/)"
 	uv run uvicorn app.main:app --port 8000
+
+web-test:
+	node apps/mobile/tool/e2e_web_test.mjs
 
 # Regenerate design tokens for Flutter and the dashboard from apps/design_tokens.json
 tokens:
