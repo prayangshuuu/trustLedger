@@ -1,0 +1,212 @@
+[
+  {
+    "id": "q01",
+    "question": "ট্রাস্টলেজার স্কোর কত থেকে কত পর্যন্ত হয়?",
+    "ground_truth": "স্কোর ৩০০ থেকে ৯০০ এর মধ্যে থাকে।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q02",
+    "question": "কোন স্কোর হলে চমৎকার ধরা হয়?",
+    "ground_truth": "৭৫০ বা তার বেশি হলে চমৎকার।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q03",
+    "question": "লিঙ্গ বা এলাকা কি মডেলের ইনপুট?",
+    "ground_truth": "না, লিঙ্গ, এলাকা, বিভাগ বা বয়স কখনো মডেলের ইনপুট নয়।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q04",
+    "question": "বিল সময়মতো পরিশোধ করলে স্কোরে কী প্রভাব পড়ে?",
+    "ground_truth": "শেষ তারিখের আগে বিল পরিশোধ স্কোরে সবচেয়ে বড় ইতিবাচক প্রভাব ফেলে।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "২."
+  },
+  {
+    "id": "q05",
+    "question": "বিলের টাকা কখন আলাদা করে রাখা উচিত?",
+    "ground_truth": "বিলের টাকা মাসের শুরুতেই আলাদা করে রাখুন।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "২."
+  },
+  {
+    "id": "q06",
+    "question": "প্রতি মাসে আয়ের কত শতাংশ সঞ্চয় করলে স্কোর উন্নত হয়?",
+    "ground_truth": "প্রতি মাসে আয়ের অন্তত ৫% সঞ্চয় করলে স্কোর উন্নত হয়।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৩."
+  },
+  {
+    "id": "q07",
+    "question": "সঞ্চয় কখন সরিয়ে রাখা সবচেয়ে কার্যকর?",
+    "ground_truth": "সঞ্চয় আয় আসার দিনেই সরিয়ে রাখা সবচেয়ে কার্যকর।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৩."
+  },
+  {
+    "id": "q08",
+    "question": "রিচার্জের নিয়মিততা কীভাবে বাড়ানো যায়?",
+    "ground_truth": "মাসের শুরুতে একটি নির্দিষ্ট দিনে রিচার্জ বা মাসিক প্যাকেজ নিলে নিয়মিততা বাড়ে।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৪."
+  },
+  {
+    "id": "q09",
+    "question": "আয় ওঠানামা করলে স্কোরে কী হয়?",
+    "ground_truth": "আয় খুব বেশি ওঠানামা করলে ঝুঁকি বেশি ধরা হয়।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৫."
+  },
+  {
+    "id": "q10",
+    "question": "পরপর কয়টি কিস্তি সময়মতো দিলে ঋণসীমা বাড়ে?",
+    "ground_truth": "পরপর তিনটি কিস্তি সময়মতো দিলে ঋণসীমা ২০% বাড়ে।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৬."
+  },
+  {
+    "id": "q11",
+    "question": "ওয়ালেট ইতিহাস তিন মাসের কম হলে কী হয়?",
+    "ground_truth": "তখন ওয়ালেটভিত্তিক বৈশিষ্ট্য হিসাব করা যায় না, ভরসা মূল্যায়ন দিয়ে স্কোর তৈরি হয়।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৭."
+  },
+  {
+    "id": "q12",
+    "question": "ভরসা মূল্যায়নে কয়টি প্রশ্ন থাকে?",
+    "ground_truth": "১০-১২টি সহজ প্রশ্নের বাংলা কথোপকথন।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৮."
+  },
+  {
+    "id": "q13",
+    "question": "ভরসা মূল্যায়নে কপি করা উত্তর দিলে কী হয়?",
+    "ground_truth": "কপি করা বা একই উত্তর বারবার দিলে স্কোর কমে যায়।",
+    "relevant_doc": "trustledger_score_guide_bn",
+    "relevant_section": "৮."
+  },
+  {
+    "id": "q14",
+    "question": "৫০/৩০/২০ নিয়মে সঞ্চয়ের জন্য কত শতাংশ?",
+    "ground_truth": "২০% সঞ্চয় ও ভবিষ্যতের সুরক্ষা।",
+    "relevant_doc": "financial_literacy_bangla_guide",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q15",
+    "question": "মৌলিক প্রয়োজনীয় খরচে আয়ের কত অংশ যায়?",
+    "ground_truth": "৫০% মৌলিক প্রয়োজনীয় খরচ।",
+    "relevant_doc": "financial_literacy_bangla_guide",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q16",
+    "question": "ইউটিলিটি বিল দেরিতে দিলে কী সমস্যা হয়?",
+    "ground_truth": "সংযোগ বিচ্ছিন্ন হওয়া বা লেট ফি জরিমানা হতে পারে।",
+    "relevant_doc": "financial_literacy_bangla_guide",
+    "relevant_section": "২."
+  },
+  {
+    "id": "q17",
+    "question": "জরুরি তহবিল কত মাসের খরচের সমান হওয়া উচিত?",
+    "ground_truth": "অন্তত ৩ থেকে ৬ মাসের সংসার খরচের সমান।",
+    "relevant_doc": "financial_literacy_bangla_guide",
+    "relevant_section": "৩."
+  },
+  {
+    "id": "q18",
+    "question": "দাদন ব্যবসায়ীর ফাঁদ এড়ানোর উপায় কী?",
+    "ground_truth": "নিজস্ব ইমার্জেন্সি ফান্ড হলো একমাত্র ঢাল।",
+    "relevant_doc": "financial_literacy_bangla_guide",
+    "relevant_section": "৩."
+  },
+  {
+    "id": "q19",
+    "question": "কিস্তির টাকা কখন আলাদা করা উচিত?",
+    "ground_truth": "মাসের শুরুতে আয় প্রাপ্তির সাথে সাথে প্রথম অগ্রাধিকার হিসেবে আলাদা করে রাখতে হবে।",
+    "relevant_doc": "credit_repayment_discipline",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q20",
+    "question": "ন্যানো লোনের পরিমাণ মাসিক আয়ের কত গুণের বেশি হওয়া উচিত নয়?",
+    "ground_truth": "মাসিক গড় আয়ের ৪ থেকে ৫ গুণের বেশি হওয়া উচিত নয়।",
+    "relevant_doc": "credit_repayment_discipline",
+    "relevant_section": "২."
+  },
+  {
+    "id": "q21",
+    "question": "মাসে কয়টি লেনদেন ওয়ালেটের গ্রহণযোগ্যতা বাড়ায়?",
+    "ground_truth": "মাসে নিয়মিত ১০ থেকে ২০টি লেনদেন।",
+    "relevant_doc": "credit_repayment_discipline",
+    "relevant_section": "৩."
+  },
+  {
+    "id": "q22",
+    "question": "ট্রাস্টলেজার কোন কোন উৎসের জন্য সম্মতি নেয়?",
+    "ground_truth": "এসএমএস, বিল, রিচার্জ, ডকুমেন্ট ছবি (ওসিআর) এবং ভরসা মূল্যায়ন।",
+    "relevant_doc": "data_rights_and_safety_bn",
+    "relevant_section": "১."
+  },
+  {
+    "id": "q23",
+    "question": "কাঁচা এসএমএস কি সার্ভারে রাখা হয়?",
+    "ground_truth": "না, কাঁচা এসএমএস কখনো সার্ভারে সংরক্ষণ করা হয় না।",
+    "relevant_doc": "data_rights_and_safety_bn",
+    "relevant_section": "২."
+  },
+  {
+    "id": "q24",
+    "question": "বিলের ছবি কতদিন রাখা হয়?",
+    "ground_truth": "বিলের ছবি এনক্রিপ্ট করে সর্বোচ্চ ৩০ দিন রাখা হয়।",
+    "relevant_doc": "data_rights_and_safety_bn",
+    "relevant_section": "২."
+  },
+  {
+    "id": "q25",
+    "question": "পিন বা ওটিপি কাউকে বলা যাবে কি?",
+    "ground_truth": "কখনো কাউকে পিন বা ওটিপি বলবেন না।",
+    "relevant_doc": "data_rights_and_safety_bn",
+    "relevant_section": "৩."
+  },
+  {
+    "id": "q26",
+    "question": "এক মাসে টাকা দ্বিগুণ করার প্রস্তাব পেলে কী ভাবা উচিত?",
+    "ground_truth": "এমন প্রস্তাব প্রায় সবসময় প্রতারণা।",
+    "relevant_doc": "data_rights_and_safety_bn",
+    "relevant_section": "৪."
+  },
+  {
+    "id": "q27",
+    "question": "What is the maximum digital nano loan amount for one borrower?",
+    "ground_truth": "Up to BDT 50,000 as a digital microloan.",
+    "relevant_doc": "bb_digital_lending_guidelines",
+    "relevant_section": "1."
+  },
+  {
+    "id": "q28",
+    "question": "Must declined applicants receive reasons?",
+    "ground_truth": "Yes, clear actionable reasons in Bengali explaining the decision.",
+    "relevant_doc": "bb_digital_lending_guidelines",
+    "relevant_section": "2."
+  },
+  {
+    "id": "q29",
+    "question": "Can borrower data be evaluated without consent?",
+    "ground_truth": "No, explicit, granular, revocable consent is required.",
+    "relevant_doc": "bb_digital_lending_guidelines",
+    "relevant_section": "3."
+  },
+  {
+    "id": "q30",
+    "question": "What is the maximum balance an individual MFS wallet may hold?",
+    "ground_truth": "Up to BDT 300,000 at any time.",
+    "relevant_doc": "bb_mfs_regulations_2022",
+    "relevant_section": "1."
+  }
+]

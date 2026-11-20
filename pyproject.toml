@@ -40,6 +40,10 @@ dependencies = [
     "xgboost>=3.4.1",
 ]
 
+[project.optional-dependencies]
+# Real BGE-M3 embeddings, BGE reranker and LLMLingua (large model downloads)
+rag-live = ["sentence-transformers>=3.0.0", "llmlingua>=0.2.2"]
+
 [dependency-groups]
 dev = [
     "mypy>=1.10.0",
@@ -60,6 +64,10 @@ extend-exclude = ["*.ipynb"]
 [tool.ruff.lint.per-file-ignores]
 "backend/alembic/env.py" = ["E402"]
 "backend/scripts/*" = ["E402"]
+"evals/**" = ["E402"]
+"federated/**" = ["E402"]
+"workflows/**" = ["E402"]
+"mcp_server/**" = ["E402"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -90,6 +98,10 @@ module = [
     "flwr",
     "flwr.*",
     "pgvector.*",
+    "sentence_transformers",
+    "sentence_transformers.*",
+    "llmlingua",
+    "llmlingua.*",
 ]
 ignore_missing_imports = true
 

@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     R2_BUCKET: str = "trustledger"
     STORAGE_ENCRYPTION_KEY: str | None = None
 
+    # RAG
+    EMBEDDINGS_MODE: str = "hash"  # hash | bge-m3
+    RERANKER_MODE: str = "lexical"  # lexical | bge
+    RAG_COMPRESSION: bool = False
+
     # Security & Authentication
     API_KEYS: str = ""
 
