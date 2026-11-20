@@ -7,7 +7,7 @@ setup:
 lint:
 	uv run ruff check .
 	uv run ruff format --check .
-	uv run mypy backend/app mcp_server
+	uv run mypy backend/app mcp_server workflows federated
 
 format:
 	uv run ruff check --fix .

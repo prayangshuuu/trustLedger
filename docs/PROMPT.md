@@ -28,7 +28,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 ## Integration and platform
 - [x] **Prompt 12: MCP server** — `docs/prompts/PROMPT_12.md` — report: `docs/PROMPT12_REPORT.md`
 - [x] **Prompt 13: Workflows — Temporal and Airflow** — `docs/prompts/PROMPT_13.md` — report: `docs/PROMPT13_REPORT.md`
-- [ ] **Prompt 14: Federated learning with Flower** — `docs/prompts/PROMPT_14.md` — report: `docs/PROMPT14_REPORT.md`
+- [x] **Prompt 14: Federated learning with Flower** — `docs/prompts/PROMPT_14.md` — report: `docs/PROMPT14_REPORT.md`
 
 ## Apps
 - [ ] **Prompt 15: Borrower app (Flutter)** — `docs/prompts/PROMPT_15.md` — report: `docs/PROMPT15_REPORT.md`
@@ -60,7 +60,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 11 | done | docs/PROMPT11_REPORT.md | LangGraph supervisor, /apply, traces |
 | 12 | done | docs/PROMPT12_REPORT.md | MCP tools over stdio + HTTP with API keys |
 | 13 | done | docs/PROMPT13_REPORT.md | Temporal LoanWorkflow + Airflow DAGs |
-| 14 | not started | — | |
+| 14 | done | docs/PROMPT14_REPORT.md | Flower DP-FedAvg, AUC 0.7555 |
 | 15 | not started | — | |
 | 16 | not started | — | |
 | 17 | not started | — | |
