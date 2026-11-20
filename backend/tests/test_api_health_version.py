@@ -47,6 +47,6 @@ def test_get_version(client: TestClient) -> None:
     resp = client.get("/version")
     assert resp.status_code == 200
     data = resp.json()
-    assert data["app_version"] == "0.1.0"
+    assert data["app_version"] == "1.0.0"
     assert len(data["model_version"]) == 16
     assert len(data["git_sha"]) >= 6
