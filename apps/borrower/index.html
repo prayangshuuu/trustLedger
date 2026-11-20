@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TrustLedger — ট্রাস্টলেজার</title>
+  <meta name="description" content="ফোনের অভ্যাস থেকে ন্যায্য, গোপনীয় ও ব্যাখ্যাযোগ্য ক্রেডিট স্কোর। Fair, private and explainable credit scores for Bangladesh.">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="TrustLedger">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preload" href="/fonts/HindSiliguri-Regular.ttf" as="font" type="font/ttf" crossorigin>
+</head>
+<body>
+  <div id="root"></div>
+  <noscript>TrustLedger needs JavaScript. ট্রাস্টলেজার চালাতে জাভাস্ক্রিপ্ট প্রয়োজন।</noscript>
+  <script type="module" src="/src/main.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/app/sw.js', { scope: '/app/' }).catch(function (err) {
+          console.warn('SW registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

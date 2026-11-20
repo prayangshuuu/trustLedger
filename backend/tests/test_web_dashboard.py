@@ -51,15 +51,19 @@ def test_borrower_web_app_deep_links(tmp_path: Path) -> None:
 
     web = tmp_path / "web"
     web.mkdir()
-    (web / "index.html").write_text("<base href='/app/'>flutter")
-    (web / "main.dart.js").write_text("main()")
+    (web / "index.html").write_text("<div id='root'></div>borrower")
+    (web / "assets").mkdir()
+    (web / "assets" / "index-abc123.js").write_text("main()")
+    (web / "sw.js").write_text("sw()")
     app = FastAPI(docs_url=None, redoc_url=None)
     assert mount_borrower_app(app, web)
     c = TestClient(app)
     assert c.get("/app", follow_redirects=False).status_code == 307
-    assert "flutter" in c.get("/app/").text
-    assert "flutter" in c.get("/app/score").text  # deep link -> index.html
-    assert c.get("/app/main.dart.js").text == "main()"
+    assert "borrower" in c.get("/app/").text
+    assert "borrower" in c.get("/app/score").text  # deep link -> index.html
+    hashed = c.get("/app/assets/index-abc123.js")
+    assert hashed.text == "main()" and "immutable" in hashed.headers["cache-control"]
+    assert c.get("/app/sw.js").headers["cache-control"] == "no-cache"
     assert c.get("/app/missing.js").status_code == 404
     assert c.get("/app/../secret").status_code == 404
 

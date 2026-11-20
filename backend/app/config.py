@@ -69,8 +69,8 @@ class Settings(BaseSettings):
     DEMO_MODE: bool = False
     # Built dashboard served at / (relative to the repo root); ignored if no build exists
     DASHBOARD_DIR: str = "apps/dashboard/dist"
-    # Flutter web build of the borrower app, served at /app (flutter build web --base-href /app/)
-    BORROWER_WEB_DIR: str = "apps/mobile/build/web"
+    # React (Vite) build of the borrower web app, served at /app (apps/borrower, base "/app/")
+    BORROWER_WEB_DIR: str = "apps/borrower/dist"
     TEMPORAL_HOST: str = "localhost:7233"
     MODEL_DIR: str = "models"
 

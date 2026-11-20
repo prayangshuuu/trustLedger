@@ -15,10 +15,10 @@ SPA_ROUTES = ("distribution", "fairness", "map", "feed", "applicant", "reports")
 
 
 def mount_borrower_app(application: FastAPI, dist: Path, prefix: str = "/app") -> bool:
-    """Serve the Flutter web build (built with --base-href /app/) under /app.
+    """Serve the borrower web app build (apps/borrower, Vite base "/app/") under /app.
 
     Every path that is not a real file returns index.html, so deep links such as /app/score and
-    browser refresh work (go_router handles the route on the client).
+    browser refresh work (React Router handles the route on the client).
     """
     dist = dist.resolve()
     index = dist / "index.html"
@@ -35,9 +35,12 @@ def mount_borrower_app(application: FastAPI, dist: Path, prefix: str = "/app") -
     def borrower_app(full_path: str) -> FileResponse:
         candidate = (dist / full_path).resolve()
         if full_path and candidate.is_relative_to(dist) and candidate.is_file():
-            # Flutter's own files are not content-hashed: revalidate, but allow caching of big wasm/fonts
-            long_lived = candidate.suffix in {".wasm", ".ttf", ".otf", ".png"}
-            headers = {"Cache-Control": "public, max-age=86400" if long_lived else "no-cache"}
+            if full_path.startswith("assets/"):  # Vite hashes these file names
+                headers = {"Cache-Control": "public, max-age=31536000, immutable"}
+            elif candidate.suffix in {".ttf", ".otf", ".png", ".jpg"}:
+                headers = {"Cache-Control": "public, max-age=86400"}
+            else:
+                headers = {"Cache-Control": "no-cache"}
             return FileResponse(candidate, headers=headers)
         if "." in full_path.rsplit("/", 1)[-1]:
             raise HTTPException(status_code=404, detail="Not Found")
