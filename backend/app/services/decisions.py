@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.decision import Decision
 from app.core.model import load_meta
 from app.db.models import Application, AuditLog, DecisionRecord, User
+from app.observability import record_decision
 
 # Sensitive attributes may drive thresholds and audits but must never reach the model.
 SENSITIVE_ATTRIBUTES: tuple[str, ...] = ("gender", "region", "division", "age")
@@ -102,6 +103,7 @@ def persist_decision(
     )
     db.add(record)
     db.flush()
+    record_decision(decision.band, approved)
 
     details: dict[str, Any] = {
         "p_repay": round(decision.p_repay, 6),

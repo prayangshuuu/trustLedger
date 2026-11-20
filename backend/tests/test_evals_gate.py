@@ -1,6 +1,7 @@
 """The eval suite's fairness gate fails when thresholds are biased (proves CI would fail)."""
 
 from app.core.model import load_meta
+
 from evals.run_all import model_eval
 
 

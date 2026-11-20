@@ -45,7 +45,12 @@ class Settings(BaseSettings):
     # HMAC secret for borrower session tokens (POST /auth/session)
     SESSION_SECRET: str | None = None
     # Allowed browser origins (comma separated); "*" only for local development
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
+    CORS_ORIGINS: str = (
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173"
+    )
+    RATE_LIMIT_PER_MINUTE: int = 300
+    MAX_BODY_BYTES: int = 1_000_000  # JSON bodies (2,000 SMS fit comfortably)
+    MAX_UPLOAD_BYTES: int = 8_000_000  # document photos
 
     # Application & Workflow Settings
     DEMO_MODE: bool = False

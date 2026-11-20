@@ -16,6 +16,19 @@ from app.schemas.documents import DocumentUploadResponse
 
 router = APIRouter(tags=["Documents & OCR"])
 
+MAX_IMAGE_BYTES = 8_000_000
+
+
+def sniff_image_type(data: bytes) -> str | None:
+    """Identify an image by its magic bytes (the client-sent content type is not trusted)."""
+    if data[:3] == b"\xff\xd8\xff":
+        return "jpeg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "png"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "webp"
+    return None
+
 
 @router.post(
     "/documents",
@@ -50,12 +63,18 @@ def upload_document(
             f"Applicant '{user_id}' lacks active consent for document OCR processing (ocr or bills)."
         )
 
-    # 3. Read raw image stream
-    image_bytes = file.file.read()
+    # 3. Read the image (bounded) and check it really is a JPEG, PNG or WebP
+    image_bytes = file.file.read(MAX_IMAGE_BYTES + 1)
     if not image_bytes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Uploaded file payload is empty.",
+        )
+    if len(image_bytes) > MAX_IMAGE_BYTES:
+        raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "Image larger than 8 MB")
+    if sniff_image_type(image_bytes) is None:
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "Only JPEG, PNG or WebP images are accepted"
         )
 
     # 4. Execute OCR processing pipeline

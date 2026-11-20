@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 10s
+scrape_configs:
+  - job_name: trustledger-api
+    metrics_path: /metrics
+    static_configs:
+      # API in docker compose (profile app) or on the host (make api)
+      - targets: ["api:8000", "host.docker.internal:8000"]

@@ -1,6 +1,5 @@
 """TrustLedger FastAPI application factory, middleware, exception handlers, and routing."""
 
-import json
 import logging
 import time
 import uuid
@@ -24,7 +23,9 @@ from app.api.routers import (
     score_router,
     stats_router,
 )
+from app.config import get_settings
 from app.core.features import AllFeaturesMissingError
+from app.observability import GuardMiddleware, install_log_filter, json_log, metrics_response
 from app.privacy.consent import ConsentMissingError
 
 logger = logging.getLogger("trustledger.api")
@@ -51,7 +52,7 @@ class RequestLoggingAndIDMiddleware(BaseHTTPMiddleware):
             "status_code": response.status_code,
             "duration_ms": duration_ms,
         }
-        logger.info(json.dumps(log_payload))
+        logger.info(json_log(log_payload))
 
         return response
 
@@ -86,17 +87,24 @@ def create_app() -> FastAPI:
         ],
     )
 
-    # 1. CORS Middleware
+    install_log_filter()
+    settings = get_settings()
+
+    # Middleware order (outermost last): request id/logging -> guard (size, rate limit, metrics) -> CORS
+    origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=origins,
+        allow_credentials=False,  # API keys and bearer tokens are headers, never cookies
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "X-API-Key", "X-Request-ID"],
     )
-
-    # 2. Request Correlation & Logging Middleware
+    application.add_middleware(GuardMiddleware)
     application.add_middleware(RequestLoggingAndIDMiddleware)
+
+    @application.get("/metrics", include_in_schema=False)
+    def metrics() -> Response:
+        return metrics_response()
 
     # 3. Exception Handlers
     @application.exception_handler(ConsentMissingError)

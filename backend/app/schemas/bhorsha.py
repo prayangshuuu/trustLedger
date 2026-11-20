@@ -24,7 +24,9 @@ class BhorshaStartResponse(BaseModel):
 class BhorshaAnswerRequest(BaseModel):
     """Applicant's answer to the current scenario."""
 
-    answer: str = Field(..., min_length=1, description="Bengali or English conversational response")
+    answer: str = Field(
+        ..., min_length=1, max_length=2000, description="Bengali or English conversational response"
+    )
     elapsed_seconds: float = Field(
         default=10.0, ge=0.0, description="Response latency in seconds for anti-gaming detection"
     )
