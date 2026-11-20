@@ -1,0 +1,353 @@
+"""Bangladeshi MFS and banking SMS parser.
+
+Implements two-stage parsing:
+1. High-throughput deterministic regex parser for bKash, Nagad, Rocket, Upay, bank, and utility bills.
+2. PII-redacted LLM fallback (DeepSeek) for unseen, complex, or conversational formats.
+
+Follows PLAN_CONTEXT.md §6: Raw SMS text is NEVER stored in database or persistent logs.
+"""
+
+import hashlib
+import re
+from datetime import UTC, datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+from app.llm.client import get_llm_client
+from app.privacy.redaction import redact_pii
+
+# Conversion table for Bengali digits ০-৯ to standard Arabic numerals 0-9
+BANGLA_DIGITS_TABLE = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
+
+TransactionType = Literal[
+    "income", "bill", "recharge", "remittance", "savings", "transfer", "other"
+]
+TransactionDirection = Literal["in", "out"]
+
+
+class Transaction(BaseModel):
+    """Structured financial transaction extracted from SMS."""
+
+    date: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        description="Transaction execution date and time",
+    )
+    amount_bdt: float = Field(..., ge=0.0, description="Transaction amount in BDT")
+    direction: TransactionDirection = Field(
+        ..., description="'in' for credits/receipts, 'out' for debits/payments"
+    )
+    type: TransactionType = Field(
+        ...,
+        description="Transaction category: income | bill | recharge | remittance | savings | transfer | other",
+    )
+    counterparty: str | None = Field(
+        default=None, description="Sender, merchant, biller, or receiver name/institution"
+    )
+    txn_id: str | None = Field(default=None, description="Unique MFS/Bank transaction identifier")
+    raw_hash: str = Field(
+        ..., description="SHA-256 fingerprint of the raw message for deduplication"
+    )
+
+
+def normalize_bangla_digits(text: str) -> str:
+    """Translate Bengali digits to standard ASCII digits."""
+    return text.translate(BANGLA_DIGITS_TABLE)
+
+
+def compute_raw_hash(text: str) -> str:
+    """Compute deterministic SHA-256 fingerprint of raw text without persisting content."""
+    return hashlib.sha256(text.strip().encode("utf-8")).hexdigest()
+
+
+def extract_amount(text: str) -> float | None:
+    """Extract numeric amount from text handling commas and decimal points."""
+    m = re.search(r"(?:Tk|BDT|টাকা|পরিমাণ)\s*[:.]?\s*([0-9,]+(?:\.[0-9]{1,2})?)", text, re.IGNORECASE)
+    if not m:
+        m = re.search(r"([0-9,]+(?:\.[0-9]{1,2})?)\s*(?:Tk|BDT|টাকা)", text, re.IGNORECASE)
+    if m:
+        raw_num = m.group(1).replace(",", "")
+        try:
+            return float(raw_num)
+        except ValueError:
+            return None
+    return None
+
+
+def extract_trx_id(text: str) -> str | None:
+    """Extract MFS or banking TrxID."""
+    m = re.search(
+        r"(?:TrxID|TxnID|Trx\s*Id|ট্রানজেকশন\s*আইডি)\s*[:.\s]*([A-Za-z0-9]+)", text, re.IGNORECASE
+    )
+    return m.group(1) if m else None
+
+
+def extract_date(text: str) -> datetime:
+    """Extract date from text with fallback to current UTC timestamp."""
+    # Pattern: DD/MM/YYYY or DD-MM-YYYY, optional HH:MM
+    m = re.search(
+        r"\b(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?\b", text
+    )
+    if m:
+        day = int(m.group(1))
+        month = int(m.group(2))
+        raw_year = int(m.group(3))
+        year = raw_year + 2000 if raw_year < 100 else raw_year
+        hour = int(m.group(4) or 12)
+        minute = int(m.group(5) or 0)
+        try:
+            return datetime(year, month, day, hour, minute, tzinfo=UTC)
+        except ValueError:
+            pass
+    return datetime.now(UTC)
+
+
+def parse_regex_stage(text: str, raw_hash: str) -> Transaction | None:
+    """Stage 1: High-speed regex parsing for known Bangladeshi MFS and banking SMS formats."""
+    norm_text = normalize_bangla_digits(text)
+    lower = norm_text.lower()
+
+    # Check for failed transactions -> classify as other/failed
+    if any(k in lower for k in ("failed", "unsuccessful", "declined", "canceled", "বাতিল", "ব্যর্থ")):
+        amount = extract_amount(norm_text) or 0.0
+        return Transaction(
+            date=extract_date(norm_text),
+            amount_bdt=amount,
+            direction="out",
+            type="other",
+            counterparty="Failed Transaction",
+            txn_id=extract_trx_id(norm_text),
+            raw_hash=raw_hash,
+        )
+
+    parsed_amount = extract_amount(norm_text)
+    if parsed_amount is None:
+        return None
+    amount = parsed_amount
+
+    txn_id = extract_trx_id(norm_text)
+    txn_date = extract_date(norm_text)
+
+    # 1. Remittance
+    if any(
+        k in lower for k in ("remittance", "western union", "moneygram", "রেমিট্যান্স", "প্রবাসী আয়")
+    ):
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="in",
+            type="remittance",
+            counterparty="Foreign Remittance",
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 2. Mobile Recharge
+    if any(k in lower for k in ("recharge", "airtime", "রিচার্জ", "টপ আপ")):
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="out",
+            type="recharge",
+            counterparty="Mobile Airtime",
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 3. Utility Bills
+    bill_keywords = (
+        "desco",
+        "dpdc",
+        "wasa",
+        "titas",
+        "nesco",
+        "breb",
+        "btcl",
+        "electricity",
+        "bill",
+        "pay bill",
+        "পল্লী বিদ্যুৎ",
+        "বিল পরিশোধ",
+        "গ্যাস বিল",
+        "বিদ্যুৎ বিল",
+        "পানির বিল",
+    )
+    if any(k in lower for k in bill_keywords):
+        counterparty = "Utility Biller"
+        for kw in ("desco", "dpdc", "wasa", "titas", "nesco", "breb", "btcl"):
+            if kw in lower:
+                counterparty = kw.upper()
+                break
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="out",
+            type="bill",
+            counterparty=counterparty,
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 4. Salary / Income
+    salary_keywords = ("salary", "payroll", "বেতন", "মজুরি", "উপবৃত্তি")
+    if any(k in lower for k in salary_keywords):
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="in",
+            type="income",
+            counterparty="Employer / Payroll",
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 5. DPS / Savings
+    if any(k in lower for k in ("dps", "savings", "সঞ্চয়", "ডিপিএস")):
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="out",
+            type="savings",
+            counterparty="Savings / DPS",
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 6. Cash In / Money Received (Inflow)
+    if any(
+        k in lower
+        for k in (
+            "received tk",
+            "cash in tk",
+            "deposit",
+            "টাকা জমা",
+            "টাকা পেয়েছেন",
+            "জমা হয়েছে",
+            "ক্রেডিট",
+        )
+    ):
+        counterparty = "Agent / Sender"
+        from_m = re.search(
+            r"from\s+([A-Za-z0-9_\s]+?)(?:\.|\s+ref|\s+fee|\s+balance|\s+trxid)",
+            norm_text,
+            re.IGNORECASE,
+        )
+        if from_m:
+            counterparty = from_m.group(1).strip()
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="in",
+            type="income" if "salary" in lower else "transfer",
+            counterparty=counterparty,
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 7. Send Money / Payment / Cash Out (Outflow)
+    if any(
+        k in lower for k in ("send money", "payment tk", "cash out", "টাকা পাঠানো", "পেমেন্ট", "ক্যাশ আউট")
+    ):
+        counterparty = "Receiver / Merchant"
+        to_m = re.search(
+            r"to\s+([A-Za-z0-9_\s]+?)(?:\.|\s+fee|\s+balance|\s+trxid)", norm_text, re.IGNORECASE
+        )
+        if to_m:
+            counterparty = to_m.group(1).strip()
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="out",
+            type="transfer",
+            counterparty=counterparty,
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    return None
+
+
+def parse_llm_stage(text: str, raw_hash: str) -> Transaction:
+    """Stage 2: Fallback to LLM parser after scrubbing PII with Presidio."""
+    # Strict compliance check: Redact PII before LLM invocation
+    anonymized_text = redact_pii(text)
+
+    llm = get_llm_client()
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are an SMS transaction parser for Bangladeshi financial messages. "
+                "Output a valid JSON transaction with date, amount_bdt, direction ('in'|'out'), "
+                "type ('income'|'bill'|'recharge'|'remittance'|'savings'|'transfer'|'other'), "
+                "counterparty, and txn_id."
+            ),
+        },
+        {"role": "user", "content": f"Parse this SMS: {anonymized_text}"},
+    ]
+
+    try:
+        raw_res = llm.chat(messages=messages, schema=Transaction)
+        if isinstance(raw_res, Transaction):
+            res_dict = raw_res.model_dump()
+            res_dict["raw_hash"] = raw_hash
+            return Transaction.model_validate(res_dict)
+        if isinstance(raw_res, dict):
+            raw_res["raw_hash"] = raw_hash
+            return Transaction.model_validate(raw_res)
+    except Exception:  # noqa: S110, BLE001
+        pass
+
+    # Safe fallback if LLM completion is unparseable
+    return Transaction(
+        date=extract_date(text),
+        amount_bdt=extract_amount(text) or 0.0,
+        direction="out",
+        type="other",
+        counterparty=None,
+        txn_id=extract_trx_id(text),
+        raw_hash=raw_hash,
+    )
+
+
+def parse_sms(raw_text: str, use_llm_fallback: bool = True) -> Transaction:
+    """Parse single SMS string into a structured Transaction.
+
+    Stage 1 regex runs first. If unrecognized and fallback is enabled, invokes Stage 2 LLM.
+    """
+    raw_hash = compute_raw_hash(raw_text)
+
+    parsed = parse_regex_stage(raw_text, raw_hash)
+    if parsed is not None:
+        return parsed
+
+    if use_llm_fallback:
+        return parse_llm_stage(raw_text, raw_hash)
+
+    return Transaction(
+        date=extract_date(raw_text),
+        amount_bdt=extract_amount(raw_text) or 0.0,
+        direction="out",
+        type="other",
+        counterparty=None,
+        txn_id=extract_trx_id(raw_text),
+        raw_hash=raw_hash,
+    )
+
+
+def parse_sms_batch(sms_list: list[str], use_llm_fallback: bool = True) -> list[Transaction]:
+    """Parse a list of SMS messages with deduplication by TrxID and raw_hash."""
+    transactions: list[Transaction] = []
+    seen_ids: set[str] = set()
+
+    for raw_sms in sms_list:
+        if not raw_sms or not raw_sms.strip():
+            continue
+        trx = parse_sms(raw_sms, use_llm_fallback=use_llm_fallback)
+        dedupe_key = trx.txn_id if trx.txn_id else trx.raw_hash
+        if dedupe_key not in seen_ids:
+            seen_ids.add(dedupe_key)
+            transactions.append(trx)
+
+    transactions.sort(key=lambda t: t.date)
+    return transactions

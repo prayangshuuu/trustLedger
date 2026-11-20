@@ -18,7 +18,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 5: FastAPI backend v1** — `docs/prompts/PROMPT_05.md` — report: `docs/PROMPT5_REPORT.md`
 
 ## AI layer
-- [ ] **Prompt 6: LLM client and SMS parser** — `docs/prompts/PROMPT_06.md` — report: `docs/PROMPT6_REPORT.md`
+- [x] **Prompt 6: LLM client and SMS parser** — `docs/prompts/PROMPT_06.md` — report: `docs/PROMPT6_REPORT.md`
 - [ ] **Prompt 7: Feature builder** — `docs/prompts/PROMPT_07.md` — report: `docs/PROMPT7_REPORT.md`
 - [ ] **Prompt 8: Document OCR — bills, receipts and khata** — `docs/prompts/PROMPT_08.md` — report: `docs/PROMPT8_REPORT.md`
 - [ ] **Prompt 9: Bhorsha — psychometric chat assessment** — `docs/prompts/PROMPT_09.md` — report: `docs/PROMPT9_REPORT.md`
@@ -52,7 +52,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 3 | done | docs/PROMPT3_REPORT.md | Scoring core, SHAP explain & fairness checks |
 | 4 | done | docs/PROMPT4_REPORT.md | Database, consent & persistence |
 | 5 | done | docs/PROMPT5_REPORT.md | FastAPI backend v1, REST endpoints & docs |
-| 6 | not started | — | |
+| 6 | done | docs/PROMPT6_REPORT.md | LLM client gateway, Presidio redaction, SMS parser |
 | 7 | not started | — | |
 | 8 | not started | — | |
 | 9 | not started | — | |
