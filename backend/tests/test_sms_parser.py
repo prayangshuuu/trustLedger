@@ -217,8 +217,9 @@ def test_deepseek_client_chat_mocked_network(caplog: pytest.LogCaptureFixture) -
         mock_log_info.assert_called_once()
         log_format = mock_log_info.call_args[0][0]
         log_args = mock_log_info.call_args[0]
-        assert "DeepSeek chat success" in log_format
-        assert log_args[3] == 100  # cache_hit_tokens
+        assert "DeepSeek %s success" in log_format
+        assert log_args[1] == "chat"
+        assert log_args[4] == 100  # cache_hit_tokens
 
 
 def test_deepseek_client_retries_and_backoff() -> None:
@@ -263,18 +264,27 @@ def test_deepseek_client_retry_exhaustion() -> None:
 
 def test_deepseek_client_ocr_mocked() -> None:
     """Verify DeepSeekClient ocr sends multipart request and returns structured output."""
-    client = DeepSeekClient(api_key="sk-test-key")
+    client = DeepSeekClient(api_key="sk-test-key", ocr_url="http://ocr.local/v1")
 
     fake_response = MagicMock()
     fake_response.raise_for_status.return_value = None
     fake_response.json.return_value = {
-        "document_type": "utility_bill",
-        "provider": "DESCO",
-        "amount_bdt": 1200.0,
+        "choices": [
+            {
+                "message": {
+                    "content": json.dumps(
+                        {"document_type": "utility_bill", "provider": "DESCO", "amount_bdt": 1200.0}
+                    )
+                }
+            }
+        ]
     }
 
-    with patch("httpx.Client.post", return_value=fake_response):
+    with patch("httpx.Client.post", return_value=fake_response) as mock_post:
         res = client.ocr(b"dummy_image_data")
+        sent = mock_post.call_args.kwargs["json"]
+        assert mock_post.call_args.args[0] == "http://ocr.local/v1/chat/completions"
+        assert sent["messages"][0]["content"][0]["type"] == "image_url"
         assert res["provider"] == "DESCO"
         assert res["amount_bdt"] == 1200.0
 

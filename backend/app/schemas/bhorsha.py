@@ -34,6 +34,7 @@ class BhorshaAnswerResponse(BaseModel):
     """Next scenario question or completion status."""
 
     completed: bool
+    off_topic: bool = False
     turn: int
     total_turns: int | None = None
     acknowledgement: str | None = None

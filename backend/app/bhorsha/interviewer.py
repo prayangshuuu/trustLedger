@@ -12,9 +12,69 @@ from app.bhorsha.scorer import (
     BhorshaScoreResult,
     compute_bhorsha_score,
     evaluate_single_answer,
+    load_prompt,
     load_question_bank,
 )
 from app.db.models import FeatureSnapshot, User
+from app.llm.client import get_llm_client, register_mock_task
+from app.privacy.redaction import redact_pii
+
+DEFAULT_ACK = "ধন্যবাদ, আপনার উত্তরটি লিপিবদ্ধ করা হয়েছে।"
+OFF_TOPIC_REPLY = (
+    "দুঃখিত, এই আলাপে আমি শুধু আপনার দৈনন্দিন টাকা-পয়সার অভ্যাস নিয়ে প্রশ্ন করতে পারি। চলুন প্রশ্নটিতে ফিরে যাই।"
+)
+OFF_TOPIC_MARKERS = (
+    "cricket",
+    "ক্রিকেট",
+    "football",
+    "ফুটবল",
+    "joke",
+    "কৌতুক",
+    "জোকস",
+    "weather",
+    "আবহাওয়া",
+    "politics",
+    "রাজনীতি",
+    "নির্বাচন",
+    "homework",
+    "movie",
+    "সিনেমা",
+    "ignore previous",
+    "ignore your instructions",
+    "system prompt",
+    "আগের নির্দেশ",
+)
+
+
+class InterviewerTurn(BaseModel):
+    acknowledgement: str = DEFAULT_ACK
+    off_topic: bool = False
+
+
+def _mock_interviewer(system: str, user_content: str) -> dict[str, Any]:
+    answer = user_content.split("<answer>", 1)[-1].split("</answer>", 1)[0].lower()
+    off_topic = any(m in answer for m in OFF_TOPIC_MARKERS)
+    return {"acknowledgement": DEFAULT_ACK, "off_topic": off_topic}
+
+
+register_mock_task("bhorsha_interviewer", _mock_interviewer)
+
+
+def interviewer_turn(question: dict[str, Any], answer_text: str) -> InterviewerTurn:
+    """Ask the interviewer LLM for a warm acknowledgement and an off-topic check."""
+    user = f"<question>{question['bangla']}</question>\n<answer>{redact_pii(answer_text)}</answer>"
+    try:
+        result = get_llm_client().chat(
+            [
+                {"role": "system", "content": load_prompt("interviewer")},
+                {"role": "user", "content": user},
+            ],
+            schema=InterviewerTurn,
+            temperature=0.3,
+        )
+        return InterviewerTurn.model_validate(result)
+    except Exception:  # noqa: BLE001 - fall back to the static acknowledgement
+        return InterviewerTurn()
 
 
 class BhorshaSessionState(BaseModel):
@@ -76,6 +136,21 @@ def answer_bhorsha_question(
     questions = load_question_bank()
     curr_q = questions[state.current_index]
 
+    turn = interviewer_turn(curr_q, answer_text)
+    if turn.off_topic:
+        # Re-ask the same question; off-topic messages are neither scored nor stored
+        return {
+            "completed": False,
+            "off_topic": True,
+            "turn": state.current_index + 1,
+            "total_turns": min(12, len(questions)),
+            "acknowledgement": OFF_TOPIC_REPLY,
+            "question_id": curr_q["id"],
+            "dimension": curr_q["dimension"],
+            "question_text": curr_q["bangla"],
+            "english_translation": curr_q["english"],
+        }
+
     # Evaluate answer against rubric and anti-gaming rules
     evaluation = evaluate_single_answer(
         question=curr_q,
@@ -102,7 +177,7 @@ def answer_bhorsha_question(
         "completed": False,
         "turn": state.current_index + 1,
         "total_turns": min(12, len(questions)),
-        "acknowledgement": "ধন্যবাদ, আপনার উত্তরটি লিপিবদ্ধ করা হয়েছে।",
+        "acknowledgement": turn.acknowledgement,
         "question_id": next_q["id"],
         "dimension": next_q["dimension"],
         "question_text": next_q["bangla"],

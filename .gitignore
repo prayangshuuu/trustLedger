@@ -17,3 +17,12 @@ __pycache__/
 .env.*
 !.env.example
 
+
+# Local runtime data
+.storage/
+node_modules/
+dist/
+coverage/
+.dart_tool/
+build/
+*.log

@@ -1,5 +1,6 @@
 """Unit and integration tests for Bhorsha psychometric chat assessment."""
 
+import pytest
 from app.bhorsha.interviewer import (
     answer_bhorsha_question,
     get_bhorsha_result,
@@ -186,3 +187,35 @@ def test_zero_history_user_completes_bhorsha_and_gets_full_score_decision() -> N
         assert len(score_data["reasons"]) > 0
     finally:
         db_session.close()
+
+
+def test_off_topic_answer_is_refused_and_not_scored() -> None:
+    """Off-topic messages get a polite refusal and the same question again."""
+    session_id, first_q = start_bhorsha_session("user-offtopic")
+    resp = answer_bhorsha_question(session_id, "আজকের ক্রিকেট ম্যাচে কে জিতবে?")
+    assert resp["off_topic"] is True
+    assert resp["question_id"] == first_q["question_id"]
+    resp2 = answer_bhorsha_question(session_id, "আমি মাসের শুরুতে বাজেট করে সঞ্চয় আলাদা রাখি।")
+    assert not resp2.get("off_topic", False)
+    assert resp2["turn"] == 2
+
+
+def test_rubric_scoring_goes_through_llm_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Rubric scoring calls LLMClient with the versioned scorer prompt and redacted answer."""
+    from app.bhorsha import scorer
+
+    seen: dict[str, str] = {}
+
+    class FakeLLM:
+        def chat(self, messages, schema=None, temperature=0.0):  # type: ignore[no-untyped-def]
+            seen["system"] = messages[0]["content"]
+            seen["user"] = messages[1]["content"]
+            return schema.model_validate({"score": 88, "rationale": "ok"})
+
+    monkeypatch.setattr(scorer, "get_llm_client", lambda: FakeLLM())
+    q = scorer.load_question_bank()[0]
+    ev = scorer.evaluate_single_answer(q, "বাজেট করি, আমার নম্বর 01711223344", elapsed_seconds=9)
+    assert ev.score == 88
+    assert "<task>bhorsha_rubric</task>" in seen["system"]
+    assert "01711223344" not in seen["user"]
+    assert scorer.prompt_version("scorer") == "1.0.0"

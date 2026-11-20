@@ -9,9 +9,10 @@ from sqlalchemy import select
 from app.api.deps import ApiKeyAuth, DbSession
 from app.core.decision import score_applicant
 from app.core.features import AllFeaturesMissingError
-from app.db.models import Application, AuditLog, DecisionRecord, FeatureSnapshot, User
+from app.db.models import DecisionRecord, FeatureSnapshot, User
 from app.privacy.consent import ConsentMissingError, has_consent
 from app.schemas.score import ExplainResponse, ReasonItem, ScoreRequest, ScoreResponse
+from app.services.decisions import fairness_check, persist_decision
 
 router = APIRouter(tags=["Scoring & Decisions"])
 
@@ -81,49 +82,16 @@ def score(payload: ScoreRequest, db: DbSession, _api_key: ApiKeyAuth = None) -> 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
 
-    # 3. Persist decision and audit log
-    app_id: str | None = None
-    if user:
-        application = Application(
-            user_id=user.id,
-            amount_bdt=payload.amount_bdt or 15000.0,
-            status="approved" if decision_result.approved else "rejected",
-        )
-        db.add(application)
-        db.flush()
-        app_id = application.id
-
-    decision_record = DecisionRecord(
-        application_id=app_id,
-        user_id=user.id if user else None,
-        p_repay=decision_result.p_repay,
-        score=decision_result.score,
-        band=decision_result.band,
-        approved=decision_result.approved,
-        reasons=[r.model_dump() for r in decision_result.reasons],
-        tips=decision_result.tips,
-        group=demographic_group,
-        threshold_used=decision_result.threshold_used,
-        model_version=decision_result.model_version,
-        fairness_ok=True,
+    # 3. Fairness sign-off, then persist decision with a full audit entry
+    fairness = fairness_check(decision_result, demographic_group, features_dict)
+    decision_record = persist_decision(
+        db,
+        decision_result,
+        features=features_dict,
+        user=user,
+        amount_bdt=payload.amount_bdt or 15000.0,
+        fairness=fairness,
     )
-    db.add(decision_record)
-    db.flush()
-
-    audit_entry = AuditLog(
-        user_id=user.id if user else None,
-        event="credit_scored",
-        entity_type="decision",
-        entity_id=decision_record.id,
-        details={
-            "score": decision_result.score,
-            "approved": decision_result.approved,
-            "group": demographic_group,
-            "threshold": decision_result.threshold_used,
-            "model_version": decision_result.model_version,
-        },
-    )
-    db.add(audit_entry)
     db.commit()
 
     reasons_items = [
@@ -142,7 +110,8 @@ def score(payload: ScoreRequest, db: DbSession, _api_key: ApiKeyAuth = None) -> 
         p_repay=decision_result.p_repay,
         score=decision_result.score,
         band=decision_result.band,
-        approved=decision_result.approved,
+        approved=decision_record.approved,
+        fairness_ok=fairness.ok,
         good=decision_result.good,
         bad=decision_result.bad,
         tips=decision_result.tips,
@@ -159,7 +128,9 @@ def score(payload: ScoreRequest, db: DbSession, _api_key: ApiKeyAuth = None) -> 
     response_model=ExplainResponse,
     summary="Get Decision Explanation",
 )
-def get_explanation(decision_id: str, db: DbSession) -> ExplainResponse:
+def get_explanation(
+    decision_id: str, db: DbSession, _api_key: ApiKeyAuth = None
+) -> ExplainResponse:
     """Retrieve full SHAP feature attributions and Bangla reasons for a decision."""
     decision = db.scalars(select(DecisionRecord).where(DecisionRecord.id == decision_id)).first()
     if not decision:

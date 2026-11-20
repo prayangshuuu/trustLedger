@@ -87,6 +87,7 @@ def submit_answer_endpoint(
 
     return BhorshaAnswerResponse(
         completed=resp["completed"],
+        off_topic=resp.get("off_topic", False),
         turn=resp.get("turn", 1),
         total_turns=resp.get("total_turns"),
         acknowledgement=resp.get("acknowledgement"),

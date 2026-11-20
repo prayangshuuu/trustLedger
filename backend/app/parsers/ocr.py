@@ -5,20 +5,15 @@ Bangla khata ledgers using DeepSeek-OCR, enforcing strict Pydantic schemas, conf
 scoring, and zero-image PostgreSQL persistence with a 30-day storage expiration policy.
 """
 
-import hashlib
 import io
-import os
-from datetime import UTC, datetime, timedelta
-from pathlib import Path
+from datetime import datetime
 from typing import Any, Literal
 
 from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
 from app.llm.client import get_llm_client
-
-# Local storage directory for encrypted document blobs with 30-day retention
-STORAGE_DIR = Path(os.getenv("DOCUMENT_STORAGE_DIR", ".storage/documents"))
+from app.storage import store_document
 
 DocumentType = Literal["utility_bill", "receipt", "khata_page"]
 
@@ -135,30 +130,8 @@ def store_document_blob(
     user_id: str,
     doc_type: str,
 ) -> tuple[str, datetime]:
-    """Store encrypted image blob in object storage with a strict 30-day expiration window.
-
-    Images are never stored in Postgres. Local dev persists blobs to filesystem with encryption headers.
-    """
-    STORAGE_DIR.mkdir(parents=True, exist_ok=True)
-    file_hash = hashlib.sha256(image_bytes).hexdigest()
-    storage_key = f"{user_id}/{doc_type}/{file_hash[:16]}.enc"
-
-    expires_at = datetime.now(UTC) + timedelta(days=30)
-
-    target_path = STORAGE_DIR / storage_key
-    target_path.parent.mkdir(parents=True, exist_ok=True)
-
-    enc_bytes = bytes([b ^ 0x5A for b in image_bytes])
-    with open(target_path, "wb") as f:
-        f.write(enc_bytes)
-
-    meta_path = target_path.with_suffix(".json")
-    with open(meta_path, "w", encoding="utf-8") as f:
-        f.write(
-            f'{{"user_id": "{user_id}", "expires_at": "{expires_at.isoformat()}", "doc_type": "{doc_type}"}}'
-        )
-
-    return storage_key, expires_at
+    """Encrypt and store the image in object storage with a 30-day expiry (never in Postgres)."""
+    return store_document(image_bytes, user_id, doc_type)
 
 
 def process_document(

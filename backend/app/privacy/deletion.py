@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.models import User
+from app.storage import delete_user_documents
 
 
 def delete_user_data(session: Session, user_id: str) -> bool:
@@ -26,4 +27,6 @@ def delete_user_data(session: Session, user_id: str) -> bool:
 
     session.delete(user)
     session.commit()
+    # Encrypted document images live in object storage, outside the DB cascade
+    delete_user_documents(user_id)
     return True

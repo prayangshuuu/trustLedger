@@ -41,7 +41,7 @@ def test_seed_demo_personas(session: Session) -> None:
 
     # Consents
     shathi_consents = [c.source for c in shathi.consents]
-    assert set(shathi_consents) == {"sms", "bills", "recharge"}
+    assert set(shathi_consents) == {"sms", "bills", "recharge", "ocr"}
 
     # Features
     shathi_snapshot = session.scalars(
@@ -69,7 +69,7 @@ def test_seed_demo_personas(session: Session) -> None:
     assert student.region == "urban"
 
     student_consents = [c.source for c in student.consents]
-    assert set(student_consents) == {"sms", "recharge"}
+    assert set(student_consents) == {"sms", "recharge", "bhorsha"}
 
     student_decision = session.scalars(
         select(DecisionRecord).where(DecisionRecord.user_id == student.id)
@@ -105,3 +105,24 @@ def test_seed_demo_personas(session: Session) -> None:
     assert len(users2) == 3
     total_users = session.scalars(select(User)).all()
     assert len(total_users) == 3
+
+
+def test_seed_population_and_full_audit(session: Session) -> None:
+    """Synthetic population seeds scored users, and every decision audit carries features + reasons."""
+    from app.db.models import AuditLog
+    from scripts.seed_demo import seed_population
+
+    count = seed_population(session, n=40, seed=3)
+    assert count == 40
+    decisions = session.scalars(select(DecisionRecord)).all()
+    assert len(decisions) == 40
+    entries = session.scalars(select(AuditLog).where(AuditLog.entity_type == "decision")).all()
+    assert len(entries) == 40
+    for entry in entries:
+        assert {"features", "reasons", "fairness", "model_version", "threshold"} <= set(
+            entry.details
+        )
+        assert not {"gender", "region", "division"} & set(entry.details["features"])
+    # Re-running with the same seed replaces rather than duplicates
+    seed_population(session, n=40, seed=3)
+    assert len(session.scalars(select(DecisionRecord)).all()) == 40

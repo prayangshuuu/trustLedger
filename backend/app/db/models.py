@@ -9,7 +9,8 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
@@ -18,6 +19,10 @@ from app.db.base import Base
 
 # Portable JSON type: JSONB on Postgres, JSON on SQLite
 JsonType = JSON().with_variant(JSONB, "postgresql")
+
+# Embeddings: pgvector on Postgres, JSON list on SQLite (tests and offline dev)
+EMBEDDING_DIM = 1024
+EmbeddingType = JSON().with_variant(Vector(EMBEDDING_DIM), "postgresql")
 
 
 def get_utc_now() -> datetime:
@@ -40,6 +45,9 @@ class User(Base):
     gender: Mapped[str] = mapped_column(String(10), nullable=False)
     region: Mapped[str] = mapped_column(String(20), nullable=False)
     division: Mapped[str] = mapped_column(String(50), nullable=False)
+    # Only used by the legacy bank-rule comparison (Inclusion Lift), never as model inputs
+    has_bank_account: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    has_salary_slip: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
 
     # Relationships with CASCADE deletion
@@ -202,3 +210,21 @@ class DocumentRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
 
     user: Mapped["User"] = relationship(back_populates="documents")
+
+
+class KnowledgeChunk(Base):
+    """RAG knowledge base chunk grounded in central bank circulars and financial guides."""
+
+    __tablename__ = "knowledge_chunks"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    doc_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(512), nullable=False)
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    contextual_header: Mapped[str] = mapped_column(String(255), nullable=False)
+    embedding: Mapped[list[float]] = mapped_column(EmbeddingType, nullable=False)
+    token_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)

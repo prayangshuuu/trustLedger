@@ -4,6 +4,7 @@ Assesses borrower character, financial discipline, risk tolerance, and consisten
 through conversational scenarios, outputting a calibrated bhorsha_score in [0, 100].
 """
 
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -11,7 +12,11 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field
 
+from app.llm.client import get_llm_client, register_mock_task
+from app.privacy.redaction import redact_pii
+
 QUESTIONS_FILE = Path(__file__).resolve().parent / "questions.yaml"
+PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 
 
 class AnswerEvaluation(BaseModel):
@@ -51,29 +56,25 @@ def load_question_bank() -> list[dict[str, Any]]:
         return list(data.get("questions", []))
 
 
-def evaluate_single_answer(
-    question: dict[str, Any],
-    answer_text: str,
-    elapsed_seconds: float = 10.0,
-    previous_answers: list[str] | None = None,
-) -> AnswerEvaluation:
-    """Evaluate a single user answer against the dimension rubric with anti-gaming checks."""
-    flags: list[str] = []
-    text = answer_text.strip().lower()
+class RubricScore(BaseModel):
+    """Final JSON kept from the rubric rater (its reasoning is never stored)."""
 
-    # 1. Anti-gaming check: Suspiciously fast submission (< 2 seconds)
-    if elapsed_seconds < 2.0:
-        flags.append("rapid_submission")
+    score: float = Field(..., ge=0.0, le=100.0)
+    rationale: str = ""
 
-    # 2. Anti-gaming check: Repeated identical answer
-    if previous_answers and any(text == prev.strip().lower() for prev in previous_answers):
-        flags.append("duplicate_answer")
 
-    # 3. Anti-gaming check: Monosyllabic / evasive non-response
-    if len(text.split()) < 3 and text in ("হ্যাঁ", "না", "হুম", "yes", "no", "ok", "ভালো"):
-        flags.append("minimal_response")
+def load_prompt(name: str) -> str:
+    return (PROMPTS_DIR / f"{name}.md").read_text(encoding="utf-8")
 
-    # 4. Rubric scoring heuristics (in live mode, DeepSeek JSON mode generates rubric score)
+
+def prompt_version(name: str) -> str:
+    match = re.search(r'version="([^"]+)"', load_prompt(name))
+    return match.group(1) if match else "unknown"
+
+
+def heuristic_rubric_score(text: str) -> tuple[float, str]:
+    """Deterministic keyword rubric used by the offline mock and as a live-mode fallback."""
+    text = text.strip().lower()
     # Positive behavioral tokens
     positive_signals = (
         "আলাদা",
@@ -136,6 +137,65 @@ def evaluate_single_answer(
         # Default moderate score
         base_score = 60.0
         rationale = "Applicant response reflects standard pragmatic household management."
+
+    return base_score, rationale
+
+
+def _mock_rubric(system: str, user_content: str) -> dict[str, Any]:
+    answer = user_content.split("<answer>", 1)[-1].split("</answer>", 1)[0]
+    score, rationale = heuristic_rubric_score(answer)
+    return {"score": score, "rationale": rationale}
+
+
+register_mock_task("bhorsha_rubric", _mock_rubric)
+
+
+def rubric_score(question: dict[str, Any], answer_text: str) -> tuple[float, str]:
+    """Score one answer against its rubric via LLMClient; falls back to the heuristic on error."""
+    rubric = question.get("rubric", {})
+    user = (
+        f"<question>{question.get('bangla', '')} ({question.get('english', '')})</question>\n"
+        f"<rubric>strong: {rubric.get('strong', '')}\nmoderate: {rubric.get('moderate', '')}\n"
+        f"weak: {rubric.get('weak', '')}</rubric>\n"
+        f"<answer>{redact_pii(answer_text)}</answer>"
+    )
+    try:
+        result = get_llm_client().chat(
+            [
+                {"role": "system", "content": load_prompt("scorer")},
+                {"role": "user", "content": user},
+            ],
+            schema=RubricScore,
+        )
+        return float(result.score), str(result.rationale)
+    except Exception:  # noqa: BLE001 - never fail an interview because of the LLM
+        return heuristic_rubric_score(answer_text)
+
+
+def evaluate_single_answer(
+    question: dict[str, Any],
+    answer_text: str,
+    elapsed_seconds: float = 10.0,
+    previous_answers: list[str] | None = None,
+) -> AnswerEvaluation:
+    """Evaluate a single user answer against the dimension rubric with anti-gaming checks."""
+    flags: list[str] = []
+    text = answer_text.strip().lower()
+
+    # 1. Anti-gaming check: Suspiciously fast submission (< 2 seconds)
+    if elapsed_seconds < 2.0:
+        flags.append("rapid_submission")
+
+    # 2. Anti-gaming check: Repeated identical answer
+    if previous_answers and any(text == prev.strip().lower() for prev in previous_answers):
+        flags.append("duplicate_answer")
+
+    # 3. Anti-gaming check: Monosyllabic / evasive non-response
+    if len(text.split()) < 3 and text in ("হ্যাঁ", "না", "হুম", "yes", "no", "ok", "ভালো"):
+        flags.append("minimal_response")
+
+    # 4. Rubric score from the LLM (mock mode uses the deterministic heuristic below)
+    base_score, rationale = rubric_score(question, text)
 
     # Apply anti-gaming penalties
     if "rapid_submission" in flags:

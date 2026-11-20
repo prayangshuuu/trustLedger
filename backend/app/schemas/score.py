@@ -75,6 +75,7 @@ class ScoreResponse(BaseModel):
     score: int = Field(..., description="TrustLedger credit score [300, 900]")
     band: str = Field(..., description="Risk tier: Excellent | Good | Fair | Building")
     approved: bool = Field(..., description="Final lending approval status")
+    fairness_ok: bool = Field(default=True, description="Fairness Agent sign-off")
     good: list[str] = Field(..., description="Top positive drivers (Bangla)")
     bad: list[str] = Field(..., description="Top negative drivers (Bangla)")
     tips: list[str] = Field(..., description="Actionable improvement recommendations (Bangla)")

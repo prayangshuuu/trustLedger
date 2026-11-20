@@ -21,7 +21,11 @@ class Settings(BaseSettings):
     # LLM & AI Services (DeepSeek)
     DEEPSEEK_API_KEY: str | None = None
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
-    DEEPSEEK_OCR_URL: str = "https://api.deepseek.com/ocr"
+    DEEPSEEK_CHAT_MODEL: str = "deepseek-chat"
+    # OpenAI-compatible server hosting DeepSeek-OCR (e.g. vLLM), base URL without /chat/completions
+    DEEPSEEK_OCR_URL: str | None = None
+    DEEPSEEK_OCR_MODEL: str = "deepseek-ai/DeepSeek-OCR"
+    DEEPSEEK_OCR_API_KEY: str | None = None
     LLM_MODE: str = "mock"
 
     # Object Storage (Cloudflare R2 / S3 API)
@@ -29,6 +33,7 @@ class Settings(BaseSettings):
     R2_ACCESS_KEY: str | None = None
     R2_SECRET_KEY: str | None = None
     R2_BUCKET: str = "trustledger"
+    STORAGE_ENCRYPTION_KEY: str | None = None
 
     # Security & Authentication
     API_KEYS: str = ""
