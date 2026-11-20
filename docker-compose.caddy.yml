@@ -1,0 +1,18 @@
+# Attach public-facing services to an existing external Caddy network.
+# Create once on the host:   docker network create caddy
+# Run with:                  docker compose -f docker-compose.yml -f docker-compose.caddy.yml up -d --build
+# Caddy reaches services by name on that network, e.g. reverse_proxy api:8000
+
+services:
+  api:
+    networks: [default, caddy]
+
+  mcp-server:
+    networks: [default, caddy]
+
+  grafana:
+    networks: [default, caddy]
+
+networks:
+  caddy:
+    external: true
