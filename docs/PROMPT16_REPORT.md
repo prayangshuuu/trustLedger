@@ -30,7 +30,7 @@ npm test && npm run build && npm run e2e
 ```
 
 ## Tests and checks
-- Backend: ruff pass, mypy pass, pytest 182 passed / 1 skipped
+- Backend: ruff pass, mypy pass, pytest 181 passed / 1 skipped
 - `tsc --noEmit`: pass · `vitest`: 4 passed · `vite build`: pass · Playwright smoke: 1 passed (API-key login → Overview KPIs → Fairness badge)
 - Live numbers with personas + 4,000 synthetic applicants: approval 58.9%, bank rule 12.4%, newly included 49.5% (notebook: 59.0% / 11.7% / 50.3%), approval-rate gap **0.023 PASS**
 
