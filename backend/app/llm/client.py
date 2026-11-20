@@ -5,6 +5,7 @@ behaviour put ``<task>name</task>`` in their system prompt; the mock routes on t
 """
 
 import base64
+import hashlib
 import json
 import logging
 import os
@@ -20,6 +21,46 @@ from pydantic import BaseModel
 from app.config import get_settings
 
 logger = logging.getLogger("trustledger.llm")
+
+
+class DeepSeekServiceUnavailableError(RuntimeError):
+    """Raised when DeepSeek API is unreachable or returns unrecoverable errors."""
+
+
+class TokenBudgetExceededError(RuntimeError):
+    """Raised when an applicant session exceeds the allotted LLM token budget."""
+
+
+def estimate_cost_usd(model: str, cache_miss: int, cache_hit: int, completion: int) -> float:
+    """Estimate DeepSeek call cost in USD according to official 2026 pricing.
+
+    deepseek-chat:
+      Input (cache miss): $0.14 / 1M tokens
+      Input (cache hit): $0.014 / 1M tokens
+      Output: $0.28 / 1M tokens
+    deepseek-reasoner:
+      Input (cache miss): $0.55 / 1M tokens
+      Input (cache hit): $0.14 / 1M tokens
+      Output: $2.19 / 1M tokens
+    """
+    if "reasoner" in model or "r1" in model.lower():
+        return round((cache_miss * 0.55 + cache_hit * 0.14 + completion * 2.19) / 1_000_000.0, 6)
+    return round((cache_miss * 0.14 + cache_hit * 0.014 + completion * 0.28) / 1_000_000.0, 6)
+
+
+def _get_redis() -> Any:
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        return None
+    url = get_settings().REDIS_URL
+    if not url:
+        return None
+    try:
+        import redis
+
+        return redis.Redis.from_url(url, socket_connect_timeout=0.5, socket_timeout=0.5)
+    except Exception:  # noqa: BLE001
+        return None
+
 
 # Optional hook (set by observability) receiving (kind, prompt_tokens, completion_tokens, ok)
 usage_hook: Callable[[str, int, int, bool], None] | None = None
@@ -61,6 +102,9 @@ class LLMClient(Protocol):
         messages: list[dict[str, str]],
         schema: type[BaseModel] | dict[str, Any] | None = None,
         temperature: float = 0.0,
+        model: str | None = None,
+        max_tokens: int | None = None,
+        session_id: str | None = None,
     ) -> Any:
         """Send chat messages and return text, or a validated object when schema is given."""
         ...
@@ -102,7 +146,12 @@ class DeepSeekClient:
         self.max_retries = max_retries
 
     def _post_with_retries(
-        self, kind: str, endpoint: str, payload: dict[str, Any], api_key: str
+        self,
+        kind: str,
+        endpoint: str,
+        payload: dict[str, Any],
+        api_key: str,
+        session_id: str | None = None,
     ) -> dict[str, Any]:
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         last_error: Exception | None = None
@@ -115,23 +164,53 @@ class DeepSeekClient:
                     data: dict[str, Any] = resp.json()
                 duration_ms = round((time.perf_counter() - start) * 1000, 2)
                 usage = data.get("usage", {}) or {}
+                prompt_tok = int(usage.get("prompt_tokens", 0))
+                completion_tok = int(usage.get("completion_tokens", 0))
+                cache_hit = int(usage.get("prompt_cache_hit_tokens", 0))
+                cache_miss = int(
+                    usage.get("prompt_cache_miss_tokens", max(0, prompt_tok - cache_hit))
+                )
+                model_name = str(payload.get("model", self.chat_model))
+                cost = estimate_cost_usd(model_name, cache_miss, cache_hit, completion_tok)
+
                 logger.info(
-                    "DeepSeek %s success: prompt_tokens=%s completion_tokens=%s "
-                    "cache_hit_tokens=%s cache_miss_tokens=%s duration_ms=%s",
+                    "DeepSeek %s success: model=%s tokens=[hit=%d, miss=%d, out=%d] "
+                    "cost_usd=$%.6f duration_ms=%s",
                     kind,
-                    usage.get("prompt_tokens"),
-                    usage.get("completion_tokens"),
-                    usage.get("prompt_cache_hit_tokens", 0),
-                    usage.get("prompt_cache_miss_tokens", 0),
+                    model_name,
+                    cache_hit,
+                    cache_miss,
+                    completion_tok,
+                    cost,
                     duration_ms,
                 )
                 _record(
                     kind,
-                    int(usage.get("prompt_tokens") or 0),
-                    int(usage.get("completion_tokens") or 0),
+                    prompt_tok,
+                    completion_tok,
                     True,
                 )
+
+                # Check and increment session token budget
+                if session_id:
+                    r = _get_redis()
+                    if r is not None:
+                        try:
+                            total_tok = prompt_tok + completion_tok
+                            used = r.incrby(f"tl:llm:session:{session_id}:tokens", total_tok)
+                            budget = get_settings().LLM_SESSION_TOKEN_BUDGET
+                            if used > budget:
+                                raise TokenBudgetExceededError(
+                                    f"Session '{session_id}' exceeded token budget: {used} > {budget}"
+                                )
+                        except TokenBudgetExceededError:
+                            raise
+                        except Exception:  # noqa: BLE001, S110
+                            pass
+
                 return data
+            except TokenBudgetExceededError:
+                raise
             except Exception as e:  # noqa: BLE001
                 last_error = e
                 _record(kind, 0, 0, False)
@@ -145,8 +224,8 @@ class DeepSeekClient:
                         backoff,
                     )
                     time.sleep(backoff)
-        raise RuntimeError(
-            f"DeepSeek {kind} failed after {self.max_retries} attempts"
+        raise DeepSeekServiceUnavailableError(
+            f"DeepSeek {kind} failed after {self.max_retries} attempts: {last_error}"
         ) from last_error
 
     def chat(
@@ -154,16 +233,44 @@ class DeepSeekClient:
         messages: list[dict[str, str]],
         schema: type[BaseModel] | dict[str, Any] | None = None,
         temperature: float = 0.0,
+        model: str | None = None,
+        max_tokens: int | None = None,
+        session_id: str | None = None,
     ) -> Any:
         if not self.api_key:
             raise RuntimeError(
                 "DEEPSEEK_API_KEY is not configured. Set the environment variable or use LLM_MODE=mock."
             )
+
+        active_model = model or self.chat_model
+
+        # Check Redis cache for identical inputs
+        cache_key: str | None = None
+        r = _get_redis()
+        if r is not None:
+            schema_name = getattr(schema, "__name__", str(schema)) if schema else ""
+            cache_tuple = [active_model, temperature, messages, schema_name]
+            cache_hash = hashlib.sha256(
+                json.dumps(cache_tuple, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+            cache_key = f"tl:llm:cache:{cache_hash}"
+            try:
+                cached_bytes = r.get(cache_key)
+                if cached_bytes:
+                    cached_val = json.loads(cached_bytes)
+                    if schema is not None:
+                        return _validate(schema, cached_val)
+                    return cached_val
+            except Exception:  # noqa: BLE001, S110
+                pass
+
         payload: dict[str, Any] = {
-            "model": self.chat_model,
+            "model": active_model,
             "messages": messages,
             "temperature": temperature,
         }
+        if max_tokens is not None:
+            payload["max_tokens"] = max_tokens
         if schema is not None:
             payload["response_format"] = {"type": "json_object"}
             schema_json = (
@@ -178,11 +285,62 @@ class DeepSeekClient:
             payload["messages"] = [{"role": "system", "content": instruction}, *messages]
 
         data = self._post_with_retries(
-            "chat", f"{self.base_url}/chat/completions", payload, self.api_key
+            "chat",
+            f"{self.base_url}/chat/completions",
+            payload,
+            self.api_key,
+            session_id=session_id,
         )
         content_str: str = data["choices"][0]["message"]["content"]
+
         if schema is not None:
-            return _validate(schema, _extract_json(content_str))
+            try:
+                parsed = _extract_json(content_str)
+                result = _validate(schema, parsed)
+                if cache_key and r is not None:
+                    try:
+                        r.setex(cache_key, 86400, json.dumps(parsed, ensure_ascii=False))
+                    except Exception:  # noqa: BLE001, S110
+                        pass
+                return result
+            except Exception as parse_err:  # noqa: BLE001
+                logger.warning(
+                    "DeepSeek output validation failed; attempting 1 repair retry: %s", parse_err
+                )
+                repair_messages = list(payload["messages"]) + [
+                    {"role": "assistant", "content": content_str},
+                    {
+                        "role": "user",
+                        "content": (
+                            f"Previous response was invalid JSON or failed validation: {parse_err}. "
+                            "Please repair and return only valid JSON matching the schema."
+                        ),
+                    },
+                ]
+                repair_payload = dict(payload)
+                repair_payload["messages"] = repair_messages
+                repair_data = self._post_with_retries(
+                    "chat_repair",
+                    f"{self.base_url}/chat/completions",
+                    repair_payload,
+                    self.api_key,
+                    session_id=session_id,
+                )
+                repaired_content: str = repair_data["choices"][0]["message"]["content"]
+                repaired_parsed = _extract_json(repaired_content)
+                result = _validate(schema, repaired_parsed)
+                if cache_key and r is not None:
+                    try:
+                        r.setex(cache_key, 86400, json.dumps(repaired_parsed, ensure_ascii=False))
+                    except Exception:  # noqa: BLE001, S110
+                        pass
+                return result
+
+        if cache_key and r is not None:
+            try:
+                r.setex(cache_key, 86400, json.dumps(content_str, ensure_ascii=False))
+            except Exception:  # noqa: BLE001, S110
+                pass
         return content_str
 
     def ocr(
@@ -244,6 +402,9 @@ class MockClient:
         messages: list[dict[str, str]],
         schema: type[BaseModel] | dict[str, Any] | None = None,
         temperature: float = 0.0,
+        model: str | None = None,
+        max_tokens: int | None = None,
+        session_id: str | None = None,
     ) -> Any:
         system = "\n".join(m["content"] for m in messages if m.get("role") == "system")
         user_content = next(

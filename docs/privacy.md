@@ -10,8 +10,8 @@ switch it off or erase it at any time.
 |---|---|---|---|---|
 | Phone number | App sign-up | Identify the account | **No.** Only a SHA-256 hash (`users.phone_hash`) | Until deletion |
 | Gender, region (urban/rural), division | App sign-up | **Fairness only**: group thresholds and audits. Never a model input | Yes (`users`) | Until deletion |
-| Transaction SMS (wallet, bank, utility) | Phone, with `sms` consent | Derive 10 habit features | **No.** In production SMS is parsed on the device. In the demo (`DEMO_MODE=true`) raw SMS is parsed in memory and dropped; only the features are kept | Features until deletion |
-| Bill / receipt / khata photos | Upload, with `ocr` or `bills` consent | Read due dates, amounts and paid stamps | Encrypted image (Fernet) in R2/MinIO, **never in Postgres**; extracted fields in `documents` | Image **30 days** (bucket lifecycle + nightly purge); fields until deletion |
+| Transaction SMS (wallet, bank, utility) | Phone or upload (.txt, .csv, .xml, paste) with `sms` consent | Derive 10 habit features | **No.** Parsed on-device or processed in-memory for user uploads; raw SMS text is **never stored** in PostgreSQL or persistent logs | Derived features until deletion |
+| Bill / receipt / khata photos | Upload (JPEG, PNG, WebP, HEIC, PDF) with `ocr` or `bills` consent | Read due dates, amounts and paid stamps | Encrypted image (Fernet) in R2/MinIO, **never in Postgres**; extracted fields in `documents` | Image **30 days** (bucket lifecycle + nightly purge); fields until deletion |
 | Bhorsha chat answers | App, with `bhorsha` consent | 0–100 `bhorsha_score` for people with no history | **No** transcript is stored, only the score and dimension scores | Score until deletion |
 | Derived features | Computed | Model input | `feature_snapshots` (numbers only) | Until deletion |
 | Decisions | Computed | Explain and audit every decision | `decisions` + `audit_log` (score, SHAP reasons, group, threshold, fairness checks, model and prompt versions) | Until deletion |
@@ -19,6 +19,15 @@ switch it off or erase it at any time.
 
 No column stores raw SMS text (`backend/tests/test_no_raw_sms.py`). All repository data, fixtures and demo
 personas are synthetic.
+
+## Real-Mode Uploads & User Data Lifecycle
+
+When a real user connects their data (`POST /upload/sms`, `POST /documents`, `POST /upload/confirm`):
+1. **In-Memory Processing**: SMS exports (.txt, .csv, Android backup .xml) or pasted text are parsed strictly in memory. Raw messages are discarded immediately after transaction extraction and are never written to database tables or persistent server logs.
+2. **Presidio PII Scrubbing**: Before any text is evaluated by LLM fallbacks, Microsoft Presidio sanitizes names, phone numbers, NIDs, and account numbers.
+3. **User Review Gate**: Extracted transactions and OCR fields are presented on an interactive review screen where the user can inspect, correct, delete, or confirm before credit scoring features are engineered.
+4. **Validation Guardrails**: Validated feature values are clipped to empirical training bounds (`models/feature_ranges.json`), checked for out-of-distribution drift, gated for >= 3 months history sufficiency, and cross-checked (e.g. OCR bill amounts vs SMS bill payments).
+5. **Document Encryption & TTL**: Uploaded bill/receipt photos are encrypted with Fernet before writing to object storage and automatically expire after 30 days.
 
 ## Consent
 

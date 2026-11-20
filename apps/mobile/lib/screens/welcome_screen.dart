@@ -18,11 +18,25 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   late Future<List<dynamic>> _personas;
   bool _busy = false;
+  bool _showDemo = false;
 
   @override
   void initState() {
     super.initState();
     _personas = widget.state.api.personas();
+  }
+
+  Future<void> _startReal() async {
+    setState(() => _busy = true);
+    try {
+      await widget.state.startRealSession();
+      if (!mounted) return;
+      context.push(Routes.consent);
+    } catch (e) {
+      if (mounted) showError(context, widget.state, e, onRetry: _startReal);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _pick(Map<String, dynamic> persona) async {
@@ -71,46 +85,72 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 style: const TextStyle(color: TColor.lightOnBrandMuted, fontSize: TType.body),
               ),
               const SizedBox(height: TSpace.xxl),
-              Text(
-                s.t('demo_mode'),
-                style: const TextStyle(color: TColor.gold, fontWeight: TFont.semibold),
+              FilledButton.icon(
+                key: const Key('use_own_data'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: TColor.teal,
+                  foregroundColor: TColor.navy,
+                  padding: const EdgeInsets.symmetric(vertical: TSpace.md),
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: TFont.bold),
+                ),
+                onPressed: _busy ? null : _startReal,
+                icon: const Icon(Icons.lock_open_rounded),
+                label: Text(s.t('use_own_data')),
               ),
-              const SizedBox(height: TSpace.sm),
-              FutureBuilder<List<dynamic>>(
-                future: _personas,
-                builder: (context, snap) {
-                  if (snap.hasError) {
+              const SizedBox(height: TSpace.xl),
+              Card(
+                child: SwitchListTile(
+                  key: const Key('try_demo_switch'),
+                  value: _showDemo,
+                  onChanged: (val) => setState(() => _showDemo = val),
+                  title: Text(
+                    s.t('try_demo'),
+                    style: const TextStyle(fontWeight: TFont.semibold),
+                  ),
+                  subtitle: Text(
+                    s.t('demo_mode'),
+                    style: const TextStyle(color: TColor.lightTextMuted, fontSize: TType.bodySmall),
+                  ),
+                ),
+              ),
+              if (_showDemo) ...[
+                const SizedBox(height: TSpace.md),
+                FutureBuilder<List<dynamic>>(
+                  future: _personas,
+                  builder: (context, snap) {
+                    if (snap.hasError) {
+                      return Column(
+                        children: [
+                          Text(s.t('err_network'), style: const TextStyle(color: TColor.lightOnBrand)),
+                          TextButton(
+                            onPressed: () => setState(() => _personas = s.api.personas()),
+                            child: Text(s.t('retry')),
+                          ),
+                        ],
+                      );
+                    }
+                    if (!snap.hasData) return const Center(child: CircularProgressIndicator());
                     return Column(
                       children: [
-                        Text(s.t('err_network'), style: const TextStyle(color: TColor.lightOnBrand)),
-                        TextButton(
-                          onPressed: () => setState(() => _personas = s.api.personas()),
-                          child: Text(s.t('retry')),
-                        ),
+                        for (final p in snap.data!.cast<Map<String, dynamic>>())
+                          Card(
+                            child: ListTile(
+                              key: Key('persona_${p['key']}'),
+                              leading: const WalletIcon(),
+                              title: Text(
+                                _personaName(p['key'] as String, s.lang),
+                                style: const TextStyle(fontWeight: TFont.semibold),
+                              ),
+                              subtitle: Text(p['description'] as String),
+                              trailing: _busy ? null : const Icon(Icons.arrow_forward),
+                              onTap: _busy ? null : () => _pick(p),
+                            ),
+                          ),
                       ],
                     );
-                  }
-                  if (!snap.hasData) return const Center(child: CircularProgressIndicator());
-                  return Column(
-                    children: [
-                      for (final p in snap.data!.cast<Map<String, dynamic>>())
-                        Card(
-                          child: ListTile(
-                            key: Key('persona_${p['key']}'),
-                            leading: const WalletIcon(),
-                            title: Text(
-                              _personaName(p['key'] as String, s.lang),
-                              style: const TextStyle(fontWeight: TFont.semibold),
-                            ),
-                            subtitle: Text(p['description'] as String),
-                            trailing: _busy ? null : const Icon(Icons.arrow_forward),
-                            onTap: _busy ? null : () => _pick(p),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
+                  },
+                ),
+              ],
             ],
           ),
         ),

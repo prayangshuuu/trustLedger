@@ -6,16 +6,37 @@ scoring, and zero-image PostgreSQL persistence with a 30-day storage expiration 
 """
 
 import io
+import json
+import logging
+import shutil
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
+from app.config import get_settings
 from app.llm.client import get_llm_client
 from app.storage import store_document
 
+logger = logging.getLogger("trustledger.ocr")
+
 DocumentType = Literal["utility_bill", "receipt", "khata_page"]
+
+
+def get_active_ocr_backend() -> str:
+    """Determine the active OCR backend: deepseek-ocr-local | tesseract | mock."""
+    settings = get_settings()
+    configured = (settings.OCR_BACKEND or "auto").lower()
+    if configured != "auto":
+        return configured
+    if settings.DEEPSEEK_OCR_URL:
+        return "deepseek-ocr-local"
+    if shutil.which("tesseract"):
+        return "tesseract"
+    if settings.LLM_MODE == "live":
+        return "deepseek-ocr-local"
+    return "mock"
 
 
 class UtilityBillExtraction(BaseModel):
@@ -87,11 +108,27 @@ class DocumentExtractionResult(BaseModel):
     confidence: float
     needs_review: bool
     expires_at: datetime
+    ocr_backend: str = Field(default_factory=get_active_ocr_backend)
 
 
 def normalize_image(image_bytes: bytes, max_dim: int = 1600) -> bytes:
-    """Normalize raw document photo: auto-orient via EXIF, resize to max dimension, and contrast-balance."""
-    with Image.open(io.BytesIO(image_bytes)) as img:
+    """Normalize raw document photo (or PDF): auto-orient via EXIF, resize, and contrast-balance."""
+    raw_data = image_bytes
+    if image_bytes.startswith(b"%PDF"):
+        try:
+            import pypdf
+
+            reader = pypdf.PdfReader(io.BytesIO(image_bytes))
+            for page in reader.pages:
+                for img_file in page.images:
+                    raw_data = img_file.data
+                    break
+                if raw_data != image_bytes:
+                    break
+        except Exception as e:  # noqa: BLE001
+            logger.debug("PDF image extraction failed (%s); processing raw bytes", e)
+
+    with Image.open(io.BytesIO(raw_data)) as img:
         oriented = ImageOps.exif_transpose(img)
         if oriented is None:
             oriented = img
@@ -110,6 +147,40 @@ def normalize_image(image_bytes: bytes, max_dim: int = 1600) -> bytes:
         output = io.BytesIO()
         enhanced.save(output, format="JPEG", quality=88, optimize=True)
         return output.getvalue()
+
+
+def extract_via_tesseract(norm_bytes: bytes, schema_cls: type[BaseModel]) -> dict[str, Any]:
+    """Tesseract extraction: OCR into text, then structure via DeepSeek text model."""
+    try:
+        import pytesseract  # type: ignore[import-not-found]
+
+        with Image.open(io.BytesIO(norm_bytes)) as img:
+            try:
+                raw_text = pytesseract.image_to_string(img, lang="ben+eng")
+            except Exception:  # noqa: BLE001
+                raw_text = pytesseract.image_to_string(img, lang="eng")
+
+        prompt = (
+            "You are an expert document parser for Bangladeshi utility bills and receipts. "
+            "Extract structured fields matching this JSON schema from the raw OCR text below:\n"
+            f"```text\n{raw_text}\n```"
+        )
+        client = get_llm_client()
+        res = client.chat(
+            [{"role": "user", "content": prompt}],
+            schema=schema_cls,
+            temperature=0.0,
+        )
+        if isinstance(res, BaseModel):
+            return res.model_dump()
+        if isinstance(res, dict):
+            return res
+        return cast(dict[str, Any], json.loads(str(res)))
+    except Exception as e:  # noqa: BLE001
+        logger.warning("Tesseract parsing failed (%s); falling back to direct OCR client", e)
+        client = get_llm_client()
+        res = client.ocr(norm_bytes, schema=schema_cls)
+        return res.model_dump() if isinstance(res, BaseModel) else cast(dict[str, Any], res)
 
 
 def detect_document_type(image_bytes: bytes, filename: str | None = None) -> DocumentType:
@@ -153,15 +224,18 @@ def process_document(
     else:
         schema_cls = KhataPageExtraction
 
-    client = get_llm_client()
-    raw_extracted = client.ocr(norm_bytes, schema=schema_cls, filename=filename)
-
-    if isinstance(raw_extracted, BaseModel):
-        extracted_data = raw_extracted.model_dump()
-    elif isinstance(raw_extracted, dict):
-        extracted_data = raw_extracted
+    active_backend = get_active_ocr_backend()
+    if active_backend == "tesseract":
+        extracted_data = extract_via_tesseract(norm_bytes, schema_cls)
     else:
-        extracted_data = {"raw_output": str(raw_extracted)}
+        client = get_llm_client()
+        raw_extracted = client.ocr(norm_bytes, schema=schema_cls, filename=filename)
+        if isinstance(raw_extracted, BaseModel):
+            extracted_data = raw_extracted.model_dump()
+        elif isinstance(raw_extracted, dict):
+            extracted_data = raw_extracted
+        else:
+            extracted_data = {"raw_output": str(raw_extracted)}
 
     confidence = float(extracted_data.get("confidence", 0.90))
     needs_review = confidence < 0.80
@@ -175,4 +249,5 @@ def process_document(
         confidence=confidence,
         needs_review=needs_review,
         expires_at=expires_at,
+        ocr_backend=active_backend,
     )

@@ -9,6 +9,7 @@ import 'screens/loan_offer_screen.dart';
 import 'screens/processing_screen.dart';
 import 'screens/reasons_screen.dart';
 import 'screens/repayment_screen.dart';
+import 'screens/review_screen.dart';
 import 'screens/score_reveal_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/welcome_screen.dart';
@@ -21,6 +22,7 @@ abstract final class Routes {
   static const home = '/';
   static const consent = '/consent';
   static const connect = '/connect';
+  static const review = '/review';
   static const processing = '/processing';
   static const score = '/score';
   static const reasons = '/reasons';
@@ -58,6 +60,7 @@ GoRouter buildRouter(AppState state, {String initialLocation = Routes.home}) {
       page(Routes.home, () => WelcomeScreen(state: state)),
       page(Routes.consent, () => ConsentScreen(state: state)),
       page(Routes.connect, () => ConnectDataScreen(state: state)),
+      page(Routes.review, () => ReviewScreen(state: state)),
       page(Routes.processing, () => ProcessingScreen(state: state)),
       page(Routes.score, () => ScoreRevealScreen(state: state)),
       page(Routes.reasons, () => ReasonsScreen(state: state)),

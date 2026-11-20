@@ -14,6 +14,8 @@ from app.core.fairness import decide, get_group_threshold
 from app.core.features import FeatureVector, to_dataframe
 from app.core.model import get_model_version
 from app.core.score import band, predict, to_score
+from app.core.validation import compute_feature_hash
+from app.parsers.ocr import get_active_ocr_backend
 
 
 class Decision(BaseModel):
@@ -31,6 +33,9 @@ class Decision(BaseModel):
     model_version: str
     group: str
     evaluated_group: str = ""
+    feature_hash: str | None = None
+    data_quality: dict[str, Any] | None = None
+    ocr_backend: str | None = None
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     def model_post_init(self, context: Any) -> None:
@@ -102,6 +107,7 @@ def score_applicant(
 
     # 8. Obtain model version hash for audit trail
     model_version = get_model_version()
+    feature_hash_val = compute_feature_hash(features)
 
     return Decision(
         p_repay=p_repay,
@@ -114,5 +120,7 @@ def score_applicant(
         model_version=model_version,
         group=group,
         evaluated_group=group,
+        feature_hash=feature_hash_val,
+        ocr_backend=get_active_ocr_backend(),
         timestamp=datetime.now(UTC),
     )

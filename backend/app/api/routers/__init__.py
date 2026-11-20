@@ -11,6 +11,7 @@ from app.api.routers.health import router as health_router
 from app.api.routers.loans import router as loans_router
 from app.api.routers.score import router as score_router
 from app.api.routers.stats import router as stats_router
+from app.api.routers.upload import router as upload_router
 
 __all__ = [
     "apply_router",
@@ -24,4 +25,5 @@ __all__ = [
     "loans_router",
     "score_router",
     "stats_router",
+    "upload_router",
 ]

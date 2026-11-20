@@ -88,7 +88,7 @@ Do not swap these without writing the reason in the report.
 | API | FastAPI, Pydantic v2, Uvicorn |
 | ML | XGBoost, SHAP, scikit-learn, Fairlearn (metrics) |
 | Agents | LangGraph (supervisor pattern), CrewAI only if a prompt says so |
-| Runtime LLMs | **DeepSeek** chat (Bhorsha, explanations, SMS parsing) and **DeepSeek-OCR** (bills, receipts, khata). Behind one `LLMClient` interface so a mock works offline |
+| Runtime LLMs | **DeepSeek**: `deepseek-chat` (fast extraction, Bhorsha turns, explanations) and `deepseek-reasoner` (Bhorsha scoring, hard parsing). Active OCR backend (`OCR_BACKEND` auto | deepseek-ocr-local | tesseract | mock). Behind `LLMClient` with schema repair, token budgeting, and offline mock |
 | Embeddings / RAG | BGE-M3, pgvector, hybrid BM25 + vector, BGE reranker |
 | MCP | Official Python MCP SDK, streamable HTTP + stdio |
 | Database | PostgreSQL 16 + pgvector, SQLAlchemy 2 + Alembic |
@@ -161,7 +161,7 @@ trustledger/
 - Approval-rate gap and equalized-odds gap between groups must stay ≤ 0.05 on the test set; CI fails if they don't.
 
 **Privacy**
-- Raw SMS never leaves the device in production. On the server only derived features are stored. (In the demo, raw SMS may be sent to the API only when `DEMO_MODE=true`, and is never persisted.)
+- Raw SMS never leaves the device in production. On the server only derived features are stored. (In demo or real-mode user uploads, raw SMS exports [.txt, .csv, .xml, paste] are parsed strictly in memory, redacted with Presidio, and never persisted to Postgres or persistent logs. Document photos are stored Fernet-encrypted in R2 with a 30-day TTL.)
 - PII is redacted with Presidio before any external LLM call.
 - Every data source needs a consent record. `DELETE /me` removes all user data.
 - No real personal data in the repo, tests or fixtures — synthetic only.
@@ -189,7 +189,7 @@ trustledger/
 - Bangla strings live in data files (JSON/YAML), not scattered in code.
 
 **Environment variables (add to `.env.example` as they appear)**
-`DATABASE_URL`, `REDIS_URL`, `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_OCR_URL`, `LLM_MODE` (`mock` | `live`), `R2_ENDPOINT`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `R2_BUCKET`, `API_KEYS`, `DEMO_MODE`, `TEMPORAL_HOST`, `MODEL_DIR`.
+`DATABASE_URL`, `REDIS_URL`, `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_CHAT_MODEL`, `DEEPSEEK_REASONER_MODEL`, `DEEPSEEK_OCR_URL`, `OCR_BACKEND`, `LLM_MODE` (`mock` | `live`), `LLM_SESSION_TOKEN_BUDGET`, `R2_ENDPOINT`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `R2_BUCKET`, `API_KEYS`, `DEMO_MODE`, `TEMPORAL_HOST`, `MODEL_DIR`.
 
 ---
 

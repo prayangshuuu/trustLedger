@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/theme.dart';
+import '../l10n.dart';
 import '../router.dart';
 import '../state/app_state.dart';
 import '../widgets/common.dart';
@@ -60,6 +61,63 @@ class ReasonsScreen extends StatelessWidget {
                           ),
                   ),
                 ),
+              if ((result['data_quality'] ?? d['data_quality'] ?? state.lastDataQuality) != null) ...[
+                SectionHeader(state.t('data_quality_title')),
+                Builder(
+                  builder: (context) {
+                    final dq = (result['data_quality'] ?? d['data_quality'] ?? state.lastDataQuality)
+                        as Map<String, dynamic>;
+                    final conf = ((dq['confidence'] as num? ?? 1.0) * 100).round();
+                    final months = dq['months_covered'] ?? 0;
+                    return Card(
+                      key: const Key('data_quality_card'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(TSpace.md),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.shield_outlined, color: TColor.teal),
+                                const SizedBox(width: TSpace.xs),
+                                Text(
+                                  '${state.t('data_confidence')}: ${num2(conf, state.lang)}%',
+                                  style: const TextStyle(fontWeight: TFont.bold),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  '${num2(months, state.lang)} মাস',
+                                  style: const TextStyle(
+                                    color: TColor.lightTextMuted,
+                                    fontSize: TType.caption,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: TSpace.sm),
+                            for (final note in (dq['notes_bn'] as List? ?? []))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('• ', style: TextStyle(color: TColor.teal, fontWeight: FontWeight.bold)),
+                                    Expanded(
+                                      child: Text(
+                                        note.toString(),
+                                        style: const TextStyle(fontSize: TType.bodySmall),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
               if (status == 'needs_review') _Notice(state.t('review'), TColor.gold),
               if (status == 'rejected' || status == 'blocked') _Notice(state.t('rejected'), TColor.warn),
             ],

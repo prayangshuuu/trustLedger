@@ -5,6 +5,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from app.core.validation import DataQualityBlock
+
 MOON_EXAMPLE_FEATURES: dict[str, Any] = {
     "monthly_inflow_bdt": 14000.0,
     "income_volatility": 0.10,
@@ -83,6 +85,11 @@ class ScoreResponse(BaseModel):
     group: str = Field(..., description="Demographic group used for fair calibrated threshold")
     threshold_used: float = Field(..., description="Calibrated decision threshold applied")
     model_version: str = Field(..., description="Model artifact SHA-256 fingerprint")
+    feature_hash: str | None = Field(default=None, description="Feature vector fingerprint")
+    data_quality: DataQualityBlock | None = Field(
+        default=None, description="Data verification & quality metrics"
+    )
+    ocr_backend: str | None = Field(default=None, description="Active OCR extraction backend")
     timestamp: datetime = Field(..., description="Decision generation timestamp")
 
 

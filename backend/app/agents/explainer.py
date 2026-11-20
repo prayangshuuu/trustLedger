@@ -11,6 +11,7 @@ from app.agents.prompts import load_prompt
 from app.core.decision import Decision
 from app.core.explain import ENGLISH_FEATURE_LABELS
 from app.core.model import load_meta
+from app.core.validation import validate_explanation
 from app.llm.client import get_llm_client, register_mock_task
 from app.rag.tips import GroundedTip, ground_tips
 
@@ -79,9 +80,31 @@ def explain_decision(db: Session | None, decision: Decision) -> ExplainerOutput:
             temperature=0.2,
         )
         candidate = result.summary_bn.strip()
-        # Rule check: the summary may only mention SHAP features
-        if candidate and feature_mentions(candidate) <= shap_features:
+        # Explanation guard: validates no hallucinated features, mismatched numbers, or approval promises
+        ok, err = validate_explanation(candidate, decision.score, shap_features)
+        if ok:
             summary, source = candidate, "llm"
+        else:
+            logger.info("Explainer output failed guard (%s); attempting 1 regeneration", err)
+            retry_res = get_llm_client().chat(
+                [
+                    {"role": "system", "content": load_prompt("explainer_agent")},
+                    {
+                        "role": "user",
+                        "content": f"<score>{decision.score}</score>\n<shap_reasons>\n{reasons_xml}\n"
+                        f"</shap_reasons>\n<template>{template}</template>\n"
+                        f"Previous summary violated guard: {err}. Mention only verified reasons, no loan promises, and exact numbers.",
+                    },
+                ],
+                schema=_Summary,
+                temperature=0.0,
+            )
+            candidate_retry = retry_res.summary_bn.strip()
+            ok_retry, _ = validate_explanation(candidate_retry, decision.score, shap_features)
+            if ok_retry:
+                summary, source = candidate_retry, "llm"
+            else:
+                summary, source = template, "template"
     except Exception:  # noqa: BLE001 - template is always a valid explanation
         logger.warning("explainer LLM call failed; using template summary")
 

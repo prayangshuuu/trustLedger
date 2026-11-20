@@ -22,8 +22,14 @@ from app.config import get_settings
 from app.core.decision import Decision, score_applicant
 from app.core.features import FEATURE_NAMES
 from app.core.model import get_model_version
+from app.core.validation import (
+    DataQualityBlock,
+    compute_feature_hash,
+    validate_features_before_scoring,
+)
 from app.db.models import AuditLog, DocumentRecord, FeatureSnapshot, User
 from app.parsers.features import extract_features
+from app.parsers.ocr import get_active_ocr_backend
 from app.parsers.sms import parse_sms_batch
 from app.privacy.consent import get_active_consents
 from app.services.decisions import FairnessCheck, fairness_check, persist_decision
@@ -50,6 +56,8 @@ class PipelineState(TypedDict, total=False):
     input_features: dict[str, Any] | None
     documents: list[dict[str, Any]]
     features: dict[str, Any]
+    data_quality: dict[str, Any]
+    feature_hash: str
     sources: list[str]
     needs_bhorsha: bool
     bhorsha_required: bool
@@ -186,15 +194,56 @@ def data_agent(state: PipelineState, config: RunnableConfig) -> dict[str, Any]:
     if all(features.get(f) is None for f in WALLET_FEATURES):
         needs_bhorsha = True
 
+    if all(v is None for v in features.values()):
+        dq_block = DataQualityBlock(
+            sources_used=["zero_history"],
+            months_covered=0.0,
+            transactions_counted=0,
+            flags=["all_features_null", "needs_bhorsha"],
+            confidence=0.5,
+            notes_bn=["পর্যাপ্ত লেনদেনের তথ্য নেই, ভরসা মূল্যায়ন প্রয়োজন।"],
+        )
+        return {
+            "features": features,
+            "data_quality": dq_block.model_dump(),
+            "feature_hash": compute_feature_hash(features),
+            "documents": docs,
+            "sources": sources or ["zero_history"],
+            "needs_bhorsha": True,
+            "_detail": {
+                "sources": sources or ["zero_history"],
+                "documents": len(docs),
+                "non_null_features": 0,
+                "ocr_backend": get_active_ocr_backend(),
+                "data_quality_confidence": 0.5,
+                "data_quality_flags": ["all_features_null", "needs_bhorsha"],
+            },
+        }
+
+    # Run AI validation guardrails on feature vector
+    val_res = validate_features_before_scoring(
+        features,
+        raw_sources={"transactions": txs if "txs" in locals() else [], "documents": docs},
+        enforce_sufficiency=False,
+    )
+    validated_features = val_res.features
+    dq_dict = val_res.data_quality.model_dump()
+    f_hash = val_res.feature_hash
+
     return {
-        "features": features,
+        "features": validated_features,
+        "data_quality": dq_dict,
+        "feature_hash": f_hash,
         "documents": docs,
         "sources": sources,
         "needs_bhorsha": needs_bhorsha,
         "_detail": {
             "sources": sources,
             "documents": len(docs),
-            "non_null_features": sum(v is not None for v in features.values()),
+            "non_null_features": sum(v is not None for v in validated_features.values()),
+            "ocr_backend": get_active_ocr_backend(),
+            "data_quality_confidence": dq_dict.get("confidence"),
+            "data_quality_flags": dq_dict.get("flags"),
         },
     }
 
@@ -221,6 +270,10 @@ def bhorsha_router(state: PipelineState, config: RunnableConfig) -> dict[str, An
 def scoring_agent(state: PipelineState, config: RunnableConfig) -> dict[str, Any]:
     try:
         decision = score_applicant(state["features"], group=state["group"])
+        if state.get("data_quality"):
+            decision.data_quality = state["data_quality"]
+        if state.get("feature_hash"):
+            decision.feature_hash = state["feature_hash"]
     except ValueError as e:  # includes AllFeaturesMissingError and unknown group
         return {"error": f"SCORING_FAILED: {e}", "_detail": {}}
     return {
@@ -229,6 +282,7 @@ def scoring_agent(state: PipelineState, config: RunnableConfig) -> dict[str, Any
             "p_repay": round(decision.p_repay, 4),
             "score": decision.score,
             "band": decision.band,
+            "feature_hash": decision.feature_hash,
         },
     }
 
@@ -251,9 +305,14 @@ def explainer_agent(state: PipelineState, config: RunnableConfig) -> dict[str, A
 def fairness_agent(state: PipelineState, config: RunnableConfig) -> dict[str, Any]:
     decision = Decision.model_validate(state["decision"]) if state.get("decision") else None
     check = fairness_check(decision, state["group"], state.get("features", {}))
+    flags = state.get("data_quality", {}).get("flags", [])
     if not check.ok or decision is None:
         status = "blocked"
-    elif abs(decision.p_repay - decision.threshold_used) <= BORDERLINE_MARGIN:
+    elif (
+        "extreme_ood_detected" in flags
+        or any("ood_" in f for f in flags)
+        or abs(decision.p_repay - decision.threshold_used) <= BORDERLINE_MARGIN
+    ):
         status = "needs_review"
     else:
         status = "approved" if decision.approved else "rejected"
@@ -296,7 +355,13 @@ def finalize(state: PipelineState, config: RunnableConfig) -> dict[str, Any]:
             fairness=fairness,
             status=status,
             event="agent_decision",
-            extra_audit={"trace_id": state["trace_id"], "status": status},
+            extra_audit={
+                "trace_id": state["trace_id"],
+                "status": status,
+                "data_quality": state.get("data_quality"),
+                "feature_hash": state.get("feature_hash"),
+                "ocr_backend": get_active_ocr_backend(),
+            },
         )
         decision_id = record.id
     return {"status": status, "decision_id": decision_id, "_detail": {"status": status}}

@@ -2,7 +2,9 @@
 
 import os
 import subprocess
+import time
 from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import APIRouter
 from sqlalchemy import text
@@ -11,6 +13,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.api.deps import DbSession
 from app.config import get_settings
 from app.core.model import get_model_version
+from app.llm.client import get_llm_client
+from app.parsers.ocr import get_active_ocr_backend
 
 router = APIRouter(tags=["System"])
 
@@ -74,4 +78,44 @@ def version() -> dict[str, str]:
         "app_version": "1.0.0",
         "model_version": get_model_version(),
         "git_sha": get_git_sha(),
+    }
+
+
+@router.get("/health/ai", summary="AI Engine and Models Health Check")
+def health_ai() -> dict[str, Any]:
+    """Verify LLM and OCR connectivity, active model versions, and latency without leaking API keys."""
+    settings = get_settings()
+    ocr_backend = get_active_ocr_backend()
+    status_str = "ok"
+    error_msg: str | None = None
+    latency_ms = 0.0
+
+    if settings.LLM_MODE == "live" and settings.DEEPSEEK_API_KEY:
+        t0 = time.perf_counter()
+        try:
+            client = get_llm_client()
+            client.chat(
+                messages=[{"role": "user", "content": "ping"}],
+                model=settings.DEEPSEEK_CHAT_MODEL,
+                temperature=0.0,
+                max_tokens=2,
+            )
+            latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+        except Exception as e:  # noqa: BLE001
+            latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+            status_str = "degraded"
+            error_msg = str(e)
+    else:
+        status_str = "mock"
+
+    return {
+        "status": status_str,
+        "mode": settings.LLM_MODE,
+        "chat_model": settings.DEEPSEEK_CHAT_MODEL,
+        "reasoner_model": settings.DEEPSEEK_REASONER_MODEL,
+        "ocr_backend": ocr_backend,
+        "latency_ms": latency_ms,
+        "key_configured": bool(settings.DEEPSEEK_API_KEY),
+        "error": error_msg,
+        "timestamp": datetime.now(UTC).isoformat(),
     }

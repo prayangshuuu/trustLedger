@@ -19,14 +19,23 @@ router = APIRouter(tags=["Documents & OCR"])
 MAX_IMAGE_BYTES = 8_000_000
 
 
-def sniff_image_type(data: bytes) -> str | None:
-    """Identify an image by its magic bytes (the client-sent content type is not trusted)."""
+def sniff_image_type(data: bytes, filename: str | None = None) -> str | None:
+    """Identify an image or PDF by its magic bytes (the client-sent content type is not trusted)."""
     if data[:3] == b"\xff\xd8\xff":
         return "jpeg"
     if data[:8] == b"\x89PNG\r\n\x1a\n":
         return "png"
     if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
         return "webp"
+    lower_fn = (filename or "").lower()
+    if (lower_fn.endswith(".pdf") or not filename) and data[:4] == b"%PDF":
+        return "pdf"
+    if (
+        len(data) >= 12
+        and data[4:8] == b"ftyp"
+        and data[8:12] in (b"heic", b"heix", b"mif1", b"msf1")
+    ):
+        return "heic"
     return None
 
 
@@ -72,9 +81,10 @@ def upload_document(
         )
     if len(image_bytes) > MAX_IMAGE_BYTES:
         raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "Image larger than 8 MB")
-    if sniff_image_type(image_bytes) is None:
+    if sniff_image_type(image_bytes, file.filename) is None:
         raise HTTPException(
-            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "Only JPEG, PNG or WebP images are accepted"
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "Only JPEG, PNG, WebP, HEIC or PDF documents are accepted",
         )
 
     # 4. Execute OCR processing pipeline
@@ -83,12 +93,18 @@ def upload_document(
         if document_type in ("utility_bill", "receipt", "khata_page")
         else None
     )
-    result = process_document(
-        image_bytes=image_bytes,
-        user_id=user_id,
-        document_type=doc_type_val,
-        filename=file.filename,
-    )
+    try:
+        result = process_document(
+            image_bytes=image_bytes,
+            user_id=user_id,
+            document_type=doc_type_val,
+            filename=file.filename,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "Could not decode image or document payload",
+        ) from e
 
     # 5. Persist metadata and extracted fields in DB (zero image bytes stored)
     doc_record = DocumentRecord(

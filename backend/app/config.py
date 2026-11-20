@@ -1,7 +1,9 @@
 """Application configuration loaded from environment variables using pydantic-settings."""
 
+import os
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,11 +24,20 @@ class Settings(BaseSettings):
     DEEPSEEK_API_KEY: str | None = None
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
     DEEPSEEK_CHAT_MODEL: str = "deepseek-chat"
+    DEEPSEEK_REASONER_MODEL: str = "deepseek-reasoner"
     # OpenAI-compatible server hosting DeepSeek-OCR (e.g. vLLM), base URL without /chat/completions
     DEEPSEEK_OCR_URL: str | None = None
     DEEPSEEK_OCR_MODEL: str = "deepseek-ai/DeepSeek-OCR"
     DEEPSEEK_OCR_API_KEY: str | None = None
+    OCR_BACKEND: str = "auto"  # auto | deepseek-ocr-local | tesseract | mock
     LLM_MODE: str = "mock"
+    LLM_SESSION_TOKEN_BUDGET: int = 50_000
+
+    @model_validator(mode="after")
+    def _apply_live_default(self) -> "Settings":
+        if "LLM_MODE" not in os.environ and self.DEEPSEEK_API_KEY and self.DEEPSEEK_API_KEY.strip():
+            self.LLM_MODE = "live"
+        return self
 
     # Object Storage (Cloudflare R2 / S3 API)
     R2_ENDPOINT: str | None = None

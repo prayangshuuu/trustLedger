@@ -36,6 +36,9 @@ class AppState extends ChangeNotifier {
   Set<String> consents = {};
   List<String> sms = [];
   Map<String, dynamic>? lastDocument;
+  List<Map<String, dynamic>> extractedTransactions = [];
+  List<Map<String, dynamic>> extractedBills = [];
+  Map<String, dynamic>? lastDataQuality;
   Map<String, dynamic>? result; // POST /apply response (or a restored equivalent)
   Map<String, dynamic>? loan;
   double amount = 15000;
@@ -63,9 +66,46 @@ class AppState extends ChangeNotifier {
     loan = null;
     sms = [];
     lastDocument = null;
+    extractedTransactions = [];
+    extractedBills = [];
+    lastDataQuality = null;
     await api.startSession(userId!);
     _persist();
     await refreshProfile();
+  }
+
+  Future<void> startRealSession({
+    String? phone,
+    String gender = 'F',
+    String region = 'urban',
+    String division = 'Dhaka',
+  }) async {
+    final resp = await api.registerUser(phone: phone, gender: gender, region: region, division: division);
+    userId = resp['user_id'] as String;
+    personaKey = 'real_user';
+    group = '${gender}_$region';
+    amount = 15000;
+    result = null;
+    loan = null;
+    sms = [];
+    lastDocument = null;
+    extractedTransactions = [];
+    extractedBills = [];
+    lastDataQuality = null;
+    _persist();
+    await refreshProfile();
+  }
+
+  Future<Map<String, dynamic>> confirmAndExtract() async {
+    final res = await api.confirmUpload(
+      userId!,
+      extractedTransactions,
+      billRecords: extractedBills,
+      requestedAmount: amount,
+    );
+    lastDataQuality = res['data_quality'] as Map<String, dynamic>?;
+    notifyListeners();
+    return res;
   }
 
   void _persist() {
@@ -159,6 +199,9 @@ class AppState extends ChangeNotifier {
     result = null;
     loan = null;
     consents = {};
+    extractedTransactions = [];
+    extractedBills = [];
+    lastDataQuality = null;
     api.client.token = null;
     _persist();
     notifyListeners();

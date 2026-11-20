@@ -4,6 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from app.core.validation import DataQualityBlock
 from app.rag.tips import GroundedTip
 from app.schemas.score import ReasonItem
 
@@ -26,6 +27,9 @@ class ApplyDecision(BaseModel):
     approved: bool
     threshold_used: float
     model_version: str
+    feature_hash: str | None = None
+    data_quality: DataQualityBlock | None = None
+    ocr_backend: str | None = None
     reasons: list[ReasonItem]
     good: list[str]
     bad: list[str]
@@ -41,6 +45,7 @@ class ApplyResponse(BaseModel):
     bhorsha_required: bool = False
     error: str | None = None
     decision: ApplyDecision | None = None
+    data_quality: DataQualityBlock | None = None
     summary_bn: str | None = None
     grounded_tips: list[GroundedTip] = []
     fairness: dict[str, Any] | None = None

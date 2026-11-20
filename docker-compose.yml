@@ -15,6 +15,11 @@ x-app-env: &app-env
   R2_BUCKET: ${R2_BUCKET:-trustledger}
   LLM_MODE: ${LLM_MODE:-mock}
   DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+  DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+  DEEPSEEK_CHAT_MODEL: ${DEEPSEEK_CHAT_MODEL:-deepseek-chat}
+  DEEPSEEK_REASONER_MODEL: ${DEEPSEEK_REASONER_MODEL:-deepseek-reasoner}
+  OCR_BACKEND: ${OCR_BACKEND:-auto}
+  LLM_SESSION_TOKEN_BUDGET: ${LLM_SESSION_TOKEN_BUDGET:-50000}
   DEMO_MODE: ${DEMO_MODE:-true}
   API_KEYS: ${API_KEYS:-dev-key}
   SESSION_SECRET: ${SESSION_SECRET:-change-me-docker-local-session-secret}
@@ -154,6 +159,20 @@ services:
       - ./infra/grafana/trustledger-api.json:/var/lib/grafana/dashboards/trustledger-api.json:ro
     depends_on:
       - prometheus
+
+  deepseek-ocr-local:
+    profiles: ["ocr"]
+    image: vllm/vllm-openai:latest
+    restart: unless-stopped
+    ports:
+      - "8082:8000"
+    environment:
+      MODEL: deepseek-ai/DeepSeek-OCR
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

@@ -24,7 +24,7 @@ void main() {
 
   testWidgets('deep link without a session lands on welcome', (tester) async {
     await pumpApp(tester, FakeBackend().state(), '/reasons');
-    expect(find.byKey(const Key('persona_moon')), findsOneWidget);
+    expect(find.byKey(const Key('use_own_data')), findsOneWidget);
   });
 
   testWidgets('wide screens centre the phone layout on a backdrop', (tester) async {

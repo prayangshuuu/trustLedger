@@ -50,14 +50,38 @@ class _ConnectDataScreenState extends State<ConnectDataScreen> {
     setState(() => s.sms = (data['sms'] as List).cast<String>());
   }
 
-  void _usePasted(String text) {
+  void _usePasted(String text) async {
     final lines = text.split(RegExp(r'\r?\n')).map((l) => l.trim()).where((l) => l.isNotEmpty).toList();
     setState(() => s.sms = lines);
+    if (s.personaKey == 'real_user') {
+      try {
+        final res = await s.api.uploadSms(s.userId!, rawText: text);
+        setState(() {
+          s.extractedTransactions = (res['transactions'] as List).cast<Map<String, dynamic>>();
+        });
+      } catch (e) {
+        if (mounted) showError(context, s, e);
+      }
+    }
   }
 
   Future<void> _pickSmsFile() async {
-    final f = await pickFile(accept: '.txt,text/plain');
-    if (f != null) _usePasted(utf8.decode(f.bytes, allowMalformed: true));
+    final f = await pickFile(accept: '.txt,.csv,.xml,text/plain,text/csv,text/xml');
+    if (f != null) {
+      if (s.personaKey == 'real_user') {
+        try {
+          final res = await s.api.uploadSms(s.userId!, bytes: f.bytes, filename: f.name);
+          setState(() {
+            s.extractedTransactions = (res['transactions'] as List).cast<Map<String, dynamic>>();
+            s.sms = s.extractedTransactions.map((t) => t.toString()).toList();
+          });
+        } catch (e) {
+          if (mounted) showError(context, s, e);
+        }
+      } else {
+        _usePasted(utf8.decode(f.bytes, allowMalformed: true));
+      }
+    }
   }
 
   Future<void> _uploadSample() async {
@@ -66,7 +90,7 @@ class _ConnectDataScreenState extends State<ConnectDataScreen> {
   }
 
   Future<void> _pickPhoto({required bool camera}) async {
-    final f = await pickFile(accept: 'image/jpeg,image/png,image/webp', camera: camera);
+    final f = await pickFile(accept: 'image/jpeg,image/png,image/webp,application/pdf', camera: camera);
     if (f != null) await _upload(f.bytes, f.name, detect: true);
   }
 
@@ -74,7 +98,15 @@ class _ConnectDataScreenState extends State<ConnectDataScreen> {
     setState(() => _uploading = true);
     try {
       final doc = await s.api.uploadDocument(s.userId!, bytes, name, documentType: detect ? null : 'utility_bill');
-      setState(() => s.lastDocument = doc);
+      setState(() {
+        s.lastDocument = doc;
+        if (doc['extracted_fields'] != null) {
+          s.extractedBills.add({
+            'document_type': doc['document_type'],
+            ...(doc['extracted_fields'] as Map<String, dynamic>),
+          });
+        }
+      });
     } catch (e) {
       if (mounted) showError(context, s, e);
     } finally {
@@ -197,8 +229,20 @@ class _ConnectDataScreenState extends State<ConnectDataScreen> {
         ),
         bottom: FilledButton(
           key: const Key('get_score'),
-          onPressed: () => context.push(Routes.processing),
-          child: Text(s.t('get_score')),
+          onPressed: () {
+            if (s.personaKey == 'real_user' &&
+                (s.extractedTransactions.isNotEmpty || s.extractedBills.isNotEmpty)) {
+              context.push(Routes.review);
+            } else {
+              context.push(Routes.processing);
+            }
+          },
+          child: Text(
+            s.personaKey == 'real_user' &&
+                    (s.extractedTransactions.isNotEmpty || s.extractedBills.isNotEmpty)
+                ? s.t('review_title')
+                : s.t('get_score'),
+          ),
         ),
       ),
     );

@@ -9,7 +9,13 @@ from sqlalchemy import select
 from app.api.deps import ApiKeyAuth, DbSession
 from app.core.decision import score_applicant
 from app.core.features import AllFeaturesMissingError
+from app.core.validation import (
+    InsufficientDataError,
+    ValidationFailureError,
+    validate_features_before_scoring,
+)
 from app.db.models import DecisionRecord, FeatureSnapshot, User
+from app.parsers.ocr import get_active_ocr_backend
 from app.privacy.consent import ConsentMissingError, has_consent
 from app.schemas.score import ExplainResponse, ReasonItem, ScoreRequest, ScoreResponse
 from app.services.decisions import fairness_check, persist_decision
@@ -74,23 +80,39 @@ def score(payload: ScoreRequest, db: DbSession, _api_key: ApiKeyAuth = None) -> 
     if not demographic_group:
         demographic_group = "F_urban"
 
-    # 2. Run core scoring and explanation pipeline
+    # 2. Run core validation and scoring pipeline
+    if not features_dict or all(v is None for v in features_dict.values()):
+        raise AllFeaturesMissingError(
+            "All features are missing. At least one feature must be provided to score an applicant."
+        )
+
     try:
-        decision_result = score_applicant(features_dict, group=demographic_group)
+        val_res = validate_features_before_scoring(features_dict, enforce_sufficiency=False)
+        validated_features = val_res.features
+        decision_result = score_applicant(validated_features, group=demographic_group)
+        decision_result.data_quality = val_res.data_quality.model_dump()
+        decision_result.feature_hash = val_res.feature_hash
     except AllFeaturesMissingError:
         raise
+    except (InsufficientDataError, ValidationFailureError) as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
 
     # 3. Fairness sign-off, then persist decision with a full audit entry
-    fairness = fairness_check(decision_result, demographic_group, features_dict)
+    fairness = fairness_check(decision_result, demographic_group, validated_features)
+    extra_audit = {
+        "feature_hash": val_res.feature_hash,
+        "data_quality": val_res.data_quality.model_dump(),
+    }
     decision_record = persist_decision(
         db,
         decision_result,
-        features=features_dict,
+        features=validated_features,
         user=user,
         amount_bdt=payload.amount_bdt or 15000.0,
         fairness=fairness,
+        extra_audit=extra_audit,
     )
     db.commit()
 
@@ -119,6 +141,9 @@ def score(payload: ScoreRequest, db: DbSession, _api_key: ApiKeyAuth = None) -> 
         group=demographic_group,
         threshold_used=decision_result.threshold_used,
         model_version=decision_result.model_version,
+        feature_hash=val_res.feature_hash,
+        data_quality=val_res.data_quality,
+        ocr_backend=get_active_ocr_backend(),
         timestamp=decision_record.created_at or datetime.now(UTC),
     )
 

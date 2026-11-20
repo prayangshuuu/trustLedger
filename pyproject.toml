@@ -121,3 +121,6 @@ ignore_missing_imports = true
 testpaths = ["backend/tests"]
 pythonpath = ["backend", "."]
 addopts = "-v --cov=app --cov-report=term-missing"
+markers = [
+    "live: marks tests as requiring a live DeepSeek API key (skipped when key missing)",
+]

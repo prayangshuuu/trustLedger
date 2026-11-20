@@ -30,6 +30,9 @@ void main() {
     final state = AppState();
     await state.api.resetDemo();
     await tester.pumpWidget(TrustLedgerApp(state: state));
+    if (find.byKey(const Key('try_demo_switch')).evaluate().isNotEmpty) {
+      await tapKey(tester, 'try_demo_switch');
+    }
     await tapKey(tester, 'persona_moon');
     for (final src in ['sms', 'bills', 'recharge', 'ocr']) {
       await waitFor(tester, find.byKey(Key('consent_$src')));

@@ -30,6 +30,51 @@ class SessionResponse(BaseModel):
     user_id: str
 
 
+class RegisterUserRequest(BaseModel):
+    phone: str | None = None
+    gender: str = "F"
+    region: str = "urban"
+    division: str = "Dhaka"
+
+
+@router.post(
+    "/auth/register",
+    response_model=SessionResponse,
+    summary="Register a real user or guest session",
+)
+def register_user(
+    payload: RegisterUserRequest, db: DbSession, _api_key: ApiKeyAuth = None
+) -> SessionResponse:
+    """Register a new borrower user and return an active session token."""
+    import hashlib
+    import uuid
+
+    if payload.phone and payload.phone.strip():
+        phone_hash = hashlib.sha256(payload.phone.strip().encode()).hexdigest()
+    else:
+        phone_hash = hashlib.sha256(str(uuid.uuid4()).encode()).hexdigest()
+
+    existing = db.scalars(select(User).where(User.phone_hash == phone_hash)).first()
+    if existing:
+        user = existing
+    else:
+        user = User(
+            id=str(uuid.uuid4()),
+            phone_hash=phone_hash,
+            gender=payload.gender,
+            region=payload.region,
+            division=payload.division,
+            has_bank_account=False,
+            has_salary_slip=False,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token, expires = issue_token(user.id)
+    return SessionResponse(token=token, expires_at=expires, user_id=user.id)
+
+
 @router.post("/auth/session", response_model=SessionResponse, summary="Issue a borrower session")
 def create_session(
     payload: SessionRequest, db: DbSession, _api_key: ApiKeyAuth = None

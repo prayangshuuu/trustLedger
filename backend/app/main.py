@@ -24,6 +24,7 @@ from app.api.routers import (
     loans_router,
     score_router,
     stats_router,
+    upload_router,
 )
 from app.config import get_settings
 from app.core.features import AllFeaturesMissingError
@@ -91,6 +92,10 @@ def create_app() -> FastAPI:
             {
                 "name": "Fairness & Inclusion",
                 "description": "Demographic parity audits and bank rule inclusion lift",
+            },
+            {
+                "name": "Real User Upload",
+                "description": "Multi-source upload, in-memory parsing, review and AI validation",
             },
         ],
     )
@@ -188,6 +193,7 @@ def create_app() -> FastAPI:
     application.include_router(loans_router)
     application.include_router(demo_router)
     application.include_router(stats_router)
+    application.include_router(upload_router)
 
     # 5. Borrower web app at /app, then the lender dashboard at / (same origin, when builds exist).
     #    The dashboard catch-all must stay last.

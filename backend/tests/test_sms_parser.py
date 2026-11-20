@@ -219,7 +219,7 @@ def test_deepseek_client_chat_mocked_network(caplog: pytest.LogCaptureFixture) -
         log_args = mock_log_info.call_args[0]
         assert "DeepSeek %s success" in log_format
         assert log_args[1] == "chat"
-        assert log_args[4] == 100  # cache_hit_tokens
+        assert log_args[3] == 100  # cache_hit_tokens
 
 
 def test_deepseek_client_retries_and_backoff() -> None:
