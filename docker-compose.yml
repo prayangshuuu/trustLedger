@@ -59,7 +59,8 @@ services:
       retries: 10
 
   minio:
-    image: minio/minio:latest
+    # minio/minio is gone from Docker Hub (MinIO stopped publishing images); use Chainguard's build
+    image: cgr.dev/chainguard/minio:latest
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -102,6 +103,13 @@ services:
       <<: *app-env
       PORT: "8000"
       SEED_POPULATION: ${SEED_POPULATION:-4000}
+    healthcheck:
+      # first boot runs migrations, RAG ingest and the demo seed before uvicorn listens
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      start_period: 900s
+      retries: 10
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -142,6 +150,8 @@ services:
       - "9090:9090"
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # second scrape target (API run on the host)
     depends_on:
       api: { condition: service_healthy }
 

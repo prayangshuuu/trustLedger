@@ -35,9 +35,8 @@ apps/mobile/build/*
 !apps/mobile/build/web
 !apps/mobile/build/web/**
 
-# Datasets, screenshots, notebooks & local data
+# Datasets, notebooks & local data (docs/media is needed by the docs site build)
 datasets
-docs/media
 *.ipynb
 *.db
 *.sqlite3

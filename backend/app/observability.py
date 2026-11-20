@@ -69,6 +69,10 @@ def scrub(text: str) -> str:
     return text
 
 
+def _scrub_arg(value: Any) -> Any:
+    return scrub(value) if isinstance(value, str) else value
+
+
 _factory_installed = False
 
 
@@ -82,8 +86,14 @@ def install_log_filter() -> None:
     def factory(*args: Any, **kwargs: Any) -> logging.LogRecord:
         record = base_factory(*args, **kwargs)
         with contextlib.suppress(Exception):  # never break logging
-            record.msg = scrub(record.getMessage())
-            record.args = None
+            # Scrub the template and each argument but keep record.args: formatters such as
+            # uvicorn's AccessFormatter unpack it, and fail on None.
+            if isinstance(record.msg, str):
+                record.msg = scrub(record.msg)
+            if isinstance(record.args, tuple):
+                record.args = tuple(_scrub_arg(a) for a in record.args)
+            elif isinstance(record.args, dict):
+                record.args = {k: _scrub_arg(v) for k, v in record.args.items()}
         return record
 
     logging.setLogRecordFactory(factory)

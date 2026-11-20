@@ -29,19 +29,18 @@ RUN cd "$FLUTTER_HOME" \
     && flutter --version && flutter config --no-analytics --enable-web >/dev/null && flutter precache --web
 WORKDIR /src/apps/mobile
 COPY apps/mobile/pubspec.yaml apps/mobile/pubspec.lock ./
-RUN --mount=type=cache,target=/root/.pub-cache/hosted \
-    flutter pub get
+# no cache mount: pub renames out of /root/.pub-cache/_temp, which fails across mounts (EXDEV)
+RUN flutter pub get
 COPY apps/design_tokens.json /src/apps/design_tokens.json
 COPY apps/mobile ./
 ARG APP_API_KEY=dev-key
-RUN --mount=type=cache,target=/root/.pub-cache/hosted \
-    dart run tool/gen_tokens.dart --check \
+RUN dart run tool/gen_tokens.dart --check \
     && flutter build web --release --base-href /app/ \
        --dart-define=API_BASE_URL= --dart-define=API_KEY=${APP_API_KEY}
 
 # ------------------------------------------------------------------ 3. Python runtime
 FROM python:3.12-slim AS runtime
-COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PYTHONUNBUFFERED=1
 WORKDIR /srv
 # dependencies first (cached unless the lockfile changes); no dev or notebook groups
