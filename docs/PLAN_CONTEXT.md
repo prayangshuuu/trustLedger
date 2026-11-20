@@ -188,8 +188,11 @@ trustledger/
 - `ruff check`, `ruff format`, `mypy backend/app` and `pytest` must pass before a prompt is done.
 - Bangla strings live in data files (JSON/YAML), not scattered in code.
 
-**Environment variables (add to `.env.example` as they appear)**
-`DATABASE_URL`, `REDIS_URL`, `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_CHAT_MODEL`, `DEEPSEEK_REASONER_MODEL`, `DEEPSEEK_OCR_URL`, `OCR_BACKEND`, `LLM_MODE` (`mock` | `live`), `LLM_SESSION_TOKEN_BUDGET`, `R2_ENDPOINT`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `R2_BUCKET`, `API_KEYS`, `DEMO_MODE`, `TEMPORAL_HOST`, `MODEL_DIR`.
+**Environment variables (synchronized across `.env`, `.env.example`, and `.env.docker`)**
+- **Database & Cache:** `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `DATABASE_URL`, `REDIS_URL`.
+- **LLMs & AI Services:** `LLM_MODE` (`mock` | `live`), `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_CHAT_MODEL`, `DEEPSEEK_REASONER_MODEL`, `DEEPSEEK_OCR_URL`, `DEEPSEEK_OCR_MODEL`, `DEEPSEEK_OCR_API_KEY`, `OCR_BACKEND` (`auto` | `deepseek-ocr-local` | `tesseract` | `mock`), `LLM_SESSION_TOKEN_BUDGET`.
+- **RAG & Storage:** `EMBEDDINGS_MODE`, `RERANKER_MODE`, `RAG_COMPRESSION`, `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `R2_ENDPOINT`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `R2_BUCKET`, `STORAGE_ENCRYPTION_KEY`, `DOCUMENT_STORAGE_DIR`.
+- **Security & Config:** `API_KEYS`, `APP_API_KEY`, `MCP_API_KEYS`, `SESSION_SECRET`, `CORS_ORIGINS`, `RATE_LIMIT_PER_MINUTE`, `MAX_BODY_BYTES`, `MAX_UPLOAD_BYTES`, `DEMO_MODE`, `SEED_POPULATION`, `DASHBOARD_DIR`, `BORROWER_WEB_DIR`, `MODEL_DIR`, `GIT_SHA`, `PORT`, `TEMPORAL_HOST`, `TRUSTLEDGER_API_URL`, `TRUSTLEDGER_API_KEY`, `TRUSTLEDGER_BACKEND`, `GRAFANA_ADMIN_PASSWORD`.
 
 ---
 
