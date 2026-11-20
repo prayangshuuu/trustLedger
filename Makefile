@@ -31,16 +31,16 @@ seed:
 ingest:
 	uv run python -m app.rag.ingest
 
-# Borrower web app (Flutter web) served by the API at /app, same origin
+# Borrower web app (React, apps/borrower) served by the API at /app, same origin
 web:
-	cd apps/mobile && dart run tool/gen_tokens.dart && flutter build web --release --base-href /app/ --dart-define=API_BASE_URL= --dart-define=API_KEY=$${APP_API_KEY:-dev-key}
+	cd apps/borrower && npm ci && VITE_API_KEY=$${APP_API_KEY:-dev-key} npm run build
 
 web-serve: web
 	@echo "Borrower web app: http://localhost:8000/app/  (dashboard: http://localhost:8000/)"
 	uv run uvicorn app.main:app --port 8000
 
 web-test:
-	node apps/mobile/tool/e2e_web_test.mjs
+	node apps/borrower/tests/e2e.mjs
 
 # Regenerate design tokens for Flutter and the dashboard from apps/design_tokens.json
 tokens:

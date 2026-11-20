@@ -60,26 +60,22 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  mobile:
-    name: Borrower app (Android + web codebase)
-    # macOS: the golden screenshots are generated on macOS; same pinned Flutter as local
-    runs-on: macos-latest
+  borrower:
+    name: Borrower web app
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/mobile
+        working-directory: apps/borrower
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/setup-node@v4
         with:
-          channel: stable
-          flutter-version: 3.44.9
-      - run: flutter pub get
-      - name: Design tokens are up to date
-        run: dart run tool/gen_tokens.dart --check
-      - run: flutter analyze
-      - name: Widget, router and golden tests
-        run: flutter test
-      - run: flutter build web --release --base-href /app/ --dart-define=API_BASE_URL=
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/borrower/package-lock.json
+      - run: npm ci
+      - run: npx tsc -b --noEmit
+      - run: npm run build
 
   web-e2e:
     name: Web app in Chromium, Firefox and WebKit
@@ -90,7 +86,6 @@ jobs:
       DEMO_MODE: "true"
       API_KEYS: dev-key
       DATABASE_URL: sqlite:///./ci.db
-      SKIP_LIGHTHOUSE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -99,14 +94,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: 3.44.9
       - run: uv sync --frozen
       - name: Build borrower web app and dashboard
         run: |
-          (cd apps/mobile && flutter pub get && flutter build web --release --base-href /app/ --dart-define=API_BASE_URL= --dart-define=API_KEY=dev-key)
+          (cd apps/borrower && npm ci && VITE_API_KEY=dev-key npm run build)
           (cd apps/dashboard && npm ci && npm run build && npx playwright install --with-deps chromium firefox webkit)
       - name: Seed and start the API
         run: |
@@ -114,7 +105,5 @@ jobs:
           uv run python -m app.rag.ingest
           uv run uvicorn app.main:app --port 8000 &
           sleep 10
-      - name: Cross-browser check (Chromium, Firefox, WebKit desktop + iPhone, Android)
-        run: node apps/mobile/tool/web_audit.mjs
-      - name: Borrower web e2e (Moon flow, deep links, desktop, Bhorsha)
-        run: node apps/mobile/tool/e2e_web_test.mjs
+      - name: Borrower web e2e (Moon flow, deep links, reload, Bhorsha) in Chromium, Firefox, WebKit
+        run: node apps/borrower/tests/e2e.mjs
