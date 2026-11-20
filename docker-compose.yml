@@ -1,0 +1,161 @@
+# TrustLedger full stack. From the repo root:   docker compose up --build
+#   http://localhost:8000/      lender dashboard        http://localhost:8000/app/   borrower web app
+#   http://localhost:8000/docs  public docs site        http://localhost:8000/api/docs  Swagger
+#   http://localhost:8001/mcp   MCP (X-API-Key)         http://localhost:8233  Temporal UI
+#   http://localhost:3000       Grafana                 http://localhost:9090  Prometheus
+# Defaults need no host configuration; override any value in .env (see .env.docker).
+# Databases are not published on host ports, so a local Postgres/Redis never conflicts.
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-trustledger}
+  REDIS_URL: redis://redis:6379/0
+  R2_ENDPOINT: http://minio:9000
+  R2_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+  R2_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+  R2_BUCKET: ${R2_BUCKET:-trustledger}
+  LLM_MODE: ${LLM_MODE:-mock}
+  DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+  DEMO_MODE: ${DEMO_MODE:-true}
+  API_KEYS: ${API_KEYS:-dev-key}
+  SESSION_SECRET: ${SESSION_SECRET:-change-me-docker-local-session-secret}
+  STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:-}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8000}
+  TEMPORAL_HOST: temporal:7233
+
+x-app-image: &app-image
+  image: trustledger-app:local
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-trustledger}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9001:9001" # console only; the API reaches MinIO on the internal network
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  temporal:
+    image: temporalio/temporal:latest
+    restart: unless-stopped
+    command: server start-dev --ip 0.0.0.0
+    ports:
+      - "7233:7233"
+      - "8233:8233"
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "127.0.0.1:7233"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    <<: *app-image
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+      args:
+        APP_API_KEY: ${APP_API_KEY:-dev-key}
+    command: ["api"]
+    ports:
+      - "8000:8000"
+    environment:
+      <<: *app-env
+      PORT: "8000"
+      SEED_POPULATION: ${SEED_POPULATION:-4000}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio: { condition: service_healthy }
+
+  temporal-worker:
+    <<: *app-image
+    pull_policy: never # built by the api service
+    command: ["worker"]
+    environment:
+      <<: *app-env
+      TRUSTLEDGER_API_URL: http://api:8000
+      TRUSTLEDGER_API_KEY: ${API_KEYS:-dev-key}
+    healthcheck:
+      disable: true
+    depends_on:
+      temporal: { condition: service_healthy }
+      api: { condition: service_healthy }
+
+  mcp-server:
+    <<: *app-image
+    pull_policy: never
+    command: ["mcp"]
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: "8001"
+      TRUSTLEDGER_API_URL: http://api:8000
+      TRUSTLEDGER_API_KEY: ${API_KEYS:-dev-key}
+      MCP_API_KEYS: ${MCP_API_KEYS:-dev-key}
+    depends_on:
+      api: { condition: service_healthy }
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      api: { condition: service_healthy }
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/trustledger-api.json:/var/lib/grafana/dashboards/trustledger-api.json:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

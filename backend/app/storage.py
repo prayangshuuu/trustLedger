@@ -109,6 +109,20 @@ class S3Store:
             aws_secret_access_key=s.R2_SECRET_KEY,
             region_name="auto",
         )
+        self._ensure_bucket()
+
+    def _ensure_bucket(self) -> None:
+        """Create the bucket on first use (MinIO in Docker starts empty). R2 buckets already exist."""
+        from botocore.exceptions import ClientError
+
+        try:
+            self.client.head_bucket(Bucket=self.bucket)
+        except ClientError:
+            try:
+                self.client.create_bucket(Bucket=self.bucket)
+                logger.info("created object storage bucket")
+            except ClientError:
+                logger.warning("bucket missing and could not be created")
 
     def put(self, key: str, data: bytes, expires_at: datetime) -> None:
         self.client.put_object(

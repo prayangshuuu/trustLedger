@@ -1,11 +1,56 @@
+# Version control & host environments
 .git
+.gitignore
+.gitattributes
 .venv
-datasets
-apps
-**/node_modules
-**/__pycache__
-.storage
+venv
+env
+
+# Cache directories
+__pycache__
+**/*.pyc
+**/*.pyo
 .mypy_cache
 .ruff_cache
 .pytest_cache
+.cache
+.dart_tool
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Node / JS artifacts
+**/node_modules
+apps/dashboard/.vite
+apps/dashboard/coverage
+
+# Mobile native build directories & testing artifacts (keep web assets only)
+apps/mobile/android
+apps/mobile/ios
+apps/mobile/macos
+apps/mobile/linux
+apps/mobile/windows
+apps/mobile/test/goldens
+apps/mobile/test/failures
+apps/mobile/build/*
+!apps/mobile/build/web
+!apps/mobile/build/web/**
+
+# Datasets, screenshots, notebooks & local data
+datasets
+docs/media
 *.ipynb
+*.db
+*.sqlite3
+.storage
+infra/grafana/data
+infra/prometheus/data
+_video_export.tgz
+*.tgz
+*.tar.gz
+*.zip
+
+# Logs & temp files
+*.log
+.DS_Store
+**/.DS_Store
+tmp/

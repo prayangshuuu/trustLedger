@@ -181,6 +181,8 @@ def create_app() -> FastAPI:
     application.include_router(documents_router)
     application.include_router(features_router)
     application.include_router(score_router)
+    # Versioned alias (/api/v1/score, /api/v1/explain/{id}) for partners; same handlers, not in the schema twice
+    application.include_router(score_router, prefix="/api/v1", include_in_schema=False)
     application.include_router(fairness_router)
     application.include_router(apply_router)
     application.include_router(loans_router)

@@ -9,6 +9,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.deps import DbSession
+from app.config import get_settings
 from app.core.model import get_model_version
 
 router = APIRouter(tags=["System"])
@@ -31,6 +32,23 @@ def get_git_sha() -> str:
         return "unknown"
 
 
+def redis_status() -> str:
+    """connected | unavailable | not_configured (Redis is optional for the API)."""
+    url = get_settings().REDIS_URL
+    if not url:
+        return "not_configured"
+    try:
+        import redis
+
+        client = redis.Redis.from_url(url, socket_connect_timeout=0.5, socket_timeout=0.5)
+        try:
+            return "connected" if client.ping() else "unavailable"
+        finally:
+            client.close()
+    except Exception:  # noqa: BLE001 - health must never raise
+        return "unavailable"
+
+
 @router.get("/health", summary="Service Health Check")
 def health(db: DbSession) -> dict[str, str]:
     """Return application and database health status."""
@@ -44,6 +62,7 @@ def health(db: DbSession) -> dict[str, str]:
         "status": "ok",
         "app": "trustledger",
         "database": db_status,
+        "redis": redis_status(),
         "timestamp": datetime.now(UTC).isoformat(),
     }
 

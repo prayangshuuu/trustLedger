@@ -46,7 +46,8 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 ## Web and Containers
 - [x] **Prompt 22: Borrower web app — Flutter Web from the same codebase** — `docs/prompts/PROMPT_22.md` — report: `docs/PROMPT22_REPORT.md`
 - [x] **Prompt 23: Web app polish, design parity QA and deployment** — `docs/prompts/PROMPT_23.md` — report: `docs/PROMPT23_REPORT.md`
-- [ ] **Prompt 24: Full-stack Dockerization — Frontend, Backend and One-Command Build** — `docs/prompts/PROMPT_24.md` — report: `docs/PROMPT24_REPORT.md`
+- [x] **Prompt 24: Full-stack Dockerization — Frontend, Backend and One-Command Build** — `docs/prompts/PROMPT_24.md` — report: `docs/PROMPT24_REPORT.md`
+- [ ] **Prompt 25: Live AI layer, real user uploads and model-validated decisions** — `docs/prompts/PROMPT_25.md` — report: `docs/PROMPT25_REPORT.md`
 
 ## Status
 
@@ -75,6 +76,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 21 | partial | docs/PROMPT21_REPORT.md | QA done; deploy/keys/media pending team |
 | 22 | done | docs/PROMPT22_REPORT.md | Borrower web app (Flutter Web), design tokens, /app route |
 | 23 | partial | docs/PROMPT23_REPORT.md | Real Lighthouse 86/93, real engines; deploy + Firefox (CI) pending |
-| 24 | pending | docs/PROMPT24_REPORT.md | Dockerize everything frontend & backend, 1-command build |
+| 24 | done | docs/PROMPT24_REPORT.md | Dockerize everything frontend & backend, 1-command build |
+| 25 | not started | — | |
 
 Timeline: code freeze **23 Dec 2026**, final **26 Dec 2026**.

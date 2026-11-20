@@ -52,3 +52,18 @@ compose-up:
 
 compose-down:
 	docker compose -f infra/docker-compose.yml down
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up --build -d
+
+docker-down:
+	docker compose down
+
+docker-clean:
+	docker compose down -v --remove-orphans
+
+docker-smoke:
+	bash infra/docker-smoke.sh

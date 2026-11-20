@@ -26,3 +26,4 @@ coverage/
 .dart_tool/
 build/
 *.log
+_video_export.tgz
