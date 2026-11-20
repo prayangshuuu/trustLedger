@@ -79,6 +79,20 @@ def group_gaps(y: np.ndarray, approved: np.ndarray, groups: np.ndarray) -> dict[
     }
 
 
+def fairlearn_check(y: np.ndarray, approved: np.ndarray, groups: np.ndarray) -> dict[str, Any]:
+    """Independent cross-check of our gap computation with Fairlearn's metrics."""
+    from fairlearn.metrics import demographic_parity_difference, equalized_odds_difference
+
+    return {
+        "demographic_parity_difference": round(
+            float(demographic_parity_difference(y, approved, sensitive_features=groups)), 4
+        ),
+        "equalized_odds_difference": round(
+            float(equalized_odds_difference(y, approved, sensitive_features=groups)), 4
+        ),
+    }
+
+
 def model_eval(thresholds: dict[str, float] | None = None) -> dict[str, Any]:
     te, source = test_split()
     meta = load_meta()
@@ -121,6 +135,7 @@ def model_eval(thresholds: dict[str, float] | None = None) -> dict[str, Any]:
         "before": {k: before[k] for k in ("approval_rate_gap", "equalized_odds_gap")},
         "after": after,
         "gate_ok": after["approval_rate_gap"] <= MAX_GAP and after["equalized_odds_gap"] <= MAX_GAP,
+        "fairlearn": fairlearn_check(y, fair, te.group.to_numpy()),
     }
     out["inclusion"] = {
         "bank_rule_approval": round(float(bank.mean()), 4),
@@ -348,6 +363,16 @@ def run(update_golden: bool = False) -> dict[str, Any]:
     gates = {
         "model_auc_not_below_notebook": m["auc"] >= metrics["auc"] - 0.01,
         "fairness_gaps_le_0.05": m.get("fairness", {}).get("gate_ok", True),
+        "fairlearn_agrees": abs(
+            m["fairness"]["fairlearn"]["demographic_parity_difference"]
+            - m["fairness"]["after"]["approval_rate_gap"]
+        )
+        <= 0.005
+        and abs(
+            m["fairness"]["fairlearn"]["equalized_odds_difference"]
+            - m["fairness"]["after"]["equalized_odds_gap"]
+        )
+        <= 0.005,
         "sms_type_f1_ge_0.95": report["sms_parser"]["type_macro_f1"] >= 0.95,
         "ocr_field_f1_ge_0.90": report["ocr"]["field_f1"] >= 0.90,
         "rag_hit_rate_ge_0.90": report["rag"]["hit_rate"] >= 0.90,
@@ -392,6 +417,11 @@ def write_markdown(r: dict[str, Any]) -> str:
             "|---|---|---|",
             f"| Single threshold | {f['before']['approval_rate_gap']} | {f['before']['equalized_odds_gap']} |",
             f"| Group thresholds | {f['after']['approval_rate_gap']} | {f['after']['equalized_odds_gap']} |",
+            "",
+            (
+                f"Fairlearn cross-check: demographic parity {f['fairlearn']['demographic_parity_difference']}, "
+                f"equalized odds {f['fairlearn']['equalized_odds_difference']}"
+            ),
             "",
             f"Inclusion: bank rule {m['inclusion']['bank_rule_approval']:.1%} · TrustLedger {m['inclusion']['trustledger_approval']:.1%} · newly included {m['inclusion']['newly_included']:.1%}",
         ]

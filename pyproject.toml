@@ -49,6 +49,7 @@ notebook = [
     "notebook",
 ]
 dev = [
+    "fairlearn>=0.15.0",
     "mypy>=1.10.0",
     "pre-commit>=3.7.0",
     "pytest>=8.0.0",
@@ -110,6 +111,8 @@ module = [
     "llmlingua.*",
     "airflow",
     "airflow.*",
+    "fairlearn",
+    "fairlearn.*",
 ]
 ignore_missing_imports = true
 

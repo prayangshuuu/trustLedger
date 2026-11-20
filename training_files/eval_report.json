@@ -89,7 +89,11 @@
         "approval_rate_gap": 0.0131,
         "equalized_odds_gap": 0.034
       },
-      "gate_ok": true
+      "gate_ok": true,
+      "fairlearn": {
+        "demographic_parity_difference": 0.0132,
+        "equalized_odds_difference": 0.034
+      }
     },
     "inclusion": {
       "bank_rule_approval": 0.1168,
@@ -139,6 +143,7 @@
   "gates": {
     "model_auc_not_below_notebook": true,
     "fairness_gaps_le_0.05": true,
+    "fairlearn_agrees": true,
     "sms_type_f1_ge_0.95": true,
     "ocr_field_f1_ge_0.90": true,
     "rag_hit_rate_ge_0.90": true,
