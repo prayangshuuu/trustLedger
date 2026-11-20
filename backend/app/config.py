@@ -47,7 +47,8 @@ class Settings(BaseSettings):
     # Allowed browser origins (comma separated); "*" only for local development
     CORS_ORIGINS: str = (
         "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173,"
-        "http://localhost:8080,http://127.0.0.1:8080"
+        "http://localhost:8080,http://127.0.0.1:8080,http://localhost:8000,http://127.0.0.1:8000,"
+        "https://app.trustledger.com,https://dashboard.trustledger.com"
     )
     RATE_LIMIT_PER_MINUTE: int = 300
     MAX_BODY_BYTES: int = 1_000_000  # JSON bodies (2,000 SMS fit comfortably)

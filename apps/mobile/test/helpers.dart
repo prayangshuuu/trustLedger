@@ -37,6 +37,16 @@ class FakeBackend {
       consents.remove(path.split('/').last);
       return _json({'status': 'revoked'});
     }
+    if (path.startsWith('/bhorsha/start') || path == '/bhorsha/start') {
+      return _json({
+        'session_id': 'b1',
+        'turn': 1,
+        'total_turns': 12,
+        'dimension': 'savings',
+        'question_text': 'আপনার জরুরি প্রয়োজনের জন্য প্রতি মাসে কিছু টাকা আলাদা করে সরিয়ে রাখার অভ্যাস আছে কি?',
+        'english_translation': 'Do you have a regular habit of setting aside money each month for emergencies?',
+      });
+    }
     if (path == '/me' && req.method == 'DELETE') return _json({'status': 'deleted'});
     return _json({'detail': 'not found'}, 404);
   }

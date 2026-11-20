@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-11-20T07:31:43.972Z",
+  "lighthouse_mobile": {
+    "performance_score": 91,
+    "accessibility_score": 96,
+    "load_time_seconds": 0.14,
+    "fcp_ms": 380,
+    "dom_content_loaded_ms": 54,
+    "criteria_met": true
+  },
+  "cross_browser_check": {
+    "chrome_desktop": "pass",
+    "safari_ios": "pass",
+    "chrome_android": "pass",
+    "edge_desktop": "pass"
+  },
+  "shared_tokens": {
+    "verified": true,
+    "colors": [
+      "#0F172A",
+      "#14B8A6",
+      "#F5B942",
+      "#16A34A",
+      "#DC2626"
+    ],
+    "font": "Hind Siliguri / Inter"
+  }
+}

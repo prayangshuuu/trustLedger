@@ -51,4 +51,7 @@ if [ -n "$MCP" ]; then
   code=$(curl -s -o /dev/null -w '%{http_code}' "$MCP/health"); [ "$code" = 200 ] && ok "MCP health" || fail "MCP health $code"
   code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$MCP/mcp" -H 'Content-Type: application/json' -d '{}'); [ "$code" = 401 ] && ok "MCP rejects missing key" || fail "MCP auth $code"
 fi
+if [ -f "$ROOT/infra/smoke_web.mjs" ] && [ -d "$ROOT/apps/dashboard/node_modules/playwright" ]; then
+  BASE_URL="$BASE/app" node "$ROOT/infra/smoke_web.mjs" > /dev/null && ok "web app: Moon flow → score" || fail "web app smoke"
+fi
 echo "PASS ($pass checks)"

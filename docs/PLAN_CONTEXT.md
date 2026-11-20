@@ -97,7 +97,7 @@ Do not swap these without writing the reason in the report.
 | Workflows | Temporal (loan lifecycle), Apache Airflow (scheduled jobs) |
 | Federated | Flower (`flwr`) |
 | Privacy | Microsoft Presidio (PII redaction), consent table, delete-my-data |
-| Borrower app | Flutter (Bangla-first, Hind Siliguri font) |
+| Borrower app | Flutter (Android + Web from single codebase, Bangla-first, Hind Siliguri font; shared design tokens in apps/design_tokens.json) |
 | Lender dashboard | React + Vite + TypeScript, Recharts, Chart.js, D3.js |
 | Monitoring | Grafana (API health), Plotly (model reports) |
 | Hosting | Heroku (API, MCP server, demo); Vercel allowed for the dashboard |
@@ -138,8 +138,9 @@ trustledger/
 │   ├── temporal/
 │   └── airflow/dags/
 ├── apps/
-│   ├── mobile/                Flutter borrower app
-│   └── dashboard/             React lender dashboard
+│   ├── design_tokens.json     single source of truth for colors, typography, spacing, radii
+│   ├── mobile/                Flutter borrower app (Android + Web targets)
+│   └── dashboard/             React lender dashboard (reads generated tokens.css)
 ├── evals/                     OCR, parser, RAG, prompt regression suites
 ├── docs/
 │   ├── prompts/               PROMPT_01.md … PROMPT_21.md

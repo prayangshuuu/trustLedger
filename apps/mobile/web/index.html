@@ -40,6 +40,26 @@
       var s = document.getElementById("splash");
       if (s) { s.style.opacity = "0"; setTimeout(function () { s.remove(); }, 300); }
     });
+
+    // Register Service Worker for PWA offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (err) {
+          console.warn('SW registration failed:', err);
+        });
+      });
+    }
+
+    // A2HS (Add to home screen) event capture
+    window.deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.deferredPrompt = e;
+      window.dispatchEvent(new CustomEvent('tl-pwa-installable'));
+    });
+    window.addEventListener('appinstalled', function () {
+      window.deferredPrompt = null;
+    });
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

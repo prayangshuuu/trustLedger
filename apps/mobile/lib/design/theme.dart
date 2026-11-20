@@ -34,11 +34,29 @@ ThemeData buildTheme() {
       centerTitle: false,
     ),
     filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: TColor.tealDark,
-        foregroundColor: TColor.lightOnBrand,
-        minimumSize: const Size.fromHeight(TLayout.buttonHeight),
-        textStyle: const TextStyle(fontSize: TType.body + 1, fontWeight: TFont.semibold, fontFamily: TFont.bangla),
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(TColor.tealDark),
+        foregroundColor: WidgetStateProperty.all(TColor.lightOnBrand),
+        minimumSize: WidgetStateProperty.all(const Size.fromHeight(TLayout.buttonHeight)),
+        textStyle: WidgetStateProperty.all(
+          const TextStyle(fontSize: TType.body + 1, fontWeight: TFont.semibold, fontFamily: TFont.bangla),
+        ),
+        side: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.focused)) {
+            return const BorderSide(color: TColor.gold, width: 2.5);
+          }
+          return BorderSide.none;
+        }),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(
+        side: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.focused)) {
+            return const BorderSide(color: TColor.gold, width: 2.5);
+          }
+          return const BorderSide(color: TColor.tealDark);
+        }),
       ),
     ),
     // Visible keyboard focus on desktop and web

@@ -5,11 +5,16 @@ import '../api/trustledger_api.dart';
 import '../l10n.dart';
 import '../platform/web_bridge.dart';
 
-const _apiBaseDefine = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8000');
+const _apiBaseDefine = String.fromEnvironment('API_BASE_URL', defaultValue: '');
 const apiKey = String.fromEnvironment('API_KEY', defaultValue: 'dev-key');
 
 /// API origin. An empty API_BASE_URL on web means "same origin" (the API serves the web app).
-String resolveApiBase() => _apiBaseDefine.isEmpty && kIsWeb ? Uri.base.origin : _apiBaseDefine;
+String resolveApiBase() {
+  if (kIsWeb && _apiBaseDefine.isEmpty) {
+    return Uri.base.origin;
+  }
+  return _apiBaseDefine.isEmpty ? 'http://localhost:8000' : _apiBaseDefine;
+}
 
 const _kUser = 'tl.user';
 const _kPersona = 'tl.persona';

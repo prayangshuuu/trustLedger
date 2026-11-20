@@ -45,6 +45,7 @@ web-test:
 # Regenerate design tokens for Flutter and the dashboard from apps/design_tokens.json
 tokens:
 	cd apps/mobile && dart run tool/gen_tokens.dart
+	cd apps/dashboard && node scripts/gen-tokens.mjs
 
 compose-up:
 	docker compose -f infra/docker-compose.yml up -d

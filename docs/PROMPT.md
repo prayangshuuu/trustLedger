@@ -45,7 +45,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 
 ## Web and Containers
 - [x] **Prompt 22: Borrower web app — Flutter Web from the same codebase** — `docs/prompts/PROMPT_22.md` — report: `docs/PROMPT22_REPORT.md`
-- [ ] **Prompt 23: Web app polish, design parity QA and deployment** — `docs/prompts/PROMPT_23.md` — report: `docs/PROMPT23_REPORT.md`
+- [x] **Prompt 23: Web app polish, design parity QA and deployment** — `docs/prompts/PROMPT_23.md` — report: `docs/PROMPT23_REPORT.md`
 - [ ] **Prompt 24: Full-stack Dockerization — Frontend, Backend and One-Command Build** — `docs/prompts/PROMPT_24.md` — report: `docs/PROMPT24_REPORT.md`
 
 ## Status

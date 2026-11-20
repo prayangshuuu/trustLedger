@@ -51,7 +51,9 @@ In Bangladesh, only **43% of adults** hold a formal financial account (**33% of 
 
 ## Product Previews
 
-### Borrower Mobile App (Flutter · Bangla-First)
+### Borrower Mobile App & Responsive Web App (Flutter · Bangla-First)
+
+Available as native Android mobile app and responsive web app at [`http://localhost:8000/app/`](http://localhost:8000/app/) (public URL `https://app.trustledger.com`). Both targets are built from the exact same codebase in `apps/mobile` and share design tokens with the dashboard.
 
 | 1. Granular Consent | 2. Transparent Score | 3. Bangla Explanations |
 |:---:|:---:|:---:|
@@ -188,7 +190,8 @@ infra/smoke.sh http://localhost:8000 dev-key
 | **Lint & Format** | `make lint` | Validates Ruff styling and Mypy strict typing |
 | **Quality Gates** | `uv run python evals/run_all.py` | Runs all 9 automated model and CI quality gates |
 | **Lender Dashboard** | `cd apps/dashboard && npm install && npm run dev` | Runs the React dashboard on `http://localhost:5173` |
-| **Borrower App** | `cd apps/mobile && flutter run` | Runs Flutter on Chrome, macOS desktop, or Android |
+| **Borrower App (Mobile)** | `cd apps/mobile && flutter run` | Runs Flutter on Android, iOS, or desktop |
+| **Borrower Web App** | `make web` & `make web-serve` | Builds & serves Flutter web app at `http://localhost:8000/app/` |
 | **MCP Server** | `make mcp` *(stdio)* · `make mcp-http` *(HTTP)* | Starts Model Context Protocol server for LLM tools |
 | **Federated Simulation** | `uv run python -m federated.simulate` | Simulates DP-FedAvg training across 8 divisions |
 | **Full Compose Stack** | `make compose-up` | Starts Postgres, pgvector, Redis, MinIO, and Temporal |
