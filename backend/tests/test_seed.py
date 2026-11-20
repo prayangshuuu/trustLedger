@@ -29,7 +29,7 @@ def session() -> Session:
 def test_seed_demo_personas(session: Session) -> None:
     """Verify seed script creates the 3 demo personas with expected attributes and decisions."""
     users = seed_demo_personas(session)
-    assert len(users) == 3
+    assert len(users) == 4
 
     # 1. Shathi Persona (Garment worker, F_urban)
     shathi_hash = hash_phone("+8801711000001")
@@ -102,9 +102,9 @@ def test_seed_demo_personas(session: Session) -> None:
 
     # Verify idempotency
     users2 = seed_demo_personas(session)
-    assert len(users2) == 3
+    assert len(users2) == 4
     total_users = session.scalars(select(User)).all()
-    assert len(total_users) == 3
+    assert len(total_users) == 4
 
 
 def test_seed_population_and_full_audit(session: Session) -> None:

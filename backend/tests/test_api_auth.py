@@ -74,7 +74,74 @@ def test_borrower_auth_headers_on_delete_me(db_session: Session) -> None:
         resp = client.delete("/me")
         assert resp.status_code == 401
 
-        # 2. With X-User-ID header succeeds
-        resp2 = client.delete("/me", headers={"X-User-ID": user.id})
+        # 2. A raw user id is not a credential
+        assert (
+            client.delete("/me", headers={"Authorization": f"Bearer {user.id}"}).status_code == 401
+        )
+        assert client.delete("/me", headers={"X-User-ID": user.id}).status_code == 401
+
+        # 3. A signed session token succeeds
+        token = client.post("/auth/session", json={"user_id": user.id}).json()["token"]
+        resp2 = client.delete("/me", headers={"Authorization": f"Bearer {token}"})
         assert resp2.status_code == 200
         assert resp2.json()["status"] == "deleted"
+
+
+def test_session_tokens_profile_and_tampering(
+    db_session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Signed tokens identify the borrower; tampered, foreign or expired tokens are rejected."""
+    from app.security import issue_token
+
+    users = []
+    for i in range(2):
+        u = User(phone_hash=f"tok{i}", gender="F", region="rural", division="Khulna")
+        db_session.add(u)
+        users.append(u)
+    db_session.commit()
+    app_instance = create_app()
+    app_instance.dependency_overrides[get_db] = lambda: db_session
+    with TestClient(app_instance) as client:
+        token = client.post("/auth/session", json={"user_id": users[0].id}).json()["token"]
+        me = client.get("/me", headers={"Authorization": f"Bearer {token}"})
+        assert me.status_code == 200 and me.json()["group"] == "F_rural"
+
+        tampered = token.replace(users[0].id, users[1].id)
+        assert client.get("/me", headers={"Authorization": f"Bearer {tampered}"}).status_code == 401
+        expired, _ = issue_token(users[0].id, ttl_seconds=-1)
+        assert client.get("/me", headers={"Authorization": f"Bearer {expired}"}).status_code == 401
+
+        # A borrower cannot grant consent for someone else
+        resp = client.post(
+            "/consent",
+            json={"user_id": users[1].id, "source": "sms"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 403
+        ok = client.post(
+            "/consent",
+            json={"user_id": users[0].id, "source": "sms"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert ok.status_code == 201
+        assert (
+            client.delete("/consent/sms", headers={"Authorization": f"Bearer {token}"}).json()[
+                "status"
+            ]
+            == "revoked"
+        )
+
+        # With API keys configured, an anonymous consent call is refused
+        monkeypatch.setattr("app.api.deps.get_settings", lambda: Settings(API_KEYS="k1"))
+        assert (
+            client.post("/consent", json={"user_id": users[0].id, "source": "sms"}).status_code
+            == 401
+        )
+        assert (
+            client.post(
+                "/consent",
+                json={"user_id": users[0].id, "source": "sms"},
+                headers={"X-API-Key": "k1"},
+            ).status_code
+            == 201
+        )

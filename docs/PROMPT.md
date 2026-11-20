@@ -31,7 +31,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 14: Federated learning with Flower** — `docs/prompts/PROMPT_14.md` — report: `docs/PROMPT14_REPORT.md`
 
 ## Apps
-- [ ] **Prompt 15: Borrower app (Flutter)** — `docs/prompts/PROMPT_15.md` — report: `docs/PROMPT15_REPORT.md`
+- [x] **Prompt 15: Borrower app (Flutter)** — `docs/prompts/PROMPT_15.md` — report: `docs/PROMPT15_REPORT.md`
 - [ ] **Prompt 16: Lender dashboard (React)** — `docs/prompts/PROMPT_16.md` — report: `docs/PROMPT16_REPORT.md`
 
 ## Quality
@@ -61,7 +61,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 12 | done | docs/PROMPT12_REPORT.md | MCP tools over stdio + HTTP with API keys |
 | 13 | done | docs/PROMPT13_REPORT.md | Temporal LoanWorkflow + Airflow DAGs |
 | 14 | done | docs/PROMPT14_REPORT.md | Flower DP-FedAvg, AUC 0.7555 |
-| 15 | not started | — | |
+| 15 | done | docs/PROMPT15_REPORT.md | Flutter app; macOS e2e passes, emulator pending |
 | 16 | not started | — | |
 | 17 | not started | — | |
 | 18 | not started | — | |

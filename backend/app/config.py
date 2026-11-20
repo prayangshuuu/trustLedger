@@ -42,6 +42,10 @@ class Settings(BaseSettings):
 
     # Security & Authentication
     API_KEYS: str = ""
+    # HMAC secret for borrower session tokens (POST /auth/session)
+    SESSION_SECRET: str | None = None
+    # Allowed browser origins (comma separated); "*" only for local development
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
 
     # Application & Workflow Settings
     DEMO_MODE: bool = False

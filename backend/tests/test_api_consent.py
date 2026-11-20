@@ -80,7 +80,8 @@ def test_revoke_consent(client: TestClient, sample_user: User) -> None:
 
 def test_delete_me(client: TestClient, sample_user: User) -> None:
     """Verify DELETE /me purges user data with 200 OK."""
-    headers = {"Authorization": f"Bearer {sample_user.id}"}
+    token = client.post("/auth/session", json={"user_id": sample_user.id}).json()["token"]
+    headers = {"Authorization": f"Bearer {token}"}
     resp = client.delete("/me", headers=headers)
     assert resp.status_code == 200
     assert resp.json()["status"] == "deleted"

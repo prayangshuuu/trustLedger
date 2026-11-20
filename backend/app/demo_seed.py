@@ -103,6 +103,19 @@ PERSONAS: list[dict[str, Any]] = [
         "amount": 8000.0,
         "repayments": [],
     },
+    {
+        # Brand-new user: no wallet history and no Bhorsha yet. The app walks her through Bhorsha.
+        "name": "Newcomer",
+        "phone": "+8801611000004",
+        "gender": "F",
+        "region": "rural",
+        "division": "Rangpur",
+        "consents": [],
+        "features": None,
+        "source_summary": "",
+        "amount": 5000.0,
+        "repayments": [],
+    },
 ]
 
 
@@ -179,6 +192,17 @@ def seed_demo_personas(session: Session | None = None) -> list[User]:
         for p in PERSONAS:
             p_hash = hash_phone(p["phone"])
             _remove_existing(session, p_hash)
+            if p["features"] is None:
+                user = User(
+                    phone_hash=p_hash,
+                    gender=p["gender"],
+                    region=p["region"],
+                    division=p["division"],
+                )
+                session.add(user)
+                session.flush()
+                users.append(user)
+                continue
             users.append(
                 _create_scored_user(
                     session,
