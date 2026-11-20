@@ -10,9 +10,6 @@ services:
   mcp-server:
     networks: [default, caddy]
 
-  grafana:
-    networks: [default, caddy]
-
 networks:
   caddy:
     external: true

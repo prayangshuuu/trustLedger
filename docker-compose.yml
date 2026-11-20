@@ -2,7 +2,6 @@
 #   http://localhost:8000/      lender dashboard        http://localhost:8000/app/   borrower web app
 #   http://localhost:8000/docs  public docs site        http://localhost:8000/api/docs  Swagger
 #   http://localhost:8001/mcp   MCP (X-API-Key)         http://localhost:8233  Temporal UI
-#   http://localhost:3000       Grafana                 http://localhost:9090  Prometheus
 # Defaults need no host configuration; override any value in .env (see .env.docker).
 # Databases are not published on host ports, so a local Postgres/Redis never conflicts.
 
@@ -142,33 +141,6 @@ services:
       MCP_API_KEYS: ${MCP_API_KEYS:-dev-key}
     depends_on:
       api: { condition: service_healthy }
-
-  prometheus:
-    image: prom/prometheus:v2.54.1
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    extra_hosts:
-      - "host.docker.internal:host-gateway" # second scrape target (API run on the host)
-    depends_on:
-      api: { condition: service_healthy }
-
-  grafana:
-    image: grafana/grafana:11.2.2
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
-    volumes:
-      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./infra/grafana/trustledger-api.json:/var/lib/grafana/dashboards/trustledger-api.json:ro
-    depends_on:
-      - prometheus
 
   deepseek-ocr-local:
     profiles: ["ocr"]
