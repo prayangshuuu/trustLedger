@@ -62,3 +62,12 @@ def test_borrower_web_app_deep_links(tmp_path: Path) -> None:
     assert c.get("/app/main.dart.js").text == "main()"
     assert c.get("/app/missing.js").status_code == 404
     assert c.get("/app/../secret").status_code == 404
+
+
+def test_responses_are_gzip_compressed() -> None:
+    from app.main import create_app
+
+    c = TestClient(create_app())
+    r = c.get("/openapi.json", headers={"Accept-Encoding": "gzip"})
+    assert r.status_code == 200
+    assert r.headers.get("content-encoding") == "gzip"

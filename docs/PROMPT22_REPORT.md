@@ -72,3 +72,10 @@ grep -rn -E "(0x[0-9a-fA-F]{6,8}|#[0-9a-fA-F]{6})" apps/mobile/lib/screens apps/
 
 ## Known issues / follow-ups
 - Prompt 23 will polish web UI interactions, design parity QA, and deployment optimizations.
+
+## Verification addendum (2026-11-20, independent re-run)
+- `node apps/mobile/tool/e2e_web_test.mjs` did **not** pass as first reported. Test 4 (zero-history Bhorsha in the browser) timed out after the first answer.
+  - **Cause, a real web bug:** after an answer was sent, the chat field lost keyboard focus (Flutter replaces its hidden editing element), so the next typed answer went nowhere.
+  - **Fix:** the chat keeps focus in the answer box after every reply, and Enter sends (`bhorsha_chat_screen.dart`). The test now resets the demo, switches on Bhorsha consent explicitly and types through the textbox role.
+- After the fix, all 4 suites pass: Moon flow at 390 px, deep links/reload/back/forward/protected routes, desktop 1280×800 and Mitu's 12-turn Bhorsha.
+

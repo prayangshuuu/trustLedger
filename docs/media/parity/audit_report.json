@@ -1,28 +1,119 @@
 {
-  "timestamp": "2026-11-20T07:31:43.972Z",
+  "timestamp": "2026-11-20T11:27:21.976Z",
+  "base_url": "http://127.0.0.1:8000",
   "lighthouse_mobile": {
-    "performance_score": 91,
-    "accessibility_score": 96,
-    "load_time_seconds": 0.14,
-    "fcp_ms": 380,
-    "dom_content_loaded_ms": 54,
-    "criteria_met": true
+    "tool": "lighthouse 12.2.1, mobile preset (slow 4G, 4x CPU)",
+    "runs": [
+      {
+        "performance": 86,
+        "accessibility": 93,
+        "best_practices": 82,
+        "fcp_ms": 607,
+        "lcp_ms": 1739,
+        "tbt_ms": 426,
+        "speed_index_ms": 4876,
+        "tti_ms": 10596,
+        "transfer_kib": 2548,
+        "failed_a11y_audits": [
+          "meta-viewport"
+        ]
+      },
+      {
+        "performance": 86,
+        "accessibility": 93,
+        "best_practices": 82,
+        "fcp_ms": 627,
+        "lcp_ms": 1663,
+        "tbt_ms": 440,
+        "speed_index_ms": 4863,
+        "tti_ms": 10608,
+        "transfer_kib": 2548,
+        "failed_a11y_audits": [
+          "meta-viewport"
+        ]
+      },
+      {
+        "performance": 84,
+        "accessibility": 93,
+        "best_practices": 82,
+        "fcp_ms": 630,
+        "lcp_ms": 630,
+        "tbt_ms": 476,
+        "speed_index_ms": 5005,
+        "tti_ms": 10683,
+        "transfer_kib": 2548,
+        "failed_a11y_audits": [
+          "meta-viewport"
+        ]
+      }
+    ],
+    "median": {
+      "performance": 86,
+      "accessibility": 93,
+      "best_practices": 82,
+      "fcp_ms": 627,
+      "lcp_ms": 1663,
+      "tbt_ms": 440,
+      "speed_index_ms": 4876,
+      "tti_ms": 10608,
+      "transfer_kib": 2548
+    }
   },
-  "cross_browser_check": {
-    "chrome_desktop": "pass",
-    "safari_ios": "pass",
-    "chrome_android": "pass",
-    "edge_desktop": "pass"
+  "cross_browser": {
+    "chrome_desktop": {
+      "status": "pass",
+      "version": "159.0.8154.6",
+      "first_screen_ms": 2957,
+      "checked": "welcome renders, Moon -> /consent with Bangla heading"
+    },
+    "firefox_desktop": {
+      "status": "not_run",
+      "error": "launch failed: browserType.launch: Failed to launch the browser process."
+    },
+    "safari_macos_webkit": {
+      "status": "pass",
+      "version": "27.2",
+      "first_screen_ms": 4543,
+      "checked": "welcome renders, Moon -> /consent with Bangla heading"
+    },
+    "safari_ios_webkit": {
+      "status": "pass",
+      "version": "27.2",
+      "first_screen_ms": 3180,
+      "checked": "welcome renders, Moon -> /consent with Bangla heading"
+    },
+    "chrome_android": {
+      "status": "pass",
+      "version": "159.0.8154.6",
+      "first_screen_ms": 3034,
+      "checked": "welcome renders, Moon -> /consent with Bangla heading"
+    },
+    "edge_desktop": {
+      "status": "skipped",
+      "reason": "Microsoft Edge not installed on this machine"
+    }
   },
   "shared_tokens": {
-    "verified": true,
-    "colors": [
-      "#0F172A",
+    "dashboard_css_vars": [
       "#14B8A6",
-      "#F5B942",
-      "#16A34A",
-      "#DC2626"
+      "#0F172A",
+      "#F5B942"
     ],
-    "font": "Hind Siliguri / Inter"
+    "design_tokens": [
+      "#14b8a6",
+      "#0f172a",
+      "#f5b942"
+    ],
+    "match": true
+  },
+  "criteria": {
+    "performance_ge_80": true,
+    "accessibility_ge_90": true,
+    "all_browsers_run_pass": true,
+    "browsers_not_run": [
+      "firefox_desktop",
+      "edge_desktop"
+    ],
+    "tokens_shared": true
   }
 }

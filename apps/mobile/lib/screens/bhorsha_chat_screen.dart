@@ -26,6 +26,7 @@ class BhorshaChatScreen extends StatefulWidget {
 class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
   final _messages = <_Msg>[];
   final _input = TextEditingController();
+  final _inputFocus = FocusNode();
   final _scroll = ScrollController();
   String? _sessionId;
   bool _busy = true;
@@ -43,6 +44,7 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
   @override
   void dispose() {
     _input.dispose();
+    _inputFocus.dispose();
     _scroll.dispose();
     super.dispose();
   }
@@ -97,6 +99,8 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
       });
       await Future<void>.delayed(const Duration(milliseconds: 50));
       if (_scroll.hasClients) _scroll.jumpTo(_scroll.position.maxScrollExtent);
+      // Keep the cursor in the answer box so the next answer can be typed straight away
+      if (mounted && !_completed) _inputFocus.requestFocus();
     } catch (e) {
       setState(() => _busy = false);
       if (mounted) showError(context, s, e);
@@ -172,6 +176,10 @@ class _BhorshaChatScreenState extends State<BhorshaChatScreen> {
                       child: TextField(
                         key: const Key('bhorsha_input'),
                         controller: _input,
+                        focusNode: _inputFocus,
+                        autofocus: true,
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _busy ? null : _send(),
                         minLines: 1,
                         maxLines: 3,
                         decoration: InputDecoration(hintText: s.t('type_answer'), border: const OutlineInputBorder()),

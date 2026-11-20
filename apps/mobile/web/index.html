@@ -21,6 +21,8 @@
     #splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 16px; color: #FFFFFF; font: 600 20px system-ui, sans-serif; transition: opacity .3s; }
     #splash img { width: 96px; height: 96px; }
+    #splash h1 { margin: 0; font-size: 34px; }
+    #splash p { margin: 0 24px; max-width: 420px; text-align: center; font-weight: 400; font-size: 17px; line-height: 1.5; color: #CBD5E1; }
     #splash .bar { width: 160px; height: 4px; border-radius: 2px; background: #1E293B; overflow: hidden; }
     #splash .bar::after { content: ""; display: block; width: 40%; height: 100%; background: #14B8A6; animation: load 1.2s ease-in-out infinite; }
     @keyframes load { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
@@ -29,8 +31,9 @@
 </head>
 <body>
   <div id="splash" role="status" aria-live="polite">
-    <img src="icons/Icon-192.png" alt="">
-    <div>ট্রাস্টলেজার</div>
+    <img src="icons/Icon-192.png" alt="" width="96" height="96">
+    <h1>ট্রাস্টলেজার</h1>
+    <p>আপনার ফোনের অভ্যাসই আপনার ক্রেডিট পরিচয়। ন্যায্য, গোপনীয় ও ব্যাখ্যাযোগ্য।</p>
     <div class="bar" aria-hidden="true"></div>
     <noscript>TrustLedger needs JavaScript. ট্রাস্টলেজার চালাতে জাভাস্ক্রিপ্ট প্রয়োজন।</noscript>
   </div>

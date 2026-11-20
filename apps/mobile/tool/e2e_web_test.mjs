@@ -217,6 +217,8 @@ async function run() {
     console.log('\n--- Test 4: Zero-history persona (Mitu) Bhorsha flow ---');
     const mituContext = await browser.newContext({ viewport: { width: 393, height: 785 } });
     const mituPage = await mituContext.newPage();
+    // Fresh demo data so the newcomer has no consents and no Bhorsha score yet
+    await mituPage.request.post(`${new URL(BASE_URL).origin}/demo/reset`, { headers: { 'X-API-Key': process.env.API_KEY || 'dev-key' } });
     await mituPage.goto(`${BASE_URL}/`);
     await mituPage.waitForTimeout(3000);
 
@@ -225,7 +227,9 @@ async function run() {
     await mituBtn.click();
     await mituPage.waitForTimeout(1500);
 
-    // Agree to Bhorsha consent
+    // Agree to Bhorsha consent (switch on, then continue)
+    const bhorshaSwitch = mituPage.getByRole('switch', { name: /ভরসা|Bhorsha/i }).first();
+    if (!(await bhorshaSwitch.isChecked())) await bhorshaSwitch.click();
     await mituPage.getByRole('button', { name: /এগিয়ে যান|Continue/i }).click();
     console.log('Submitted consent for newcomer, awaiting Bhorsha routing...');
 
@@ -250,18 +254,22 @@ async function run() {
     ];
 
     for (let t = 0; t < bhorshaAnswers.length; t++) {
-      const input = mituPage.locator('input[type="text"], textarea').first();
+      // Flutter web exposes the chat field as an ARIA textbox; the DOM input appears once focused
+      const input = mituPage.getByRole('textbox').first();
       const sendBtn = mituPage.getByRole('button', { name: /পাঠান|Send/i });
       const finishBtn = mituPage.getByRole('button', { name: /মূল্যায়ন শেষ|Done/i });
 
       if (await finishBtn.isVisible()) break;
 
       await input.waitFor({ state: 'visible', timeout: 15000 });
-      await input.fill(bhorshaAnswers[t]);
+      // The app keeps focus in the answer box after each reply, like a chat app
+      if (t === 0) await input.click();
+      await mituPage.waitForTimeout(200);
+      await mituPage.keyboard.insertText(bhorshaAnswers[t]);
       await mituPage.waitForTimeout(300);
 
       const respPromise = mituPage.waitForResponse(r => r.url().includes('/bhorsha/'));
-      await sendBtn.click();
+      await mituPage.keyboard.press("Enter"); // submit from the field (keyboard users do this)
       const resp = await respPromise;
       const data = await resp.json();
       console.log(`  Turn ${t + 1}/12 answered, turn: ${data.turn || 12}, completed: ${data.completed}`);

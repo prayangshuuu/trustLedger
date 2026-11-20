@@ -61,8 +61,9 @@ jobs:
       - run: npm run build
 
   mobile:
-    name: Borrower app
-    runs-on: ubuntu-latest
+    name: Borrower app (Android + web codebase)
+    # macOS: the golden screenshots are generated on macOS; same pinned Flutter as local
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: apps/mobile
@@ -71,6 +72,49 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: 3.44.9
       - run: flutter pub get
+      - name: Design tokens are up to date
+        run: dart run tool/gen_tokens.dart --check
       - run: flutter analyze
-      - run: flutter test
+      - name: Widget, router and golden tests
+        run: flutter test
+      - run: flutter build web --release --base-href /app/ --dart-define=API_BASE_URL=
+
+  web-e2e:
+    name: Web app in Chromium, Firefox and WebKit
+    runs-on: ubuntu-latest
+    needs: [backend]
+    env:
+      LLM_MODE: mock
+      DEMO_MODE: "true"
+      API_KEYS: dev-key
+      DATABASE_URL: sqlite:///./ci.db
+      SKIP_LIGHTHOUSE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.9
+      - run: uv sync --frozen
+      - name: Build borrower web app and dashboard
+        run: |
+          (cd apps/mobile && flutter pub get && flutter build web --release --base-href /app/ --dart-define=API_BASE_URL= --dart-define=API_KEY=dev-key)
+          (cd apps/dashboard && npm ci && npm run build && npx playwright install --with-deps chromium firefox webkit)
+      - name: Seed and start the API
+        run: |
+          uv run python backend/scripts/seed_demo.py --population 500
+          uv run python -m app.rag.ingest
+          uv run uvicorn app.main:app --port 8000 &
+          sleep 10
+      - name: Cross-browser check (Chromium, Firefox, WebKit desktop + iPhone, Android)
+        run: node apps/mobile/tool/web_audit.mjs
+      - name: Borrower web e2e (Moon flow, deep links, desktop, Bhorsha)
+        run: node apps/mobile/tool/e2e_web_test.mjs

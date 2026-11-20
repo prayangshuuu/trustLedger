@@ -8,6 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
@@ -107,6 +108,8 @@ def create_app() -> FastAPI:
         allow_headers=["Content-Type", "Authorization", "X-API-Key", "X-Request-ID"],
     )
     application.add_middleware(GuardMiddleware)
+    # Compress JSON and the web builds (main.dart.js shrinks ~70%)
+    application.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=6)
     application.add_middleware(RequestLoggingAndIDMiddleware)
 
     @application.get("/metrics", include_in_schema=False)

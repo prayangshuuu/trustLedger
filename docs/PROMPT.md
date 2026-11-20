@@ -74,7 +74,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 20 | partial | docs/PROMPT20_REPORT.md | Docs site, README, demo script, judge Q&A |
 | 21 | partial | docs/PROMPT21_REPORT.md | QA done; deploy/keys/media pending team |
 | 22 | done | docs/PROMPT22_REPORT.md | Borrower web app (Flutter Web), design tokens, /app route |
-| 23 | pending | docs/PROMPT23_REPORT.md | Web app polish, design parity QA and deployment |
+| 23 | partial | docs/PROMPT23_REPORT.md | Real Lighthouse 86/93, real engines; deploy + Firefox (CI) pending |
 | 24 | pending | docs/PROMPT24_REPORT.md | Dockerize everything frontend & backend, 1-command build |
 
 Timeline: code freeze **23 Dec 2026**, final **26 Dec 2026**.
