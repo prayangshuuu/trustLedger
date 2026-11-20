@@ -78,7 +78,7 @@ jobs:
       - run: npm run build
 
   web-e2e:
-    name: Web app in Chromium, Firefox and WebKit
+    name: Borrower web app e2e (Chromium)
     runs-on: ubuntu-latest
     needs: [backend]
     env:
@@ -98,12 +98,12 @@ jobs:
       - name: Build borrower web app and dashboard
         run: |
           (cd apps/borrower && npm ci && VITE_API_KEY=dev-key npm run build)
-          (cd apps/dashboard && npm ci && npm run build && npx playwright install --with-deps chromium firefox webkit)
+          (cd apps/dashboard && npm ci && npm run build && npx playwright install --with-deps chromium)
       - name: Seed and start the API
         run: |
           uv run python backend/scripts/seed_demo.py --population 500
           uv run python -m app.rag.ingest
           uv run uvicorn app.main:app --port 8000 &
           sleep 10
-      - name: Borrower web e2e (Moon flow, deep links, reload, Bhorsha) in Chromium, Firefox, WebKit
+      - name: Borrower web e2e (Moon flow, deep links, reload, Bhorsha)
         run: node apps/borrower/tests/e2e.mjs

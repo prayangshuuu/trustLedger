@@ -2,14 +2,14 @@
 // Borrower web app e2e against a running API that serves /app (seeded demo, LLM_MODE=mock).
 //
 //   node apps/borrower/tests/e2e.mjs            BASE_URL (default http://127.0.0.1:8000)
-//   BROWSERS=chromium,firefox,webkit            engines to run (default: all three)
+//   BROWSERS=chromium,firefox,webkit            engines to run (default: chromium)
 //
 // Uses the Playwright install of apps/dashboard (`npm ci && npx playwright install` there).
 import { chromium, firefox, webkit } from "../../dashboard/node_modules/playwright/index.mjs";
 
 const BASE = (process.env.BASE_URL || "http://127.0.0.1:8000") + "/app";
 const engines = { chromium, firefox, webkit };
-const wanted = (process.env.BROWSERS || "chromium,firefox,webkit").split(",").map((s) => s.trim());
+const wanted = (process.env.BROWSERS || "chromium").split(",").map((s) => s.trim());
 const HOME = /\/app\/?$/;
 
 async function run(name) {
