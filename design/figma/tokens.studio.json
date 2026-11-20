@@ -1,0 +1,262 @@
+{
+  "global": {
+    "color": {
+      "brand": {
+        "teal": {
+          "value": "#14B8A6",
+          "type": "color"
+        },
+        "tealDark": {
+          "value": "#0F766E",
+          "type": "color"
+        },
+        "navy": {
+          "value": "#0F172A",
+          "type": "color"
+        },
+        "gold": {
+          "value": "#F5B942",
+          "type": "color"
+        }
+      },
+      "status": {
+        "good": {
+          "value": "#16A34A",
+          "type": "color"
+        },
+        "warn": {
+          "value": "#B45309",
+          "type": "color"
+        },
+        "bad": {
+          "value": "#DC2626",
+          "type": "color"
+        },
+        "info": {
+          "value": "#0E7490",
+          "type": "color"
+        }
+      },
+      "band": {
+        "excellent": {
+          "value": "#16A34A",
+          "type": "color"
+        },
+        "good": {
+          "value": "#0F766E",
+          "type": "color"
+        },
+        "fair": {
+          "value": "#B7791F",
+          "type": "color"
+        },
+        "building": {
+          "value": "#C2410C",
+          "type": "color"
+        }
+      },
+      "light": {
+        "background": {
+          "value": "#F8FAFC",
+          "type": "color"
+        },
+        "surface": {
+          "value": "#FFFFFF",
+          "type": "color"
+        },
+        "text": {
+          "value": "#0F172A",
+          "type": "color"
+        },
+        "textMuted": {
+          "value": "#475569",
+          "type": "color"
+        },
+        "border": {
+          "value": "#E2E8F0",
+          "type": "color"
+        },
+        "onBrand": {
+          "value": "#FFFFFF",
+          "type": "color"
+        },
+        "onBrandMuted": {
+          "value": "#CBD5E1",
+          "type": "color"
+        },
+        "track": {
+          "value": "#CBD5E1",
+          "type": "color"
+        },
+        "neutralBar": {
+          "value": "#94A3B8",
+          "type": "color"
+        },
+        "shadow": {
+          "value": "#1F0F172A",
+          "type": "color"
+        },
+        "pageBackdrop": {
+          "value": "#E6F7F5",
+          "type": "color"
+        }
+      },
+      "dark": {
+        "background": {
+          "value": "#0B1220",
+          "type": "color"
+        },
+        "surface": {
+          "value": "#111A2E",
+          "type": "color"
+        },
+        "text": {
+          "value": "#E2E8F0",
+          "type": "color"
+        },
+        "textMuted": {
+          "value": "#94A3B8",
+          "type": "color"
+        },
+        "border": {
+          "value": "#1E293B",
+          "type": "color"
+        },
+        "onBrand": {
+          "value": "#FFFFFF",
+          "type": "color"
+        },
+        "onBrandMuted": {
+          "value": "#CBD5E1",
+          "type": "color"
+        },
+        "track": {
+          "value": "#334155",
+          "type": "color"
+        },
+        "neutralBar": {
+          "value": "#64748B",
+          "type": "color"
+        },
+        "shadow": {
+          "value": "#66000000",
+          "type": "color"
+        },
+        "pageBackdrop": {
+          "value": "#0B1220",
+          "type": "color"
+        }
+      }
+    },
+    "spacing": {
+      "xxs": {
+        "value": 2,
+        "type": "spacing"
+      },
+      "xs": {
+        "value": 4,
+        "type": "spacing"
+      },
+      "sm": {
+        "value": 8,
+        "type": "spacing"
+      },
+      "md": {
+        "value": 12,
+        "type": "spacing"
+      },
+      "lg": {
+        "value": 16,
+        "type": "spacing"
+      },
+      "xl": {
+        "value": 24,
+        "type": "spacing"
+      },
+      "xxl": {
+        "value": 32,
+        "type": "spacing"
+      },
+      "xxxl": {
+        "value": 48,
+        "type": "spacing"
+      }
+    },
+    "borderRadius": {
+      "sm": {
+        "value": 8,
+        "type": "borderRadius"
+      },
+      "md": {
+        "value": 12,
+        "type": "borderRadius"
+      },
+      "lg": {
+        "value": 14,
+        "type": "borderRadius"
+      },
+      "pill": {
+        "value": 999,
+        "type": "borderRadius"
+      }
+    },
+    "fontSizes": {
+      "display": {
+        "value": 52,
+        "type": "fontSizes"
+      },
+      "headline": {
+        "value": 34,
+        "type": "fontSizes"
+      },
+      "title": {
+        "value": 22,
+        "type": "fontSizes"
+      },
+      "titleSmall": {
+        "value": 18,
+        "type": "fontSizes"
+      },
+      "body": {
+        "value": 16,
+        "type": "fontSizes"
+      },
+      "bodySmall": {
+        "value": 14,
+        "type": "fontSizes"
+      },
+      "caption": {
+        "value": 12,
+        "type": "fontSizes"
+      }
+    },
+    "fontFamilies": {
+      "latin": {
+        "value": "Inter",
+        "type": "fontFamilies"
+      },
+      "bangla": {
+        "value": "Hind Siliguri",
+        "type": "fontFamilies"
+      }
+    },
+    "fontWeights": {
+      "regular": {
+        "value": "400",
+        "type": "fontWeights"
+      },
+      "medium": {
+        "value": "500",
+        "type": "fontWeights"
+      },
+      "semibold": {
+        "value": "600",
+        "type": "fontWeights"
+      },
+      "bold": {
+        "value": "700",
+        "type": "fontWeights"
+      }
+    }
+  }
+}
