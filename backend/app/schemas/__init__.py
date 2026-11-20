@@ -6,6 +6,7 @@ from app.schemas.consent import (
     ConsentResponse,
     ConsentRevokeResponse,
 )
+from app.schemas.documents import DocumentUploadResponse
 from app.schemas.fairness import (
     FairnessReportResponse,
     GroupFairnessMetrics,
@@ -23,6 +24,7 @@ __all__ = [
     "ConsentRequest",
     "ConsentResponse",
     "ConsentRevokeResponse",
+    "DocumentUploadResponse",
     "ErrorResponse",
     "ExplainResponse",
     "FairnessReportResponse",

@@ -11,11 +11,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from app.api.routers.consent import router as consent_router
-from app.api.routers.fairness import router as fairness_router
-from app.api.routers.features import router as features_router
-from app.api.routers.health import router as health_router
-from app.api.routers.score import router as score_router
+from app.api.routers import (
+    consent_router,
+    documents_router,
+    fairness_router,
+    features_router,
+    health_router,
+    score_router,
+)
 from app.core.features import AllFeaturesMissingError
 from app.privacy.consent import ConsentMissingError
 
@@ -151,6 +154,7 @@ def create_app() -> FastAPI:
     # 4. Mount Routers
     application.include_router(health_router)
     application.include_router(consent_router)
+    application.include_router(documents_router)
     application.include_router(features_router)
     application.include_router(score_router)
     application.include_router(fairness_router)

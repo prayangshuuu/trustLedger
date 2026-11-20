@@ -20,7 +20,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 ## AI layer
 - [x] **Prompt 6: LLM client and SMS parser** — `docs/prompts/PROMPT_06.md` — report: `docs/PROMPT6_REPORT.md`
 - [x] **Prompt 7: Feature builder** — `docs/prompts/PROMPT_07.md` — report: `docs/PROMPT7_REPORT.md`
-- [ ] **Prompt 8: Document OCR — bills, receipts and khata** — `docs/prompts/PROMPT_08.md` — report: `docs/PROMPT8_REPORT.md`
+- [x] **Prompt 8: Document OCR — bills, receipts and khata** — `docs/prompts/PROMPT_08.md` — report: `docs/PROMPT8_REPORT.md`
 - [ ] **Prompt 9: Bhorsha — psychometric chat assessment** — `docs/prompts/PROMPT_09.md` — report: `docs/PROMPT9_REPORT.md`
 - [ ] **Prompt 10: RAG knowledge base** — `docs/prompts/PROMPT_10.md` — report: `docs/PROMPT10_REPORT.md`
 - [ ] **Prompt 11: LangGraph multi-agent pipeline** — `docs/prompts/PROMPT_11.md` — report: `docs/PROMPT11_REPORT.md`
@@ -54,7 +54,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 5 | done | docs/PROMPT5_REPORT.md | FastAPI backend v1, REST endpoints & docs |
 | 6 | done | docs/PROMPT6_REPORT.md | LLM client gateway, Presidio redaction, SMS parser |
 | 7 | done | docs/PROMPT7_REPORT.md | Feature builder, clipping & demo parse endpoints |
-| 8 | not started | — | |
+| 8 | done | docs/PROMPT8_REPORT.md | DeepSeek-OCR for bills, receipts & khata |
 | 9 | not started | — | |
 | 10 | not started | — | |
 | 11 | not started | — | |

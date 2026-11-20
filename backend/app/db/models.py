@@ -58,6 +58,9 @@ class User(Base):
     audit_logs: Mapped[list["AuditLog"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    documents: Mapped[list["DocumentRecord"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class Consent(Base):
@@ -179,3 +182,23 @@ class AuditLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
 
     user: Mapped["User | None"] = relationship(back_populates="audit_logs")
+
+
+class DocumentRecord(Base):
+    """Extracted document metadata and structured fields (images stored in object storage, never in DB)."""
+
+    __tablename__ = "documents"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    document_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    storage_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    extracted_fields: Mapped[dict[str, Any]] = mapped_column(JsonType, nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    needs_review: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
+
+    user: Mapped["User"] = relationship(back_populates="documents")

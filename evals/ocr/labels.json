@@ -1,0 +1,100 @@
+[
+  {
+    "filename": "bill_01_desco.jpg",
+    "type": "utility_bill",
+    "expected": {
+      "document_type": "utility_bill",
+      "provider": "DESCO",
+      "amount_bdt": 1450.0,
+      "due_date": "2026-11-25"
+    }
+  },
+  {
+    "filename": "bill_02_dpdc.jpg",
+    "type": "utility_bill",
+    "expected": {
+      "document_type": "utility_bill",
+      "provider": "DPDC",
+      "amount_bdt": 2200.0,
+      "due_date": "2026-11-20"
+    }
+  },
+  {
+    "filename": "bill_03_wasa.jpg",
+    "type": "utility_bill",
+    "expected": {
+      "document_type": "utility_bill",
+      "provider": "WASA",
+      "amount_bdt": 750.0,
+      "due_date": "2026-11-28"
+    }
+  },
+  {
+    "filename": "bill_04_titas.jpg",
+    "type": "utility_bill",
+    "expected": {
+      "document_type": "utility_bill",
+      "provider": "Titas",
+      "amount_bdt": 1080.0,
+      "due_date": "2026-11-15"
+    }
+  },
+  {
+    "filename": "bill_05_nesco.jpg",
+    "type": "utility_bill",
+    "expected": {
+      "document_type": "utility_bill",
+      "provider": "NESCO",
+      "amount_bdt": 950.0,
+      "due_date": "2026-11-22"
+    }
+  },
+  {
+    "filename": "receipt_01_shwapno.jpg",
+    "type": "receipt",
+    "expected": {
+      "document_type": "receipt",
+      "merchant_or_platform": "Shwapno Superstore",
+      "amount_bdt": 1850.0,
+      "date": "2026-10-20"
+    }
+  },
+  {
+    "filename": "receipt_02_aarong.jpg",
+    "type": "receipt",
+    "expected": {
+      "document_type": "receipt",
+      "merchant_or_platform": "Aarong",
+      "amount_bdt": 3200.0,
+      "date": "2026-10-22"
+    }
+  },
+  {
+    "filename": "receipt_03_pharmacy.jpg",
+    "type": "receipt",
+    "expected": {
+      "document_type": "receipt",
+      "merchant_or_platform": "Lazz Pharma",
+      "amount_bdt": 640.0,
+      "date": "2026-10-25"
+    }
+  },
+  {
+    "filename": "khata_01_grocery.jpg",
+    "type": "khata_page",
+    "expected": {
+      "document_type": "khata_page",
+      "shop_name": "Bhai Bhai General Store",
+      "page_total_bdt": 3400.0
+    }
+  },
+  {
+    "filename": "khata_02_tea_stall.jpg",
+    "type": "khata_page",
+    "expected": {
+      "document_type": "khata_page",
+      "shop_name": "Ma Babar Doa Store",
+      "page_total_bdt": 1850.0
+    }
+  }
+]

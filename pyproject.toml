@@ -21,6 +21,7 @@ dependencies = [
     "psycopg[binary]>=3.1.0",
     "pydantic>=2.7.0",
     "pydantic-settings>=2.2.0",
+    "python-multipart>=0.0.34",
     "scikit-learn>=1.9.1",
     "shap>=0.54.1",
     "sqlalchemy>=2.0.0",
@@ -75,5 +76,5 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
-pythonpath = ["backend"]
+pythonpath = ["backend", "."]
 addopts = "-v --cov=app --cov-report=term-missing"
