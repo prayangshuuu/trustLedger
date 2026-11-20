@@ -41,7 +41,17 @@ def load_dataset(path: Path | None = None, fallback_rows: int = 20000) -> pd.Dat
 
     rows = generate_population(fallback_rows, seed=SEED)
     df = pd.DataFrame(
-        [{**r["features"], "division": r["division"], "repaid": int(r["repaid"])} for r in rows]
+        [
+            {
+                **r["features"],
+                "division": r["division"],
+                "group": f"{r['gender']}_{r['region']}",
+                "has_bank_account": int(r["has_bank_account"]),
+                "has_salary_slip": int(r["has_salary_slip"]),
+                "repaid": int(r["repaid"]),
+            }
+            for r in rows
+        ]
     )
     return df
 

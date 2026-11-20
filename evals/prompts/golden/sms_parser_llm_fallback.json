@@ -1,0 +1,12 @@
+{
+  "novel_credit": {
+    "amount": 2350.0,
+    "direction": "in",
+    "type": "transfer"
+  },
+  "novel_debit": {
+    "amount": 410.0,
+    "direction": "out",
+    "type": "other"
+  }
+}

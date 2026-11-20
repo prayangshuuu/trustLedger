@@ -35,7 +35,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 16: Lender dashboard (React)** — `docs/prompts/PROMPT_16.md` — report: `docs/PROMPT16_REPORT.md`
 
 ## Quality
-- [ ] **Prompt 17: Evaluation suite and quality gates** — `docs/prompts/PROMPT_17.md` — report: `docs/PROMPT17_REPORT.md`
+- [x] **Prompt 17: Evaluation suite and quality gates** — `docs/prompts/PROMPT_17.md` — report: `docs/PROMPT17_REPORT.md`
 - [ ] **Prompt 18: Security, privacy hardening and observability** — `docs/prompts/PROMPT_18.md` — report: `docs/PROMPT18_REPORT.md`
 
 ## Launch
@@ -63,7 +63,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 14 | done | docs/PROMPT14_REPORT.md | Flower DP-FedAvg, AUC 0.7555 |
 | 15 | done | docs/PROMPT15_REPORT.md | Flutter app; macOS e2e passes, emulator pending |
 | 16 | done | docs/PROMPT16_REPORT.md | React dashboard, live stats endpoints |
-| 17 | not started | — | |
+| 17 | done | docs/PROMPT17_REPORT.md | 8 offline gates, CI fails on bias |
 | 18 | not started | — | |
 | 19 | not started | — | |
 | 20 | not started | — | |

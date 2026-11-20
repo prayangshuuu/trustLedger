@@ -1,0 +1,47 @@
+{
+  "F_rural_Chattogram": {
+    "nodes": [
+      "data_agent",
+      "bhorsha_router",
+      "scoring_agent",
+      "explainer_agent",
+      "fairness_agent",
+      "finalize"
+    ],
+    "score": 650,
+    "status": "approved"
+  },
+  "F_rural_Rangpur": {
+    "nodes": [
+      "data_agent",
+      "bhorsha_router",
+      "finalize"
+    ],
+    "score": null,
+    "status": "bhorsha_required"
+  },
+  "F_urban_Dhaka": {
+    "nodes": [
+      "data_agent",
+      "bhorsha_router",
+      "scoring_agent",
+      "explainer_agent",
+      "fairness_agent",
+      "finalize"
+    ],
+    "score": 717,
+    "status": "approved"
+  },
+  "M_urban_Dhaka": {
+    "nodes": [
+      "data_agent",
+      "bhorsha_router",
+      "scoring_agent",
+      "explainer_agent",
+      "fairness_agent",
+      "finalize"
+    ],
+    "score": 674,
+    "status": "approved"
+  }
+}

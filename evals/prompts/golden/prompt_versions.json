@@ -1,0 +1,10 @@
+{
+  "bhorsha_interviewer": "1.1.0",
+  "bhorsha_router": "1.0.0",
+  "bhorsha_scorer": "1.0.0",
+  "data_agent": "1.0.0",
+  "explainer_agent": "1.0.0",
+  "fairness_agent": "1.0.0",
+  "scoring_agent": "1.0.0",
+  "supervisor": "1.0.0"
+}
