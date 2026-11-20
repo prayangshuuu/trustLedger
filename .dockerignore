@@ -14,26 +14,15 @@ __pycache__
 .ruff_cache
 .pytest_cache
 .cache
-.dart_tool
-.flutter-plugins
-.flutter-plugins-dependencies
 
 # Node / JS artifacts
 **/node_modules
 apps/dashboard/.vite
 apps/dashboard/coverage
 
-# Mobile native build directories & testing artifacts (keep web assets only)
-apps/mobile/android
-apps/mobile/ios
-apps/mobile/macos
-apps/mobile/linux
-apps/mobile/windows
-apps/mobile/test/goldens
-apps/mobile/test/failures
-apps/mobile/build/*
-!apps/mobile/build/web
-!apps/mobile/build/web/**
+# Flutter app is not part of the image (the borrower web app is apps/borrower, built in the image)
+apps/mobile
+apps/borrower/dist
 
 # Datasets, notebooks & local data (docs/media is needed by the docs site build)
 datasets

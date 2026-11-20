@@ -49,11 +49,11 @@ DASH_CODE=$(curl -sS -o "$TMP/dash.html" -w '%{http_code}' "$BASE/")
 grep -qEi "root|TrustLedger" "$TMP/dash.html" || fail "Lender dashboard HTML missing root div"
 ok "2. React Lender Dashboard rendered at http://localhost:8000/"
 
-# 3. Borrower Web App (Flutter Web) index served at /app/
+# 3. Borrower Web App (React) index served at /app/
 WEB_CODE=$(curl -sS -o "$TMP/web.html" -w '%{http_code}' "$BASE/app/")
 [ "$WEB_CODE" = "200" ] || fail "Borrower web app returned $WEB_CODE"
-grep -qEi "flutter|TrustLedger|HindSiliguri" "$TMP/web.html" || fail "Borrower web app HTML missing Flutter assets"
-ok "3. Flutter Borrower Web App rendered at http://localhost:8000/app/"
+grep -qEi "TrustLedger|HindSiliguri" "$TMP/web.html" || fail "Borrower web app HTML missing app assets"
+ok "3. Borrower Web App rendered at http://localhost:8000/app/"
 
 # 4. Interactive API documentation served at /docs and /api/docs
 DOCS_CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/docs")
