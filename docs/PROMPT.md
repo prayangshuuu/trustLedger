@@ -26,7 +26,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 11: LangGraph multi-agent pipeline** — `docs/prompts/PROMPT_11.md` — report: `docs/PROMPT11_REPORT.md`
 
 ## Integration and platform
-- [ ] **Prompt 12: MCP server** — `docs/prompts/PROMPT_12.md` — report: `docs/PROMPT12_REPORT.md`
+- [x] **Prompt 12: MCP server** — `docs/prompts/PROMPT_12.md` — report: `docs/PROMPT12_REPORT.md`
 - [ ] **Prompt 13: Workflows — Temporal and Airflow** — `docs/prompts/PROMPT_13.md` — report: `docs/PROMPT13_REPORT.md`
 - [ ] **Prompt 14: Federated learning with Flower** — `docs/prompts/PROMPT_14.md` — report: `docs/PROMPT14_REPORT.md`
 
@@ -58,7 +58,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 9 | done | docs/PROMPT9_REPORT.md | Bhorsha psychometric chat assessment |
 | 10 | done | docs/PROMPT10_REPORT.md | Hybrid RAG, pgvector, 30-question eval |
 | 11 | done | docs/PROMPT11_REPORT.md | LangGraph supervisor, /apply, traces |
-| 12 | not started | — | |
+| 12 | done | docs/PROMPT12_REPORT.md | MCP tools over stdio + HTTP with API keys |
 | 13 | not started | — | |
 | 14 | not started | — | |
 | 15 | not started | — | |
