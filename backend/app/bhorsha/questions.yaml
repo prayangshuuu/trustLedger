@@ -1,0 +1,124 @@
+# TrustLedger Bhorsha Psychometric Questionnaire
+# 12 contextual scenarios designed for Bangladeshi unbanked borrowers (garment workers, gig workers, small shop owners)
+# Covers: Planning, Saving, Risk Attitude, Consistency, and Emergency Preparedness.
+
+questions:
+  - id: "plan_01"
+    dimension: "planning"
+    bangla: "মাসের শুরুতে যখন বেতন বা উপার্জনের টাকা হাতে পান, তখন আপনি খরচের হিসাব কীভাবে ঠিক করেন?"
+    english: "At the start of the month when income arrives, how do you plan your expenses?"
+    pair_id: "plan_02_pair"
+    rubric:
+      strong: "লিখিত বা নির্দিষ্ট তালিকা তৈরি করেন, বাসাভাড়া ও বিল আগে আলাদা করেন, সঞ্চয় আলাদা রাখেন।"
+      moderate: "মনে মনে একটা আনুমানিক হিসাব রাখেন এবং প্রয়োজনমতো খরচ করেন।"
+      weak: "কোনো পরিকল্পনা করেন না, টাকা হাতে আসলে খরচ করেন পরে টান পড়লে ধার করেন।"
+
+  - id: "save_01"
+    dimension: "saving"
+    bangla: "আপনার জরুরি প্রয়োজনের জন্য প্রতি মাসে কিছু টাকা আলাদা করে সরিয়ে রাখার অভ্যাস আছে কি?"
+    english: "Do you have a regular habit of setting aside money each month for emergencies?"
+    pair_id: "save_02_pair"
+    rubric:
+      strong: "নিয়মিত ডিপিএস, সমিতি বা মোবাইল ব্যাংকিংয়ে নির্দিষ্ট পরিমাণ টাকা সরিয়ে রাখেন।"
+      moderate: "খরচ শেষে টাকা বাঁচলে মাঝে মাঝে কিছু টাকা আলাদা করে রাখেন।"
+      weak: "কখনোই সঞ্চয় করেন না বা সব টাকা খরচ হয়ে যায়।"
+
+  - id: "risk_01"
+    dimension: "risk"
+    bangla: "কেউ যদি আপনাকে বলে এক মাসে টাকা দ্বিগুণ করে দেবে এমন কোনো ব্যবসায় টাকা বিনিয়োগ করতে, আপনি কী করবেন?"
+    english: "If someone offers you an investment that promises to double your money in one month, what would you do?"
+    pair_id: "risk_02_pair"
+    rubric:
+      strong: "অবাস্তব ও ঝুঁকিপূর্ণ মনে করে সরাসরি না করে দেবেন বা যাচাই-বাছাই ছাড়া বিনিয়োগ করবেন না।"
+      moderate: "অন্যদের সাথে পরামর্শ করে সতর্কতার সাথে অল্প টাকা যাচাই করতে পারেন।"
+      weak: "লোভে পড়ে বা না বুঝে বেশি লাভের আশায় সব টাকা বিনিয়োগ করবেন।"
+
+  - id: "emerg_01"
+    dimension: "emergency"
+    bangla: "পরিবারে হঠাৎ কোনো অসুস্থতা বা জরুরি চিকিৎসার খরচ আসলে আপনি তাৎক্ষণিকভাবে কীভাবে সামলান?"
+    english: "If a sudden medical emergency arises in your family, how do you handle the immediate cost?"
+    pair_id: "emerg_02_pair"
+    rubric:
+      strong: "নিজের জমানো ইমার্জেন্সি ফান্ড থেকে মেটান অথবা পূর্বপরিকল্পিত উপায়ে মেটান।"
+      moderate: "পরিবারের সদস্য বা বন্ধুদের কাছ থেকে সাময়িক সাহায্য নেন এবং দ্রুত পরিশোধ করেন।"
+      weak: "উচ্চ সুদে দাদন নেন বা জিনিসপত্র বন্ধক রাখেন।"
+
+  - id: "const_01"
+    dimension: "consistency"
+    bangla: "বিদ্যুৎ বা গ্যাসের বিল দেওয়ার শেষ তারিখ মনে রেখে সময়মতো পরিশোধ করা আপনার জন্য কতটা গুরুত্বপূর্ণ?"
+    english: "How important is it for you to remember and pay your utility bills before the due date?"
+    pair_id: "const_02_pair"
+    rubric:
+      strong: "জরুরি দায়িত্ব মনে করেন, জরিমানা বা সংযোগ বিচ্ছিন্ন হওয়া এড়াতে শেষ দিনের আগেই দেন।"
+      moderate: "সাধারণত সময়মতো দেন, তবে মাঝে মাঝে ভুলে গিয়ে দেরিতে জরিমানা সহ দেন।"
+      weak: "বিল জমানো থাকে, চাপ না আসলে পরিশোধ করেন না।"
+
+  - id: "debt_01"
+    dimension: "planning"
+    bangla: "আপনি যদি কারো কাছ থেকে বা সমিতি থেকে টাকা ঋণ নেন, কিস্তি পরিশোধের টাকা কীভাবে ম্যানেজ করেন?"
+    english: "If you borrow money, how do you manage and prioritize the installment repayments?"
+    pair_id: null
+    rubric:
+      strong: "অন্যান্য শখের খরচের আগেই ঋণের কিস্তির টাকা প্রথম অগ্রাধিকার হিসেবে আলাদা করে রাখেন।"
+      moderate: "মাসিক খরচের সাথে সামঞ্জস্য রেখে কোনোমতে কিস্তির টাকা জোগাড় করেন।"
+      weak: "কিস্তি পরিশোধের কথা ভুলে যান বা অন্য ঋণ নিয়ে আগের ঋণ শোধ করেন।"
+
+  - id: "plan_02_pair"
+    dimension: "planning"
+    bangla: "মাসের শেষ দশ দিনে যদি দেখেন হাতে টাকা কম, তখন পরিবারের খরচ কীভাবে নিয়ন্ত্রণ করেন?"
+    english: "In the last ten days of the month if funds run low, how do you control household spending?"
+    pair_id: "plan_01"
+    rubric:
+      strong: "অপ্রয়োজনীয় খরচ বাদ দেন, বাজেট কাটছাঁট করেন এবং জমানো টাকার উপর নির্ভর না করার চেষ্টা করেন।"
+      moderate: "সাধারণ খরচ কিছুটা কমান এবং কোনোভাবে মাস পার করেন।"
+      weak: "খরচ কমাতে পারেন না, বাধ্য হয়ে বাকিতে কেনাকাটা করেন বা ঋণ নেন।"
+
+  - id: "save_02_pair"
+    dimension: "saving"
+    bangla: "হঠাৎ কিছু অতিরিক্ত টাকা বা বোনাস পেলে আপনি প্রথমে সেই টাকা দিয়ে কী করবেন?"
+    english: "If you suddenly receive unexpected money or a bonus, what do you do first?"
+    pair_id: "save_01"
+    rubric:
+      strong: "বকেয়া ঋণ শোধ করেন বা ভবিষ্যতের নিরাপত্তার জন্য সঞ্চয় তহবিলে জমা রাখেন।"
+      moderate: "কিছু টাকা জরুরি দরকারে রাখেন এবং কিছু দিয়ে কেনাকাটা করেন।"
+      weak: "সব টাকা সাথে সাথে শখের জিনিসপত্র কিনে বা উৎসবে খরচ করে ফেলেন।"
+
+  - id: "risk_02_pair"
+    dimension: "risk"
+    bangla: "লটারি বা চটজলদি ধনী হওয়ার কোনো স্কিম দেখলে আপনি কি তাতে অংশ নেন?"
+    english: "Do you participate in lotteries or get-rich-quick schemes?"
+    pair_id: "risk_01"
+    rubric:
+      strong: "কখনোই অংশ নেন না, কারণ এগুলো পরিশ্রমের উপার্জনের টাকা নষ্ট করে।"
+      moderate: "উৎসবের সময় বন্ধুদের সাথে সামান্য টাকার টিকিট কেনেন কিন্তু নিয়মিত নয়।"
+      weak: "নিয়মিত অংশ নেন এবং ভাগ্যের জোরে বড়লোক হওয়ার স্বপ্ন দেখেন।"
+
+  - id: "emerg_02_pair"
+    dimension: "emergency"
+    bangla: "যদি আগামী এক বা দুই মাস আপনার কোনো উপার্জন না থাকে, তবে চলার মতো কোনো প্রস্তুতি আপনার আছে?"
+    english: "If you had no income for the next 1-2 months, do you have preparations to survive?"
+    pair_id: "emerg_01"
+    rubric:
+      strong: "হ্যাঁ, অন্তত ২-৩ মাসের সংসার চলার মতো সঞ্চয় বা বিকল্প ব্যবস্থা গুছিয়ে রাখা আছে।"
+      moderate: "১ মাসের মতো চলতে পারব, এরপর ধারদেনা করতে হবে।"
+      weak: "এক সপ্তাহও চলার উপায় নেই, তাৎক্ষণিক অন্যের সাহায্য লাগবে।"
+
+  - id: "const_02_pair"
+    dimension: "consistency"
+    bangla: "কোনো কাজ শুরু করার পর পরিস্থিতি কঠিন হলেও আপনি কি শেষ পর্যন্ত তা বজায় রাখেন?"
+    english: "Once you commit to a plan or routine, do you see it through even when difficult?"
+    pair_id: "const_01"
+    rubric:
+      strong: "দায়িত্ব সচেতনতার সাথে কঠিন হলেও নিয়ম মেনে শেষ পর্যন্ত চালিয়ে যান।"
+      moderate: "বেশিরভাগ সময় চেষ্টা করেন, তবে অনেক বাধা আসলে হাল ছেড়ে দেন।"
+      weak: "খুব দ্রুত আগ্রহ হারিয়ে ফেলেন এবং মাঝপথে বন্ধ করে দেন।"
+
+  - id: "honesty_01"
+    dimension: "consistency"
+    bangla: "দোকানদার যদি ভুল করে আপনাকে বেশি টাকা ফেরত দেয়, আপনি কী করেন?"
+    english: "If a shopkeeper mistakenly gives you extra change, what do you do?"
+    pair_id: null
+    rubric:
+      strong: "তৎক্ষণাৎ ভুল ধরিয়ে দিয়ে অতিরিক্ত টাকা ফেরত দেন।"
+      moderate: "যদি মনে হয় দোকানদার গরিব তবে ফেরত দেন।"
+      weak: "নিজের লাভ মনে করে চুপচাপ রেখে দেন।"

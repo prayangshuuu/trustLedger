@@ -71,6 +71,8 @@ module = [
     "presidio_analyzer.*",
     "presidio_anonymizer",
     "presidio_anonymizer.*",
+    "yaml",
+    "yaml.*",
 ]
 ignore_missing_imports = true
 

@@ -1,5 +1,12 @@
 """Schemas package exposing request and response models."""
 
+from app.schemas.bhorsha import (
+    BhorshaAnswerRequest,
+    BhorshaAnswerResponse,
+    BhorshaResultResponse,
+    BhorshaStartRequest,
+    BhorshaStartResponse,
+)
 from app.schemas.common import ErrorResponse
 from app.schemas.consent import (
     ConsentRequest,
@@ -21,6 +28,11 @@ from app.schemas.features import (
 from app.schemas.score import ExplainResponse, ReasonItem, ScoreRequest, ScoreResponse
 
 __all__ = [
+    "BhorshaAnswerRequest",
+    "BhorshaAnswerResponse",
+    "BhorshaResultResponse",
+    "BhorshaStartRequest",
+    "BhorshaStartResponse",
     "ConsentRequest",
     "ConsentResponse",
     "ConsentRevokeResponse",

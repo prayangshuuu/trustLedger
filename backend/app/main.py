@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from app.api.routers import (
+    bhorsha_router,
     consent_router,
     documents_router,
     fairness_router,
@@ -154,6 +155,7 @@ def create_app() -> FastAPI:
     # 4. Mount Routers
     application.include_router(health_router)
     application.include_router(consent_router)
+    application.include_router(bhorsha_router)
     application.include_router(documents_router)
     application.include_router(features_router)
     application.include_router(score_router)
