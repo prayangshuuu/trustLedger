@@ -1,9 +1,12 @@
 {
-  "name": "TrustLedger API",
-  "description": "Fair, private, explainable credit scoring for Bangladeshis without a credit history.",
+  "name": "TrustLedger",
+  "description": "Fair, private, explainable credit scoring for Bangladeshis without a credit history. API and lender dashboard in one app.",
   "repository": "https://github.com/prayangshuuu/trustLedger",
   "stack": "heroku-24",
   "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
     {
       "url": "heroku/python"
     }
@@ -48,7 +51,8 @@
       "description": "Fernet key; generate locally"
     },
     "CORS_ORIGINS": {
-      "value": "https://trustledger-dashboard.vercel.app"
+      "value": "",
+      "description": "Extra browser origins; the bundled dashboard is same-origin and needs none"
     },
     "SEED_POPULATION": {
       "value": "4000"

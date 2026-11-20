@@ -24,4 +24,6 @@ node tests/screenshots.mjs      # regenerate docs/media/dashboard_*.png
 ```
 
 Demo data: `make seed` (3 personas + 4,000 synthetic applicants generated with the notebook formulas).
-Deploy: Vercel (`vercel.json`) with `VITE_API_BASE_URL` set to the API URL. Add the dashboard origin to the API's `CORS_ORIGINS`.
+Deploy: ships inside the `trustledger` Heroku app. The Node buildpack builds `dist/` and the FastAPI app serves it at `/`
+(same origin, so no `VITE_API_BASE_URL` or CORS setup). See [`docs/deploy.md`](../../docs/deploy.md).
+Production builds call the page's own origin; set `VITE_API_BASE_URL` only to point a build at another API.

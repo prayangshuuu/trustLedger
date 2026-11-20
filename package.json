@@ -1,0 +1,11 @@
+{
+  "name": "trustledger",
+  "private": true,
+  "description": "Heroku build entry: the Node buildpack builds the lender dashboard, which the FastAPI app serves at /.",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "heroku-postbuild": "npm --prefix apps/dashboard ci --include=dev && npm --prefix apps/dashboard run build && rm -rf apps/dashboard/node_modules"
+  }
+}

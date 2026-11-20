@@ -93,7 +93,7 @@ flowchart LR
 <section id="api"><h2>API</h2>
 <pre>curl -X POST $API/apply -H 'X-API-Key: …' -d '{"user_id":"…","amount_bdt":15000}'
 # → {"status":"approved","decision":{"score":691,"band":"Good","good":["বিল সময়মতো পরিশোধ",…]},"trace_id":"trace_…"}</pre>
-<p>31 endpoints: consent and sessions, <code>/apply</code> (agents), <code>/score</code>, <code>/explain/{id}</code>, <code>/documents</code> (OCR), <code>/bhorsha/*</code>, <code>/loans/*</code>, <code>/fairness/report</code>, <code>/inclusion-lift</code>, dashboard stats, <code>/metrics</code>. Full reference: <a href="https://github.com/prayangshuuu/trustLedger/blob/main/docs/api.md">docs/api.md</a> and Swagger at <code>/docs</code> on the API.</p>
+<p>31 endpoints: consent and sessions, <code>/apply</code> (agents), <code>/score</code>, <code>/explain/{id}</code>, <code>/documents</code> (OCR), <code>/bhorsha/*</code>, <code>/loans/*</code>, <code>/fairness/report</code>, <code>/inclusion-lift</code>, dashboard stats, <code>/metrics</code>. Full reference: <a href="https://github.com/prayangshuuu/trustLedger/blob/main/docs/api.md">docs/api.md</a> and Swagger at <code>/api/docs</code>.</p>
 </section>
 <section id="mcp"><h2>MCP for partner agents</h2>
 <p>Tools <code>score_user</code>, <code>explain_score</code>, <code>fairness_audit</code>, <code>get_inclusion_lift</code> over stdio or authenticated streamable HTTP (<code>/mcp</code>, <code>X-API-Key</code>).</p>

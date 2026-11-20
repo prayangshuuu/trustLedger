@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Shathi's demo flow against a deployed (or local) TrustLedger API.
-#   infra/smoke.sh https://trustledger-api.herokuapp.com <API_KEY> [MCP_URL]
+#   infra/smoke.sh https://trustledger-<id>.herokuapp.com <API_KEY> [MCP_URL]
 set -euo pipefail
 BASE="${1:-http://localhost:8000}"; KEY="${2:-${API_KEY:-dev-key}}"; MCP="${3:-${MCP_URL:-}}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

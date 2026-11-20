@@ -8,11 +8,11 @@ International AI Builders Congress 2026 · problem **CreditForAll** (FinSphere A
 
 | | Link |
 |---|---|
-| Live demo (API / dashboard) | _set after deployment — see [`docs/deploy.md`](docs/deploy.md)_ |
-| Public docs page | [`docs/site/index.html`](docs/site/index.html), served at `/docs` on the dashboard deployment |
+| Live demo (dashboard + API, one Heroku app) | _set after deployment — see [`docs/deploy.md`](docs/deploy.md)_ |
+| Public docs page | [`docs/site/index.html`](docs/site/index.html), served at `/docs` on the Heroku app |
 | Demo video | _team to add_ |
 | Pitch deck | _team to add_ |
-| API reference | [`docs/api.md`](docs/api.md) · Swagger at `/docs` on the API |
+| API reference | [`docs/api.md`](docs/api.md) · Swagger at `/api/docs` |
 | Architecture | [`docs/architecture.md`](docs/architecture.md) |
 | Privacy | [`docs/privacy.md`](docs/privacy.md) |
 | Demo script / judge Q&A | [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · [`docs/JUDGE_QA.md`](docs/JUDGE_QA.md) |
@@ -95,7 +95,7 @@ cp .env.example .env                      # defaults run fully offline (LLM_MODE
 export DATABASE_URL=sqlite:///./trustledger.db DEMO_MODE=true API_KEYS=dev-key
 make seed                                 # 4 personas + 4,000 synthetic applicants
 make ingest                               # RAG knowledge base
-make api                                  # http://localhost:8000/docs
+make api                                  # http://localhost:8000/api/docs
 infra/smoke.sh http://localhost:8000 dev-key   # Shathi's full flow
 ```
 

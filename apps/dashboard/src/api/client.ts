@@ -1,5 +1,7 @@
 // Typed client for the TrustLedger API. The lender's API key is kept in sessionStorage.
-export const API_BASE: string = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+// Production builds default to same origin (the API serves the dashboard on Heroku).
+export const API_BASE: string =
+  import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? "http://localhost:8000" : "");
 const KEY_STORAGE = "tl_api_key";
 
 export class ApiError extends Error {

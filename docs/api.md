@@ -1,7 +1,7 @@
 # TrustLedger API reference
 
-Generated from the OpenAPI schema by `backend/scripts/gen_api_docs.py`. Interactive docs: `GET /docs` (Swagger),
-`GET /redoc`, schema `GET /openapi.json`.
+Generated from the OpenAPI schema by `backend/scripts/gen_api_docs.py`. Interactive docs: `GET /api/docs` (Swagger),
+`GET /api/redoc`, schema `GET /openapi.json`.
 
 ## Authentication
 

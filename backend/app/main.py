@@ -3,6 +3,7 @@
 import logging
 import time
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
@@ -27,8 +28,11 @@ from app.config import get_settings
 from app.core.features import AllFeaturesMissingError
 from app.observability import GuardMiddleware, install_log_filter, json_log, metrics_response
 from app.privacy.consent import ConsentMissingError
+from app.web import mount_dashboard
 
 logger = logging.getLogger("trustledger.api")
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class RequestLoggingAndIDMiddleware(BaseHTTPMiddleware):
@@ -70,6 +74,9 @@ def create_app() -> FastAPI:
             "- **Inclusion reporting**: Quantifiable Inclusion Lift vs legacy collateral/salary-slip banking rules"
         ),
         version="1.0.0",
+        # /docs is the public docs site shipped with the dashboard
+        docs_url="/api/docs",
+        redoc_url="/api/redoc",
         openapi_tags=[
             {"name": "System", "description": "Service health checks and version introspection"},
             {
@@ -176,6 +183,10 @@ def create_app() -> FastAPI:
     application.include_router(loans_router)
     application.include_router(demo_router)
     application.include_router(stats_router)
+
+    # 5. Lender dashboard (same origin) when a build is present; must stay last
+    dist = Path(settings.DASHBOARD_DIR)
+    mount_dashboard(application, dist if dist.is_absolute() else REPO_ROOT / dist)
 
     return application
 

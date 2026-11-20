@@ -54,6 +54,8 @@ class Settings(BaseSettings):
 
     # Application & Workflow Settings
     DEMO_MODE: bool = False
+    # Built dashboard served at / (relative to the repo root); ignored if no build exists
+    DASHBOARD_DIR: str = "apps/dashboard/dist"
     TEMPORAL_HOST: str = "localhost:7233"
     MODEL_DIR: str = "models"
 

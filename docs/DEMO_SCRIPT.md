@@ -21,8 +21,8 @@ Closing line: "Fair, private, explainable. So no responsible Bangladeshi is reje
 
 1. **Local stack** on the presenting laptop (no internet needed, `LLM_MODE=mock`):
    ```bash
+   (cd apps/dashboard && npm run build)          # the API serves it at http://localhost:8000
    DEMO_MODE=true API_KEYS=dev-key make seed && DEMO_MODE=true API_KEYS=dev-key make api
-   cd apps/dashboard && npm run preview            # built with VITE_API_BASE_URL=http://localhost:8000
    cd apps/mobile && flutter run -d macos          # API_BASE_URL defaults to http://localhost:8000
    ```
    Or: `docker compose -f infra/docker-compose.yml --profile app up`.
