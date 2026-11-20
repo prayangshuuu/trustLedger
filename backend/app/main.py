@@ -22,6 +22,7 @@ from app.api.routers import (
     health_router,
     loans_router,
     score_router,
+    stats_router,
 )
 from app.core.features import AllFeaturesMissingError
 from app.privacy.consent import ConsentMissingError
@@ -166,6 +167,7 @@ def create_app() -> FastAPI:
     application.include_router(apply_router)
     application.include_router(loans_router)
     application.include_router(demo_router)
+    application.include_router(stats_router)
 
     return application
 

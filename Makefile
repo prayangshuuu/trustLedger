@@ -26,7 +26,7 @@ mcp-http:
 	uv run python -m mcp_server.server --transport http
 
 seed:
-	uv run python backend/scripts/seed_demo.py --population 400
+	uv run python backend/scripts/seed_demo.py --population 4000
 
 ingest:
 	uv run python -m app.rag.ingest

@@ -32,7 +32,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 
 ## Apps
 - [x] **Prompt 15: Borrower app (Flutter)** — `docs/prompts/PROMPT_15.md` — report: `docs/PROMPT15_REPORT.md`
-- [ ] **Prompt 16: Lender dashboard (React)** — `docs/prompts/PROMPT_16.md` — report: `docs/PROMPT16_REPORT.md`
+- [x] **Prompt 16: Lender dashboard (React)** — `docs/prompts/PROMPT_16.md` — report: `docs/PROMPT16_REPORT.md`
 
 ## Quality
 - [ ] **Prompt 17: Evaluation suite and quality gates** — `docs/prompts/PROMPT_17.md` — report: `docs/PROMPT17_REPORT.md`
@@ -62,7 +62,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 13 | done | docs/PROMPT13_REPORT.md | Temporal LoanWorkflow + Airflow DAGs |
 | 14 | done | docs/PROMPT14_REPORT.md | Flower DP-FedAvg, AUC 0.7555 |
 | 15 | done | docs/PROMPT15_REPORT.md | Flutter app; macOS e2e passes, emulator pending |
-| 16 | not started | — | |
+| 16 | done | docs/PROMPT16_REPORT.md | React dashboard, live stats endpoints |
 | 17 | not started | — | |
 | 18 | not started | — | |
 | 19 | not started | — | |

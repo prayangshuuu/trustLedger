@@ -9,4 +9,3 @@ apps
 .ruff_cache
 .pytest_cache
 *.ipynb
-training_files

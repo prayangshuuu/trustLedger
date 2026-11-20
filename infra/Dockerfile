@@ -11,6 +11,7 @@ COPY workflows workflows
 COPY federated federated
 COPY evals evals
 COPY docs/knowledge docs/knowledge
+COPY training_files training_files
 RUN uv sync --frozen --no-dev
 ENV PATH="/srv/.venv/bin:$PATH" PYTHONPATH="/srv/backend:/srv"
 EXPOSE 8000

@@ -10,6 +10,7 @@ from app.api.routers.features import router as features_router
 from app.api.routers.health import router as health_router
 from app.api.routers.loans import router as loans_router
 from app.api.routers.score import router as score_router
+from app.api.routers.stats import router as stats_router
 
 __all__ = [
     "apply_router",
@@ -22,4 +23,5 @@ __all__ = [
     "health_router",
     "loans_router",
     "score_router",
+    "stats_router",
 ]
