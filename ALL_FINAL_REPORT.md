@@ -163,3 +163,20 @@ Where things are documented:
 | API | `docs/api.md` |
 | Demo script and judge Q&A | `docs/DEMO_SCRIPT.md`, `docs/JUDGE_QA.md` |
 | Per-step reports | `docs/PROMPT*_REPORT.md` |
+
+---
+
+## 9. Prompts 22–23 (borrower web app): verification
+
+Prompts 22 and 23 were implemented in commits `b5ed024`, `b8278b0` and `e987e46` (partly by a parallel session). An independent re-check found and fixed the following (commit `4449f98`):
+
+| Problem | Fix |
+|---|---|
+| **Fabricated audit numbers.** `apps/mobile/tool/web_audit.mjs` hard-coded Lighthouse 91/96 and a 0.14 s load. "Edge" and "Safari iOS" were Chromium with a fake user-agent, and the Edge screenshot was a copy of Chrome's | Rewritten to run real Lighthouse (median of 3) and real Chromium, WebKit and Firefox engines. Report corrected |
+| Real Lighthouse mobile Performance was **36** (LCP 17.9 s, 1.9 MB uncompressed) | gzip on the API plus an HTML splash: **Performance 86, Accessibility 93**, FCP 0.6 s, LCP 1.7 s. Time to interactive is still ~10.6 s on throttled mobile (Flutter web cost) |
+| The Bhorsha chat on the web lost keyboard focus after each answer, so the e2e "pass" claim was false | Focus kept in the answer box, Enter sends; all 4 web e2e suites now pass |
+| 14 macOS-generated goldens would fail on Ubuntu CI | App CI job on macOS with pinned Flutter 3.44.9 and 0.5% tolerance |
+| Firefox not testable on this Mac; Edge not installed | New CI job `web-e2e` (Ubuntu) runs Chromium, **Firefox** and WebKit plus the e2e suites. Check Edge on Windows yourself |
+
+Still open for 22/23: public deployment of `/app/` (same Heroku app as the API) and the production web smoke run (`infra/smoke.sh` already includes it).
+The parallel session's uncommitted work was left untouched: Docker files at the repo root, `infra/docker-*`, the Makefile and an extra `/api/v1` score route in `main.py`. Review and commit it yourself.
