@@ -39,7 +39,7 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 - [x] **Prompt 18: Security, privacy hardening and observability** — `docs/prompts/PROMPT_18.md` — report: `docs/PROMPT18_REPORT.md`
 
 ## Launch
-- [ ] **Prompt 19: Deployment — Heroku and demo environment** — `docs/prompts/PROMPT_19.md` — report: `docs/PROMPT19_REPORT.md`
+- [x] **Prompt 19: Deployment — Heroku and demo environment** — `docs/prompts/PROMPT_19.md` — report: `docs/PROMPT19_REPORT.md`
 - [ ] **Prompt 20: Public /docs site, README and submission pack** — `docs/prompts/PROMPT_20.md` — report: `docs/PROMPT20_REPORT.md`
 - [ ] **Prompt 21: Final QA and submission readiness** — `docs/prompts/PROMPT_21.md` — report: `docs/PROMPT21_REPORT.md`
 
@@ -61,11 +61,11 @@ Read PLAN_CONTEXT.md, PROMPT.md and all docs/PROMPT*_REPORT.md. Then execute doc
 | 12 | done | docs/PROMPT12_REPORT.md | MCP tools over stdio + HTTP with API keys |
 | 13 | done | docs/PROMPT13_REPORT.md | Temporal LoanWorkflow + Airflow DAGs |
 | 14 | done | docs/PROMPT14_REPORT.md | Flower DP-FedAvg, AUC 0.7555 |
-| 15 | done | docs/PROMPT15_REPORT.md | Flutter app; macOS e2e passes, emulator pending |
+| 15 | partial | docs/PROMPT15_REPORT.md | Flutter app; macOS e2e passes, emulator pending |
 | 16 | done | docs/PROMPT16_REPORT.md | React dashboard, live stats endpoints |
 | 17 | done | docs/PROMPT17_REPORT.md | 8 offline gates, CI fails on bias |
 | 18 | done | docs/PROMPT18_REPORT.md | Rate limits, CORS, metrics, Grafana, privacy.md |
-| 19 | not started | — | |
+| 19 | partial | docs/PROMPT19_REPORT.md | Deploy-ready; public URLs blocked on team accounts |
 | 20 | not started | — | |
 | 21 | not started | — | |
 

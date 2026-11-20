@@ -5478,6 +5478,7 @@ wheels = [
 name = "trustledger"
 version = "0.1.0"
 source = { editable = "." }
+default-groups = ["dev", "notebook"]
 dependencies = [
     { name = "alembic" },
     { name = "boto3" },
@@ -5485,11 +5486,8 @@ dependencies = [
     { name = "fastapi" },
     { name = "flwr" },
     { name = "httpx" },
-    { name = "ipykernel" },
     { name = "langgraph" },
-    { name = "matplotlib" },
     { name = "mcp" },
-    { name = "notebook" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "pgvector" },
@@ -5526,6 +5524,11 @@ dev = [
     { name = "pytest-cov" },
     { name = "ruff" },
 ]
+notebook = [
+    { name = "ipykernel" },
+    { name = "matplotlib" },
+    { name = "notebook" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -5535,12 +5538,9 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.111.0" },
     { name = "flwr", specifier = ">=1.44.0" },
     { name = "httpx", specifier = ">=0.27.0" },
-    { name = "ipykernel", specifier = ">=7.4.0" },
     { name = "langgraph", specifier = ">=1.2.24" },
     { name = "llmlingua", marker = "extra == 'rag-live'", specifier = ">=0.2.2" },
-    { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "mcp", specifier = ">=1.20,<2" },
-    { name = "notebook" },
     { name = "numpy", specifier = ">=2.5.5" },
     { name = "pandas", specifier = ">=3.1.1" },
     { name = "pgvector", specifier = ">=0.2.5" },
@@ -5572,6 +5572,11 @@ dev = [
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-cov", specifier = ">=5.0.0" },
     { name = "ruff", specifier = ">=0.5.0" },
+]
+notebook = [
+    { name = "ipykernel", specifier = ">=7.4.0" },
+    { name = "matplotlib", specifier = ">=3.11.2" },
+    { name = "notebook" },
 ]
 
 [[package]]

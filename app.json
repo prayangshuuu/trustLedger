@@ -1,0 +1,57 @@
+{
+  "name": "TrustLedger API",
+  "description": "Fair, private, explainable credit scoring for Bangladeshis without a credit history.",
+  "repository": "https://github.com/prayangshuuu/trustLedger",
+  "stack": "heroku-24",
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0"
+    },
+    {
+      "plan": "heroku-redis:mini"
+    }
+  ],
+  "env": {
+    "TL_ROLE": {
+      "value": "api"
+    },
+    "DEMO_MODE": {
+      "value": "true"
+    },
+    "LLM_MODE": {
+      "value": "mock",
+      "description": "Set to live once DEEPSEEK_API_KEY is configured"
+    },
+    "DEEPSEEK_API_KEY": {
+      "required": false
+    },
+    "API_KEYS": {
+      "generator": "secret",
+      "description": "Comma-separated lender/app/partner keys"
+    },
+    "SESSION_SECRET": {
+      "generator": "secret"
+    },
+    "STORAGE_ENCRYPTION_KEY": {
+      "required": false,
+      "description": "Fernet key; generate locally"
+    },
+    "CORS_ORIGINS": {
+      "value": "https://trustledger-dashboard.vercel.app"
+    },
+    "SEED_POPULATION": {
+      "value": "4000"
+    }
+  }
+}
