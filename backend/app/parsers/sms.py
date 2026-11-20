@@ -10,6 +10,8 @@ Follows PLAN_CONTEXT.md §6: Raw SMS text is NEVER stored in database or persist
 import hashlib
 import re
 from datetime import UTC, datetime
+from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -19,6 +21,8 @@ from app.privacy.redaction import redact_pii
 
 # Conversion table for Bengali digits ০-৯ to standard Arabic numerals 0-9
 BANGLA_DIGITS_TABLE = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
+
+PROMPT_FILE_PATH = Path(__file__).resolve().parent / "prompts" / "sms_parser.md"
 
 TransactionType = Literal[
     "income", "bill", "recharge", "remittance", "savings", "transfer", "other"
@@ -47,6 +51,18 @@ class Transaction(BaseModel):
     txn_id: str | None = Field(default=None, description="Unique MFS/Bank transaction identifier")
     raw_hash: str = Field(
         ..., description="SHA-256 fingerprint of the raw message for deduplication"
+    )
+
+
+@lru_cache(maxsize=1)
+def load_sms_parser_prompt() -> str:
+    """Load XML-structured SMS parser system prompt."""
+    if PROMPT_FILE_PATH.exists():
+        return PROMPT_FILE_PATH.read_text(encoding="utf-8")
+    return (
+        "<system_prompt>\n"
+        "<role>You are an expert financial transaction extraction system for Bangladeshi SMS.</role>\n"
+        "</system_prompt>"
     )
 
 
@@ -142,7 +158,7 @@ def parse_regex_stage(text: str, raw_hash: str) -> Transaction | None:
             raw_hash=raw_hash,
         )
 
-    # 2. Mobile Recharge
+    # 2. Mobile Recharge (must precede fee checks to prevent "recharge" matching "charge")
     if any(k in lower for k in ("recharge", "airtime", "রিচার্জ", "টপ আপ")):
         return Transaction(
             date=txn_date,
@@ -163,6 +179,7 @@ def parse_regex_stage(text: str, raw_hash: str) -> Transaction | None:
         "nesco",
         "breb",
         "btcl",
+        "carnival",
         "electricity",
         "bill",
         "pay bill",
@@ -174,7 +191,7 @@ def parse_regex_stage(text: str, raw_hash: str) -> Transaction | None:
     )
     if any(k in lower for k in bill_keywords):
         counterparty = "Utility Biller"
-        for kw in ("desco", "dpdc", "wasa", "titas", "nesco", "breb", "btcl"):
+        for kw in ("desco", "dpdc", "wasa", "titas", "nesco", "breb", "btcl", "carnival"):
             if kw in lower:
                 counterparty = kw.upper()
                 break
@@ -213,17 +230,31 @@ def parse_regex_stage(text: str, raw_hash: str) -> Transaction | None:
             raw_hash=raw_hash,
         )
 
-    # 6. Cash In / Money Received (Inflow)
+    # 6. Service fee / adjustments / other debits
+    if any(k in lower for k in ("fee deduction", "service fee", "annual sms", "চার্জ", "ফি কর্তন")):
+        return Transaction(
+            date=txn_date,
+            amount_bdt=amount,
+            direction="out",
+            type="other",
+            counterparty="Service Fee / Bank",
+            txn_id=txn_id,
+            raw_hash=raw_hash,
+        )
+
+    # 7. Cash In / Money Received (Inflow)
     if any(
         k in lower
         for k in (
             "received tk",
-            "cash in tk",
+            "cash in",
             "deposit",
             "টাকা জমা",
             "টাকা পেয়েছেন",
             "জমা হয়েছে",
             "ক্রেডিট",
+            "credited",
+            "ক্যাশ ইন",
         )
     ):
         counterparty = "Agent / Sender"
@@ -244,9 +275,18 @@ def parse_regex_stage(text: str, raw_hash: str) -> Transaction | None:
             raw_hash=raw_hash,
         )
 
-    # 7. Send Money / Payment / Cash Out (Outflow)
+    # 8. Send Money / Payment / Cash Out (Outflow)
     if any(
-        k in lower for k in ("send money", "payment tk", "cash out", "টাকা পাঠানো", "পেমেন্ট", "ক্যাশ আউট")
+        k in lower
+        for k in (
+            "send money",
+            "payment tk",
+            "payment of tk",
+            "cash out",
+            "টাকা পাঠানো",
+            "পেমেন্ট",
+            "ক্যাশ আউট",
+        )
     ):
         counterparty = "Receiver / Merchant"
         to_m = re.search(
@@ -273,17 +313,10 @@ def parse_llm_stage(text: str, raw_hash: str) -> Transaction:
     anonymized_text = redact_pii(text)
 
     llm = get_llm_client()
+    system_prompt = load_sms_parser_prompt()
     messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are an SMS transaction parser for Bangladeshi financial messages. "
-                "Output a valid JSON transaction with date, amount_bdt, direction ('in'|'out'), "
-                "type ('income'|'bill'|'recharge'|'remittance'|'savings'|'transfer'|'other'), "
-                "counterparty, and txn_id."
-            ),
-        },
-        {"role": "user", "content": f"Parse this SMS: {anonymized_text}"},
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": f"Parse this SMS:\n{anonymized_text}"},
     ]
 
     try:
